@@ -125,7 +125,7 @@ In the realizable case, the suboptimality on the population log-likelihood is ex
     %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
 \end{align}
 where $\conj$ is the entropy, the convex conjugate of the log-partition.
-The relationship between Bregman divergences and Fenchel conjugacy is well explained in Wainwright's book, and the article geometry of exponential family. \RLP{add citations} 
+The relationship between Bregman divergences and Fenchel conjugacy is well explained in \citet{wainwright2008graphical}, and \citet{agarwal2010geometric}. 
 The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability ?
 \begin{align}
 	\label{eq:bregmanMLE}
@@ -141,7 +141,7 @@ The question is: how does this quantity behave when $\natp$ is the maximum-likel
     \leq 2L \norm{\mu^* - \mu}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz.
-Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood. \RLP{find relevant inequalities}.
+Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood.
 
 \paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
 \begin{align}
@@ -255,13 +255,30 @@ In other words, we need for all $\lr\in(0,1)$, and all $\mu$ in the interior of 
 	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr)\mu)\bigg	) 
 	\leq \lr \sigma^2 \; .
 \end{align}
-When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal poytope, we get
+When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
 	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
 \end{multline}
-where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
+where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. 
+In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. We can also apply this result to the MAP estimate $\hat \mu = \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n}$ but I did not manage to reach a satisfying conclusion about the bias. 
+Note $\tilde \mu = \E[\hat \mu] = \frac{n_0 \mu_0 + n \mu_*}{n_0+n}$ and $\gamma_0= \frac{n_0}{n_0+n}$ and the step-size $\gamma = \inv{n_0 + n}$ .
+\begin{align}
+	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) } 
+	&\leq \conj(\mu_*) - \conj(\tilde \mu) + \gamma_0 \langle \mu_0 - \mu_* ; \E[\hat \natp] \rangle + (1 - \gamma_0) \gamma \sigma^2  \\
+	& = \bregmanconj (\mu_* ; \tilde \mu) - \langle \tilde \mu - \mu_* ;    \tilde \natp - \E[\hat \natp] \rangle + \frac{n}{(n_0+n)^2}\sigma^2
+\end{align}
+so we recover the $O(n^{-1})$ for the variance and we are still looking for $O(n^{-2})$ rate for the bias. The Bregman term in the bias should be in this spirit, given a quadratic approximation
+\begin{align}
+	 \bregmanconj (\mu_* ; \tilde \mu)  
+	 = \bregmanconj (\mu_* ; \mu_* + \gamma_0 (\mu_0 - \mu_*) ) \approx \half \gamma_0^2 \norm{\mu_0 - \mu_*}^2_{\mSigma_*^{-1}}
+\end{align}
+where $\mSigma_* = \Cov_{\mu_*}(T(X))$. \RLP{beware of the order, this might be inaccurate}
+However the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
+
+\paragraph{TODO}
+The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
 
 The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
 
