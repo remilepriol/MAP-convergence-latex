@@ -150,12 +150,24 @@ Since the empirical average converges in expectation to the population mean at a
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
 
-Let us make these statements more precise. For a Manahalobis distance with matrix $\mM$
+\paragraph{$\ell^2$-norm analysis}
+Let us make these statements more precise. 
+If $\Var T(X) = \sigma^2$, then 
+\begin{align}
+	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}^2 = \frac{\sigma^2}{n} 
+\end{align}
+eg the variance of the mean is $n$ times smaller than the variance of the samples. We can extend this result to a Manahalobis distance with any matrix $\mM$
 \begin{align}
 	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
 \end{align}
 where $\mSigma$ is the covariance of $T(X)$. This  bound is equal to $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$. 
-
+Adding a reference mean $\mu_0$ to get the MAP,
+\begin{align}
+	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2 
+	&= \frac{n}{(n+n_0)^2} \sigma^2 +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2 \\
+	&= O\left(\frac{\sigma^2}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2}{n^2} \right)
+\end{align}
+so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. Let's see if we can get similar estimates for arbitrary exponential families !
 
 \section{Stochastic Bregman Proximal Point}
 We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
@@ -246,7 +258,7 @@ In other words, we need for all $\lr\in(0,1)$, and all $\mu$ in the interior of 
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal poytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
-	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
+	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
 	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
 \end{multline}
 where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
@@ -433,7 +445,7 @@ Embracing the Bayesian viewpoint, the independent mechanism principle is embodie
 %     \natp_i \indep X_{G(i)}
 % \end{align}
 Following these equations, the joint distribution on $(\natp,X)$ factors along a larger graph $G'$ which augments $G$ by adding nodes $\natp_i$ with arrows pointing to $X_i$, as illustrated in Figure~\ref{fig:joint_graph}.
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \begin{tikzpicture}[shorten >=1pt,->]
       \tikzstyle{vertex}=[draw, circle,minimum size=24pt,inner sep=0pt]
