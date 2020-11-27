@@ -113,6 +113,45 @@ such that the MAP is
 \end{align}
 The MAP estimate is a random quantity.
 
+
+\section{Straightforward Convergence Rate}
+In the realizable case, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
+\begin{align}
+    &\expect[x\sim p(.|\natp^*)]{-\log p(x|\natp) + \log p(x|\natp^*)}\\
+    =& \KL( p(.|\natp^*) || p(.|\natp)) \\
+    =& \bregman (\natp || \natp^*) \\
+    =& \bregmanconj ( \meanp^* || \meanp) \\
+    =& \conj(\mu^*) + \logpart(\natp) - \langle \natp , \mu^* \rangle
+    %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
+\end{align}
+where $\conj$ is the entropy, the convex conjugate of the log-partition.
+The relationship between Bregman divergences and Fenchel conjugacy is well explained in Wainwright's book, and the article geometry of exponential family. \RLP{add citations} 
+The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability ?
+\begin{align}
+	\label{eq:bregmanMLE}
+	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \\
+	\label{eq:bregmanMAP}
+	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
+\end{align}
+
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\begin{align}
+    \bregmanconj(\mu^* || \mu) 
+    \leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu}
+    \leq 2L \norm{\mu^* - \mu}
+\end{align}
+so $\bregmanconj$ is $2L$-Lipschitz.
+Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood. \RLP{find relevant inequalities}.
+
+\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
+\begin{align}
+    \bregmanconj(\mu^* || \mu) 
+    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
+\end{align}
+so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
+
+
+
 \section{Stochastic Bregman Proximal Point}
 We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
 \begin{align}
@@ -174,42 +213,6 @@ is upper bounded by the simple formula
 \end{align}
 These notions were rediscovered and expanded by \citet{bauschke2017descent} and \citet{lu2018relatively}. If you need to read one, pick \citet{lu2018relatively} -- I found it much much easier and more enjoyable to read.  This latter paper also derived a linear convergence rate for mirror descent under relative smoothness and strong-convexity, with the relative condition number $\frac{L}{\mu}$ appearing.
 
-
-\subsubsection{Three point lemma}
-These proofs rely on another basic property of Bregman divergences, familiar to information geometry folks. If $x_+$ is solution to 
-\begin{align}
-	\min	_{x\in C} \overbrace{f(x) + \cB_h(x || y)}^{\phi(x)}
-\end{align}
-where $C$ is a closed convex set, $f$ is a convex function, $\cB_h$ is the Bregman divergence induce by some convex function $h$ (we will drop the index, and use a semicolon instead of double bars to lighten the notation), and $y$ is some reference vector. Then 
-\begin{align}
-	\forall x, f(x) + \cB(x ;y) \geq f(x_+) + \cB(x ; x_+) +\cB(x_+ ; y) \; .
-\end{align}
-This property is an analog of the Pythagorean theorem for generalized projections (setting $f=0$ and $h=\|.\|^2$).
-
-\begin{proof}
-	The first order optimality condition is
-	\begin{align}
-		&\langle \nabla \phi (x_+) , x -  x_+ \rangle \geq 0, \forall x \\
-		=& \langle \nabla f(x_+) + \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  
-	\end{align}
-	This proof relies on another property called three point property 
-	\begin{align}
-		\langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  =\cB(x;y) -\cB(x;x_+) - \cB(x_+;y) 
-	\end{align}
-	which can be proved by expanding the right hand side.
-	By convexity of $f$ we also have 
-	\begin{align}
-		 f(x_+) + \langle \nabla f(x_+), x - x_+ \rangle \leq f(x) \; .
-	\end{align} 
-	Putting it all together we get
-	\begin{align}
-		0 
-		&\leq  \langle \nabla f(x_+), x - x_+ \rangle + \langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
-		&\leq f(x) - f(x_+) + \cB(x;y) -\cB(x;x_+) - \cB(x_+;y)
-	\end{align}
-	which concludes the proof.
-\end{proof}
-
 \subsection{Relative smoothness for SMD}
 Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 
@@ -235,7 +238,7 @@ In other words, we need for all $\lr\in(0,1)$, and all $\mu$ in the interior of 
 	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr)\mu)\bigg	) 
 	\leq \lr \sigma^2 \; .
 \end{align}
-When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanconj} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal poytope, we get
+When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal poytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
@@ -246,42 +249,6 @@ where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1
 The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
 
 Also \citet{raskutti2015information} only gives asymptotic results.
-
-
-\section{Straightforward Convergence Rate}
-In the realizable case, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
-\begin{align}
-    &\expect[x\sim p(.|\natp^*)]{-\log p(x|\natp) + \log p(x|\natp^*)}\\
-    =& \KL( p(.|\natp^*) || p(.|\natp)) \\
-    =& \bregman (\natp || \natp^*) \\
-    \label{eq:bregmanconj}
-    =& \bregmanconj ( \meanp^* || \meanp) \\
-    =& \conj(\mu^*) + \logpart(\natp) - \langle \natp , \mu^* \rangle
-    %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
-\end{align}
-where $\conj$ is the entropy, the convex conjugate of the log-partition.
-The relationship between Bregman divergences and Fenchel conjugacy is well explained in Wainwright's book, and the article geometry of exponential family. \RLP{add citations} 
-The question is: how does this quantity behave when $\natp$ is the MAP estimate ? Can we get bounds -- in expectation or high-probability ? 
-\begin{align}
-	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \\
-	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right )
-\end{align}
-
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
-\begin{align}
-    \bregmanconj(\mu^* || \mu) 
-    \leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu}
-    \leq 2L \norm{\mu^* - \mu}
-\end{align}
-so $\bregmanconj$ is $2L$-Lipschitz.
-Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood. \RLP{find relevant inequalities}.
-
-\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
-\begin{align}
-    \bregmanconj(\mu^* || \mu) 
-    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
-\end{align}
-so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
 
 \section{Self-Concordance}
 
@@ -300,44 +267,6 @@ The exponent $\frac{3}{2}$ is motivated by dimensional analysis and the factor $
 A multidimensional function $f: \real^n \rightarrow \real$ is SC if it's restriction to any line is SC.
 Negative logarithm $-\log(x)$ and entropy $x\log(x)$ are both self-concordant function. This is good news for us since log-partition function may include SC logarithmic barriers.
 In particular, gaussians have a logarithmic term. They also have an inverse term which is not self-concordant, but which is generalized self-concordant.
-
-\subsection{Fenchel conjugate motivation to self-concordance}
-
-In the most regular case, when $f(x)$ is a convex function, continuously differentiable on its domain, then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ verifies
-\begin{align}
-    \nabla f \circ \nabla f^*  &= \Id \\
-     \nabla f^* \circ \nabla f &= \Id
-\end{align}
-where $\Id$ is the identity function on the relevant domain. In words, the gradients of $f$ and $f^*$ are reciprocal.
-Deriving this equality yields
-\begin{align}
-    \nabla^2 f(x) \nabla^2 f^*(x^*) = I_n
-\end{align}
-where $x,x^*$ are conjugate points -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
-Now, it gets interesting to us when we derive again this equality. Let's tackle the 1D case first
-\begin{align}
-    &f''(x) f^{* \prime \prime}(f'(x)) = 1, \forall x \\
-    \implies
-    &f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))  = 0 \\
-    \implies
-    &\frac{f'''(x)}{f''(x){\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*){\frac{3}{2}}}  = 0
-\end{align}
-where to get to the last line we used the first line, and we divided the second line by $f''(x)^{\frac{1}{2}}$. 
-We see that for a pair of conjugate functions, the self-concordance ratio is preserved, modulo the sign.
-This gives another rational, beyond dimensional analysis, for using this ratio as a regularity assumption for convex analysis. 
-
-It is also very helpful for us, since we are looking at pairs $\logpart, \conj$, and their associated Bregman divergences. 
-If $\logpart$ is SC, then so is 
-$f(\natp)= \bregman(\natp || \natp^*) = \logpart(\natp) - \langle \meanp^*, \natp \rangle + \cst$. 
-And $\conj$ is SC as well, thus  $h(\meanp) = \bregmanconj ( \meanp || \meanp^*)$ is SC.
-But there is no reason for 
-$g(\meanp) = \bregmanconj ( \meanp^* || \meanp) =  \cst - \conj(\meanp) - \langle \nabla \conj (\meanp), \meanp^* - \meanp \rangle $ to be SC. 
-
-The multivariate generalization of this formula is a third order tensor equality
-\begin{align}
-    \nabla^2 f^{-\half} \nabla^3 f \nabla^2 f^{-1} + \nabla^2 f^{* -\half} \nabla^3 f^* \nabla^2 f^{* -1} = 0
-\end{align}
-where we omit  multiplication axis and functions take relevant argument $x$ or $x^*$. Consequently, a multivariate definition of self-concordance might take the form of an inequality on the 3d tensor $\nabla^2 f^{-\half} \nabla^3 f \nabla^2 f^{-1}$.
 
 \subsection{Suboptimality and Newton Decrement}
 An important property of self-concordant functions (cite Boyd's book, although Nesterov's may be better) is that their suboptimality  may be upper bounded by the Newton Decrement 
@@ -404,6 +333,82 @@ This is just a remark. I don't think it can help us to get anywhere.
 
 
 \newpage
+\appendix
+
+\section{Three point lemma}
+Proofs of convergence for mirror descent with relative smoothness rely on a specific property of Bregman divergences, familiar to information geometry folks. If $x_+$ is solution to 
+\begin{align}
+	\min	_{x\in C} \overbrace{f(x) + \cB_h(x || y)}^{\phi(x)}
+\end{align}
+where $C$ is a closed convex set, $f$ is a convex function, $\cB_h$ is the Bregman divergence induce by some convex function $h$ (we will drop the index, and use a semicolon instead of double bars to lighten the notation), and $y$ is some reference vector. Then 
+\begin{align}
+	\forall x, f(x) + \cB(x ;y) \geq f(x_+) + \cB(x ; x_+) +\cB(x_+ ; y) \; .
+\end{align}
+This property is an analog of the Pythagorean theorem for generalized projections (setting $f=0$ and $h=\|.\|^2$).
+
+\begin{proof}
+	The first order optimality condition is
+	\begin{align}
+		&\langle \nabla \phi (x_+) , x -  x_+ \rangle \geq 0, \forall x \\
+		=& \langle \nabla f(x_+) + \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  
+	\end{align}
+	This proof relies on another property called three point property 
+	\begin{align}
+		\langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  =\cB(x;y) -\cB(x;x_+) - \cB(x_+;y) 
+	\end{align}
+	which can be proved by expanding the right hand side.
+	By convexity of $f$ we also have 
+	\begin{align}
+		 f(x_+) + \langle \nabla f(x_+), x - x_+ \rangle \leq f(x) \; .
+	\end{align} 
+	Putting it all together we get
+	\begin{align}
+		0 
+		&\leq  \langle \nabla f(x_+), x - x_+ \rangle + \langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
+		&\leq f(x) - f(x_+) + \cB(x;y) -\cB(x;x_+) - \cB(x_+;y)
+	\end{align}
+	which concludes the proof.
+\end{proof}
+
+\section{Fenchel conjugate motivation to self-concordance}
+
+In the most regular case, when $f(x)$ is a convex function, continuously differentiable on its domain, then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ verifies
+\begin{align}
+    \nabla f \circ \nabla f^*  &= \Id \\
+     \nabla f^* \circ \nabla f &= \Id
+\end{align}
+where $\Id$ is the identity function on the relevant domain. In words, the gradients of $f$ and $f^*$ are reciprocal.
+Deriving this equality yields
+\begin{align}
+    \nabla^2 f(x) \nabla^2 f^*(x^*) = I_n
+\end{align}
+where $x,x^*$ are conjugate points -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
+Now, it gets interesting to us when we derive again this equality. Let's tackle the 1D case first
+\begin{align}
+    &f''(x) f^{* \prime \prime}(f'(x)) = 1, \forall x \\
+    \implies
+    &f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))  = 0 \\
+    \implies
+    &\frac{f'''(x)}{f''(x){\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*){\frac{3}{2}}}  = 0
+\end{align}
+where to get to the last line we used the first line, and we divided the second line by $f''(x)^{\frac{1}{2}}$. 
+We see that for a pair of conjugate functions, the self-concordance ratio is preserved, modulo the sign.
+This gives another rational, beyond dimensional analysis, for using this ratio as a regularity assumption for convex analysis. 
+
+It is also very helpful for us, since we are looking at pairs $\logpart, \conj$, and their associated Bregman divergences. 
+If $\logpart$ is SC, then so is 
+$f(\natp)= \bregman(\natp || \natp^*) = \logpart(\natp) - \langle \meanp^*, \natp \rangle + \cst$. 
+And $\conj$ is SC as well, thus  $h(\meanp) = \bregmanconj ( \meanp || \meanp^*)$ is SC.
+But there is no reason for 
+$g(\meanp) = \bregmanconj ( \meanp^* || \meanp) =  \cst - \conj(\meanp) - \langle \nabla \conj (\meanp), \meanp^* - \meanp \rangle $ to be SC. 
+
+The multivariate generalization of this formula is a third order tensor equality
+\begin{align}
+    \nabla^2 f^{-\half} \nabla^3 f \nabla^2 f^{-1} + \nabla^2 f^{* -\half} \nabla^3 f^* \nabla^2 f^{* -1} = 0
+\end{align}
+where we omit  multiplication axis and functions take relevant argument $x$ or $x^*$. Consequently, a multivariate definition of self-concordance might take the form of an inequality on the 3d tensor $\nabla^2 f^{-\half} \nabla^3 f \nabla^2 f^{-1}$.
+
+
 
 \section{MAP on Graphs}
 Assume that the variable $X$ factors along some graph $G$. 
