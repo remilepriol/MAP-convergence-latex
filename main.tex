@@ -150,6 +150,11 @@ Since the empirical average converges in expectation to the population mean at a
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
 
+Let us make these statements more precise. For a Manahalobis distance with matrix $\mM$
+\begin{align}
+	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
+\end{align}
+where $\mSigma$ is the covariance of $T(X)$. This  bound is equal to $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$. 
 
 
 \section{Stochastic Bregman Proximal Point}
@@ -291,13 +296,13 @@ The gradient and Hessian of $f$ are
     \nabla f(\natp) 
     &= \meanp - \meanp^* = \expect[p(X|\natp)]{T(X)} - \expect[p(X|\natp^*)]{T(X)} \\
     \nabla^2 f(\natp) 
-    &= \Sigma(\natp) = \Cov_{p(X|\natp)}[T(X)]
+    &= \mSigma(\natp) = \Cov_{p(X|\natp)}[T(X)]
 \end{align}
 so that we get the bound.
 \begin{align}
     \bregmanconj(\mu^* || \mu) 
     \leq \decrement(\natp)^2 
-    = \norm{\mu^* - \mu(\theta)}^2_{\Sigma(\theta)^{-1}} 
+    = \norm{\mu^* - \mu(\theta)}^2_{\mSigma(\theta)^{-1}} 
     \leq 0.46
 \end{align}
 % If we were to use $g(\meanp)$ instead, we would get dirty third order derivatives
