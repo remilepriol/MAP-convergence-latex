@@ -233,15 +233,15 @@ These notions were rediscovered and expanded by \citet{bauschke2017descent} and 
 \subsection{Relative smoothness for SMD}
 Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 
-This is very interesting for us, but the variance hyper-parameter is oddly defined. Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is a lower bound on the covariance between $g_t$ and $\natp_{t+1} = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t )$. 
+This is very interesting for us, but the variance hyper-parameter is oddly defined. Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the descent direction $\natp_{t+1} - \natp_t = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t ) - \natp_t $ that should hold for all time steps  
 \begin{align}
-	\Cov(g_t,\natp_{t+1}) 
-	&= \expect{\langle g_t, \natp_{t+1} \rangle}  - \langle \E[g_t], \E[\natp_{t+1}] \rangle \geq -  \lr_t \sigma^2, \forall t \\
-	 &= \expect{\langle g_t - \nabla f(\natp_t), \natp_{t+1}  - \natp \rangle}, (\forall \natp)
+	&\Cov(- g_t,\natp_{t+1} - \natp_t | X_{1 \dots t}) \leq \lr_t \sigma^2 \\
+	&= \expect{\langle - g_t, \natp_{t+1} \rangle}  - \langle \E[-g_t], \E[\natp_{t+1}] \rangle   \\
+	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}
 \end{align}
-where $\gamma_t$ is the step-size and expectations are conditional on $\natp_t$. In words, $g_t$ and $\natp_{t+1}$ should not be too negatively correlated. In our case, 
+where $\gamma_t$ is the step-size and expectations are conditional on the past. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. In our case, 
 \begin{align}
-	g_t - \nabla f(\natp_t) = \E[T(X)] - T(X_{t+1})	
+	\nabla f(\natp_t) - g_t =  T(X_{t+1})	- \E[T(X)]
 \end{align}
 so that $\sigma$ is really a bound on the covariance of the sufficient statistics with another variable
 \begin{align}
