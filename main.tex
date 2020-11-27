@@ -38,10 +38,10 @@
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
-\newcommand{\logpartition}{A}
-\newcommand{\conj}{\logpartition^*}
-\newcommand{\bregman}{\cB_\logpartition}
-\newcommand{\bregmanconj}{\cB_{\logpartition^*}}
+\newcommand{\logpart}{A}
+\newcommand{\conj}{\logpart^*}
+\newcommand{\bregman}{\cB_\logpart}
+\newcommand{\bregmanconj}{\cB_{\logpart^*}}
 \newcommand{\natp}{\theta}
 \newcommand{\meanp}{\mu}
 \newcommand{\decrement}{D}
@@ -67,39 +67,39 @@ We hope  to get a new result by combining tools from statistics and optimization
 
 The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model
 \begin{align}
-    p(X|\natp) &= \exp( \natp^\top T(X) - \logpartition(\natp)) \; ,
+    p(X|\natp) &= \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
 \end{align}
 with log-partition function 
 \begin{align}
-    \logpartition(\natp) = \log \int e^{\natp^\top T(x)} dx \; .
+    \logpart(\natp) = \log \int e^{\natp^\top T(x)} dx \; .
 \end{align}
-Recall that $\logpartition$ verifies the two following identities 
+Recall that $\logpart$ verifies the two following identities 
 \begin{align}
-    \nabla\logpartition(\natp) &=  \expect[p(X|\natp)]{T(X)} =: \meanp \\
-    \nabla^2 \logpartition(\natp) &= \Cov_\natp[T(X)] > 0
+    \nabla\logpart(\natp) &=  \expect[p(X|\natp)]{T(X)} =: \meanp \\
+    \nabla^2 \logpart(\natp) &= \Cov_\natp[T(X)] > 0
 \end{align}
 where $\meanp$ is called the mean parameter.
-The second identity entails that $\logpartition$ is strictly-convex.
+The second identity entails that $\logpart$ is strictly-convex.
 The conjugate prior for this distribution is
 \begin{align}
     \pi(\natp) &\propto \exp( - n_0 \bregman(\natp || \natp_0) )
 \end{align}
 where $n_0$ is a number of fictional points observed from a distribution with parameter $\natp_0$.
-$\bregman(\natp || \natp_0)$ is the Bregman divergence induced by $\logpartition$ between $\natp$ and $\natp_0$
+$\bregman(\natp || \natp_0)$ is the Bregman divergence induced by $\logpart$ between $\natp$ and $\natp_0$
 \begin{align}
     \bregman (\natp || \natp_0)
-    & = \logpartition(\natp) - \logpartition(\natp_0) 
+    & = \logpart(\natp) - \logpart(\natp_0) 
     - \langle \meanp_0 , \natp - \natp_0 \rangle
 \end{align}
-with $\meanp_0 = \nabla \logpartition(\natp_0) = \expect[\natp_0]{T(X)}$ the mean parameter associated to the natural parameter $\natp_0$.
+with $\meanp_0 = \nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)}$ the mean parameter associated to the natural parameter $\natp_0$.
 The negative log-likelihood of the prior is then
 \begin{align*}
-    -\log \pi(\natp) = n_0 (\logpartition(\natp)  - \natp^\top \meanp_0 ) + \cst
+    -\log \pi(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
 \end{align*}
 Thus the joint NLL of $(x_1,\dots,x_n,\natp)$ is
 \begin{align}
     -\log p(X|\natp)\pi(\natp) 
-    = (n_0+n) \logpartition (\natp) 
+    = (n_0+n) \logpart (\natp) 
     - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(x_i) \right) \; .
 \end{align}
 Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
@@ -108,13 +108,13 @@ Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
 \end{align}
 such that the MAP is
 \begin{align}
-    \nabla \logpartition(\hat \natp) = \hat \meanp
+    \nabla \logpart(\hat \natp) = \hat \meanp
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
 \end{align}
 The MAP estimate is a random quantity.
 
-\section{Stochastic Proximal Bregman Point}
-We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic proximal Bregman step with step-size $\inv{n_0}$. This can also be seen at each step since
+\section{Stochastic Bregman Proximal Point}
+We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
 \begin{align}
     \hat \natp_{n+1} 
     &= \argmin_\natp -\log p(x_{n+1}|\natp) + (n_0 + n) \bregman(\natp || \hat \natp_n) \\
@@ -126,13 +126,13 @@ This is similar to the online learning setup, and it may be possible to bound th
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
-Let $f(\natp) := \expect[x]{-\log p(x|\natp)} = - \langle \mu_*, \natp\rangle + \logpartition(\natp)$. In words, $f$ is linear modification of a convex function $\logpartition$, which we can access only through noisy estimates of $\mu_*$. It turns out that the MAP estimate can also be seen as the iterates of stochastic mirror descent with mirror map $\logpartition$. First let's recall mirror descent iteration
+Let $f(\natp) := \expect[x]{-\log p(x|\natp)} = - \langle \mu_*, \natp\rangle + \logpart(\natp)$. In words, $f$ is linear modification of a convex function $\logpart$, which we can access only through noisy estimates of $\mu_*$. It turns out that the MAP estimate can also be seen as the iterates of stochastic mirror descent with mirror map $\logpart$. First let's recall mirror descent iteration
 \begin{align}
 	\natp_{t+1} 
 	&:= \argmin_\natp \lr \linear_f(\natp; \natp_t) + \bregman(\natp || \natp_t)  \\
-	& = \nabla \conj (\nabla \logpartition(\natp_t) - \lr \nabla f(\natp_t))
+	& = \nabla \conj (\nabla \logpart(\natp_t) - \lr \nabla f(\natp_t))
 \end{align}
-where $\linear_f(\natp; \natp_t) = f(\natp_t) + \langle \nabla f(\natp_t), \natp - \natp_t \rangle$ is the linear approximation of $f$ in $\natp_t$ evaluated at $\natp$. Solving this problem require solving problems of the form $\argmin_\natp - \langle c, \natp \rangle + \logpartition(\natp)$, eg computing the convex conjugate of $\logpartition$. 
+where $\linear_f(\natp; \natp_t) = f(\natp_t) + \langle \nabla f(\natp_t), \natp - \natp_t \rangle$ is the linear approximation of $f$ in $\natp_t$ evaluated at $\natp$. Solving this problem require solving problems of the form $\argmin_\natp - \langle c, \natp \rangle + \logpart(\natp)$, eg computing the convex conjugate of $\logpart$. 
 Note that finding $\natp_*$ is done with 1 step of mirror descent. Indeed plugging in definitions of $f$ and $\mu$ yields
 \begin{align}
 	&\mu_{t+1}  = \mu_t - \lr (\mu_t - \mu_*) \\
@@ -142,15 +142,15 @@ which shows exponential convergence and 1-step convergence when $\lr =1$. Back t
 \begin{align}
     \hat \natp_{n+1} 
     &= \argmin_\natp 
-    - \langle T(x_{t+1}), \natp \rangle  + \logpartition(\natp) + (n_0 + n) \bregman(\natp || \natp_n) \\
-    %&(n_0+n)\left(\logpartition(\natp) - \logpartition(\natp_n) - \langle \nabla \logpartition(\natp_n)  , \natp - \natp_n \rangle \right)  \\
-    &= \argmin_\natp - \langle T(x_{t+1}), \natp \rangle   + \logpartition(\natp_n) + \langle \nabla \logpartition(\natp_n)  , \natp - \natp_n \rangle + (n_0+n + 1) \bregman(\natp || \natp_n) \\
+    - \langle T(x_{t+1}), \natp \rangle  + \logpart(\natp) + (n_0 + n) \bregman(\natp || \natp_n) \\
+    %&(n_0+n)\left(\logpart(\natp) - \logpart(\natp_n) - \langle \nabla \logpart(\natp_n)  , \natp - \natp_n \rangle \right)  \\
+    &= \argmin_\natp - \langle T(x_{t+1}), \natp \rangle   + \logpart(\natp_n) + \langle \nabla \logpart(\natp_n)  , \natp - \natp_n \rangle + (n_0+n + 1) \bregman(\natp || \natp_n) \\
     &= \argmin_\natp \linear_f(\natp;\natp_n, x_{t+1}) + (n_0 + n + 1) \bregman(\natp || \natp_n)
 \end{align}
-where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpartition$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
+where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
 
 \subsection{Relative Smoothness for Mirror Descent}
-In the classic setting, SMD is studied under strong-convexity assumption on the mirror map $\logpartition$ \citep{bubeck2015convex}.
+In the classic setting, SMD is studied under strong-convexity assumption on the mirror map $\logpart$ \citep{bubeck2015convex}.
 In our setting this is not always true -- eg gaussians.
 However a recent and fast-expanding body of work is concerned with a new assumption: relative smoothness and relative strong-convexity. $f$ is $\mu$ strongly-convex and $L$-smooth relative to $h$ if
 \begin{align}
@@ -164,9 +164,12 @@ where the last equivalence holds only when $f$ and $h$ are twice differentiable.
 This sweet generalization of smoothness and strong-convexity transfers the Loewner partial order on symmetric matrices to functions, via the Hessian. 
 As such it can be applied to many functions that were out of reach for $\ell^2$ norm, by taking the appropriate reference function.  For instance $h(x) = -\log(x)$ or $h(x) = x^4$. 
 As early as 2011, \citet{birnbaum2011distributed} showed $O(\inv{t})$ convergence rate for mirror descent under smoothness assumption relative to the mirror map. 
-More precisely, he proved that when $f$ is $L$-smooth relative to $h$, then the suboptimality is upper bounded by the simple formula
+More precisely, he proved that when $f$ is $L$-smooth relative to $h$, then the suboptimality of the sequence 
 \begin{align}
-	x_{t+1}  = \argmin_x \langle \nabla f(x_t), x \rangle + \cB_h(x || x_t) \\
+	x_{t+1}  = \argmin_x \langle \nabla f(x_t), x \rangle + \cB_h(x || x_t)
+\end{align}
+is upper bounded by the simple formula
+\begin{align}
 	\implies f(x_t) - f(x_*) \leq \frac{L \cB_h(x_* || x_0) }{t} \; .
 \end{align}
 These notions were rediscovered and expanded by \citet{bauschke2017descent} and \citet{lu2018relatively}. If you need to read one, pick \citet{lu2018relatively} -- I found it much much easier and more enjoyable to read.  This latter paper also derived a linear convergence rate for mirror descent under relative smoothness and strong-convexity, with the relative condition number $\frac{L}{\mu}$ appearing.
@@ -201,7 +204,7 @@ This property is an analog of the Pythagorean theorem for generalized projection
 	Putting it all together we get
 	\begin{align}
 		0 
-		&\leq  \langle \nabla f(x_+) + \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
+		&\leq  \langle \nabla f(x_+), x - x_+ \rangle + \langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
 		&\leq f(x) - f(x_+) + \cB(x;y) -\cB(x;x_+) - \cB(x_+;y)
 	\end{align}
 	which concludes the proof.
@@ -210,17 +213,35 @@ This property is an analog of the Pythagorean theorem for generalized projection
 \subsection{Relative smoothness for SMD}
 Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 
-This is very interesting for us, but the variance hyper-parameter is oddly defined. Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is a lower bound on the covariance between $g_t$ and $\natp_{t+1} = \nabla \logpartition^*(\nabla \logpartition(\natp_t) - \gamma_t g_t )$. 
+This is very interesting for us, but the variance hyper-parameter is oddly defined. Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is a lower bound on the covariance between $g_t$ and $\natp_{t+1} = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t )$. 
 \begin{align}
 	\Cov(g_t,\natp_{t+1}) 
-	&= \expect{\langle g_t, \natp_{t+1} \rangle}  - \langle \E[g_t], \E[\natp_{t+1}] \rangle \geq -  \gamma_t \sigma^2, \forall t \\
+	&= \expect{\langle g_t, \natp_{t+1} \rangle}  - \langle \E[g_t], \E[\natp_{t+1}] \rangle \geq -  \lr_t \sigma^2, \forall t \\
 	 &= \expect{\langle g_t - \nabla f(\natp_t), \natp_{t+1}  - \natp \rangle}, (\forall \natp)
 \end{align}
 where $\gamma_t$ is the step-size and expectations are conditional on $\natp_t$. In words, $g_t$ and $\natp_{t+1}$ should not be too negatively correlated. In our case, 
 \begin{align}
-	g_t - \nabla f(\natp_t) = \E[T(X)] - T(x_{t+1})	
+	g_t - \nabla f(\natp_t) = \E[T(X)] - T(X_{t+1})	
 \end{align}
-so that $\sigma$ is really a bound on the covariance of the sufficient statistics with another variable. 
+so that $\sigma$ is really a bound on the covariance of the sufficient statistics with another variable
+\begin{align}
+	&\Cov( T(X_{t+1}), \natp_{t+1}| X_{1\dots t})
+	\leq \lr_t\sigma^2 \\
+	=& \Cov(T(X_{t+1}), \nabla\conj \left(\lr_t T(X_{t+1}) + (1-\lr_t ) \mu_t \right) | X_{1\dots t}) \;.
+\end{align}
+In other words, we need for all $\lr\in(0,1)$, and all $\mu$ in the interior of the marginal polytope,
+\begin{align}
+\label{eq:hypvariance}
+	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr)\mu)\bigg	) 
+	\leq \lr \sigma^2 \; .
+\end{align}
+When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanconj} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal poytope, we get
+\begin{multline}
+	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
+	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
+	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
+\end{multline}
+where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
 
 The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
 
@@ -230,21 +251,23 @@ Also \citet{raskutti2015information} only gives asymptotic results.
 \section{Straightforward Convergence Rate}
 In the realizable case, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{align}
-    \expect[x\sim p(.|\natp^*)]{-\log p(x|\natp) + \log p(x|\natp^*)}
-    &= \KL( p(.|\natp^*) || p(.|\natp)) \\
-    &= \bregman (\natp || \natp^*) \\
-    &= \bregmanconj ( \meanp^* || \meanp)
-    %& = \logpartition(\natp) - \logpartition(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
+    &\expect[x\sim p(.|\natp^*)]{-\log p(x|\natp) + \log p(x|\natp^*)}\\
+    =& \KL( p(.|\natp^*) || p(.|\natp)) \\
+    =& \bregman (\natp || \natp^*) \\
+    \label{eq:bregmanconj}
+    =& \bregmanconj ( \meanp^* || \meanp) \\
+    =& \conj(\mu^*) + \logpart(\natp) - \langle \natp , \mu^* \rangle
+    %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
 \end{align}
 where $\conj$ is the entropy, the convex conjugate of the log-partition.
-The relationship between Bregman divergences and Fenchel conjugacy is well explained in Wainwright's book, and the article geometry of exponential family. 
+The relationship between Bregman divergences and Fenchel conjugacy is well explained in Wainwright's book, and the article geometry of exponential family. \RLP{add citations} 
 The question is: how does this quantity behave when $\natp$ is the MAP estimate ? Can we get bounds -- in expectation or high-probability ? 
 \begin{align}
 	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \\
 	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right )
 \end{align}
 
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpartition$ is defined within the $\ell^2$-ball of radius $L$), then
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
     \bregmanconj(\mu^* || \mu) 
     \leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu}
@@ -253,7 +276,7 @@ The question is: how does this quantity behave when $\natp$ is the MAP estimate 
 so $\bregmanconj$ is $2L$-Lipschitz.
 Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood. \RLP{find relevant inequalities}.
 
-\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpartition$ is $L^{-1}$-strongly convex), then
+\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
 \begin{align}
     \bregmanconj(\mu^* || \mu) 
     \leq \frac{L}{2} \norm{\mu^* - \mu}^2
@@ -264,7 +287,7 @@ so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should con
 
 A big problem is that $\conj$ is seldom Lipschitz or smooth. For instance the log-partition function of a multivariate normal is 
 \begin{align}
-    \logpartition(\eta, \Lambda) = \half \eta^\top \Lambda^{-1} \eta - \log\det(\Lambda)
+    \logpart(\eta, \Lambda) = \half \eta^\top \Lambda^{-1} \eta - \log\det(\Lambda)
 \end{align}
 which is defined on $\eta \in \real^d$ and $\Lambda\in \real^{d\times d}$ symmetric positive definite. 
 It is not strongly convex, so $\conj$ is not smooth.
@@ -303,9 +326,9 @@ where to get to the last line we used the first line, and we divided the second 
 We see that for a pair of conjugate functions, the self-concordance ratio is preserved, modulo the sign.
 This gives another rational, beyond dimensional analysis, for using this ratio as a regularity assumption for convex analysis. 
 
-It is also very helpful for us, since we are looking at pairs $\logpartition, \conj$, and their associated Bregman divergences. 
-If $\logpartition$ is SC, then so is 
-$f(\natp)= \bregman(\natp || \natp^*) = \logpartition(\natp) - \langle \meanp^*, \natp \rangle + \cst$. 
+It is also very helpful for us, since we are looking at pairs $\logpart, \conj$, and their associated Bregman divergences. 
+If $\logpart$ is SC, then so is 
+$f(\natp)= \bregman(\natp || \natp^*) = \logpart(\natp) - \langle \meanp^*, \natp \rangle + \cst$. 
 And $\conj$ is SC as well, thus  $h(\meanp) = \bregmanconj ( \meanp || \meanp^*)$ is SC.
 But there is no reason for 
 $g(\meanp) = \bregmanconj ( \meanp^* || \meanp) =  \cst - \conj(\meanp) - \langle \nabla \conj (\meanp), \meanp^* - \meanp \rangle $ to be SC. 
@@ -331,11 +354,11 @@ Note that this bound is vacuous for $\decrement(x)\geq 1$. For $y = \decrement(x
 \end{align}
 
 Our functions of interest is $f(\natp)= \bregman (\natp || \natp^*)= \bregmanconj ( \meanp^* || \meanp) = g(\meanp)$, with minimum $f^*=0$. 
-If $\logpartition$ is self-concordant, then so is $f$, but not necessarily $g$.
+If $\logpart$ is self-concordant, then so is $f$, but not necessarily $g$.
 The gradient and Hessian of $f$ are
 \begin{align}
     f(\natp) 
-    &= \logpartition(\natp) - \logpartition(\natp^*) - \langle \meanp^*, \natp - \natp^* \rangle \\
+    &= \logpart(\natp) - \logpart(\natp^*) - \langle \meanp^*, \natp - \natp^* \rangle \\
     \nabla f(\natp) 
     &= \meanp - \meanp^* = \expect[p(X|\natp)]{T(X)} - \expect[p(X|\natp^*)]{T(X)} \\
     \nabla^2 f(\natp) 
@@ -366,7 +389,7 @@ Finally, if instead we were looking at a different function switching the role o
     &= \natp - \natp^* \\
     \nabla^2 h(\meanp ) 
     &= \nabla^2 \conj(\meanp) 
-    = \nabla^2 \logpartition(\natp) ^{-1}
+    = \nabla^2 \logpart(\natp) ^{-1}
     = \Cov_{p(X|\natp)}[T(X)]^{-1}\\
     \implies 
     \decrement(\meanp)
