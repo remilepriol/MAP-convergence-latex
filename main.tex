@@ -100,7 +100,7 @@ Thus the joint NLL of $(x_1,\dots,x_n,\natp)$ is
 \begin{align}
     -\log p(X|\natp)\pi(\natp) 
     = (n_0+n) \logpart (\natp) 
-    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(x_i) \right) \; .
+    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(x_i) \right) + \cst \; .
 \end{align}
 Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
 \begin{align}
@@ -117,7 +117,7 @@ The MAP estimate is a random quantity.
 \section{Straightforward Convergence Rate}
 In the realizable case, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{align}
-    &\expect[x\sim p(.|\natp^*)]{-\log p(x|\natp) + \log p(x|\natp^*)}\\
+    &\expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*)}\\
     =& \KL( p(.|\natp^*) || p(.|\natp)) \\
     =& \bregman (\natp || \natp^*) \\
     =& \bregmanconj ( \meanp^* || \meanp) \\
@@ -126,12 +126,12 @@ In the realizable case, the suboptimality on the population log-likelihood is ex
 \end{align}
 where $\conj$ is the entropy, the convex conjugate of the log-partition.
 The relationship between Bregman divergences and Fenchel conjugacy is well explained in \citet{wainwright2008graphical}, and \citet{agarwal2010geometric}. 
-The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability ?
+The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability -- on the following quantities ?
 \begin{align}
 	\label{eq:bregmanMLE}
-	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \\
+	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \; , \\
 	\label{eq:bregmanMAP}
-	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
+	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) \; .
 \end{align}
 
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
@@ -249,7 +249,7 @@ so that $\sigma$ is really a bound on the covariance of the sufficient statistic
 	\leq \lr_t\sigma^2 \\
 	=& \Cov(T(X_{t+1}), \nabla\conj \left(\lr_t T(X_{t+1}) + (1-\lr_t ) \mu_t \right) | X_{1\dots t}) \;.
 \end{align}
-In other words, we need for all $\lr\in(0,1)$, and all $\mu$ in the interior of the marginal polytope,
+In other words, we need for all $\lr\in(0,\inv{n})$, and all $\mu$ in the interior of the marginal polytope,
 \begin{align}
 \label{eq:hypvariance}
 	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr)\mu)\bigg	) 
@@ -276,6 +276,8 @@ so we recover the $O(n^{-1})$ for the variance and we are still looking for $O(n
 \end{align}
 where $\mSigma_* = \Cov_{\mu_*}(T(X))$. \RLP{beware of the order, this might be inaccurate}
 However the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
+
+This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which is applicable here. 
 
 \paragraph{TODO}
 The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
