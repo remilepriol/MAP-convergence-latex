@@ -156,18 +156,44 @@ If $\Var T(X) = \sigma^2$, then
 \begin{align}
 	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}^2 = \frac{\sigma^2}{n} 
 \end{align}
-eg the variance of the mean is $n$ times smaller than the variance of the samples. We can extend this result to a Manahalobis distance with any matrix $\mM$
-\begin{align}
-	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
-\end{align}
-where $\mSigma$ is the covariance of $T(X)$. This  bound is equal to $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$. 
-Adding a reference mean $\mu_0$ to get the MAP,
+eg the variance of the mean is $n$ times smaller than the variance of the samples.
+Adding a reference mean $\mu_0$ to get the MAP yields
 \begin{align}
 	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2 
 	&= \frac{n}{(n+n_0)^2} \sigma^2 +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2 \\
 	&= O\left(\frac{\sigma^2}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2}{n^2} \right)
 \end{align}
 so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. Let's see if we can get similar estimates for arbitrary exponential families !
+
+In the limit, the MAP estimates reach the Cramer-Rao lower bound. This can be seen by approximating the Bregman divergence using a second order Taylor expansion
+\begin{align}
+    \bregmanconj(\mu^* || \mu) 
+    &= (\mu - \mu^*)^\top \nabla^2\conj(\mu^*)(\mu - \mu^*)  
+    + O(\norm{\mu - \mu^*}^3)\\
+    &= \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
+    + O(\norm{\mu - \mu^*}^3)
+\end{align}
+where we introduced the Mahalanobis distance induced by the matrix 
+\begin{align}
+    \nabla^2\conj(\mu^*) 
+    = \nabla^2\logpart(\natp^*)^{-1} 
+    = \Cov_{\natp^*}[T(X)]^{-1} 
+    =: \mSigma^{-1}  \; .
+\end{align}
+To exploit this approximation, let us extend the $\ell^2$ norm results to a Mahalanobis distance induced by matrix $\mM$
+\begin{align}
+	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
+\end{align}
+where $\mSigma$ is the covariance of $T(X)$. This is equal to $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$. It is worth $\nicefrac{d}{n}$ when $\mM = \mSigma^{-1}$. \RLP{Maybe that is Cramer-Rao, but check again.} And for the MAP we  get 
+
+\begin{align}
+	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
+	&= \frac{n}{(n+n_0)^2} \Tr(\mSigma^{-1}\mSigma) +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
+	&= O\left(\frac{d}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
+\end{align}
+Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
+Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
+
 
 \section{Stochastic Bregman Proximal Point}
 We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
