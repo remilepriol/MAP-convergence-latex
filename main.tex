@@ -316,10 +316,11 @@ so we recover the $O(n^{-1})$ for the variance and we are still looking for $O(n
 	 \bregmanconj (\mu_* ; \tilde \mu)  
 	 = \bregmanconj (\mu_* ; \mu_* + \gamma_0 (\mu_0 - \mu_*) ) \approx \half \gamma_0^2 \norm{\mu_0 - \mu_*}^2_{\mSigma_*^{-1}}
 \end{align}
-where $\mSigma_* = \Cov_{\mu_*}(T(X))$. \RLP{beware of the order, this might be inaccurate}
-However the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
+where $\mSigma_* = \Cov_{\mu_*}(T(X))$. 
+The order of terms $\bregmanconj (\mu_* ; \tilde \mu)  \neq \bregmanconj (\tilde \mu ; \mu_* ) $ only affects third order terms.
+That's for the bregman, but the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
 
-This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which is applicable here. 
+This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which applies here. However it does not give interesting conclusions.
 
 \paragraph{TODO}
 The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
@@ -327,6 +328,26 @@ The question remains of : when is such a bound valid? For which values of $\sigm
 The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
 
 Also \citet{raskutti2015information} only gives asymptotic results.
+
+\section{Variance bound for centered gaussians}
+Sections on proximal point and mirror descent gave us the variance assumption 
+\begin{align}
+	\Cov(T(x_{n}) , \natp_{n+1}) = \Cov_X \bigg(T(X), \nabla \conj (\lr_n T(X) + (1-\lr_n)\mu_n)\bigg	) 
+	\leq \lr_n M \; .
+\end{align}
+on the sufficient statistic and $\conj$. Unfortunately this bound is not trivially satisfied, even for simple exponential family members, such as centered gaussians $\cN(0,\sigma^2)$ with natural parameter $\lambda > 0$ the precision and sufficient statistic $T(X)= - \half x^2$. The mean parameter is $- \half \sigma^2$ and  the conjugate map is $\nabla \conj (- \half \sigma^2) = \inv{\sigma^2} = \lambda$. 
+\begin{align}
+	\logpart (\lambda) = -\half \log(\lambda)  + \half \log \pi \\
+	\conj(-\half \sigma^2) = -\half \log(\sigma^2) + \half (\log\frac{\pi}{2} - 1) \\
+	\KL(\hat \sigma ; \sigma_*) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \sigma^2}
+\end{align}
+
+We want to bound
+\begin{align}
+	\half \expect{\frac{\sigma_*^2 - X^2 }{ X^2 \lr + (1-\lr) \sigma_0^2 }}
+	\approx \lr (1-\lr)^{-2} \left (\frac{\sigma_*}{\sigma_0} \right)^4
+\end{align}
+using a first order approximation of the inverse , eg a first order approximation of $\nabla \conj$. This can explode for small values of $\sigma_0$. In fact it does as illustrated experimentally.
 
 \section{Self-Concordance}
 
