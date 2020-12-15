@@ -61,10 +61,12 @@ for the exponential family}
 \maketitle
 
 \section{Background}
-It's hard to find general convergence rate on the KL for the maximum likelihood estimates of the exponential family.  We want the simplest one.
+
+\paragraph{Motivation.} 
+We do not know general convergence rates on the KL for maximum likelihood estimates of the exponential family.  We want the simplest one.
 We hope  to get a new result by combining tools from statistics and optimization. 
 
-
+\paragraph{Exponential Family.}
 The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model
 \begin{align}
     p(X|\natp) &= \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
@@ -80,18 +82,23 @@ Recall that $\logpart$ verifies the two following identities
 \end{align}
 where $\meanp$ is called the mean parameter.
 The second identity entails that $\logpart$ is strictly-convex.
-The conjugate prior for this distribution is
+
+\paragraph{Conjugate Prior}
+The conjugate prior for $p(X|\natp)$ is
 \begin{align}
     \pi(\natp) &\propto \exp( - n_0 \bregman(\natp || \natp_0) )
 \end{align}
-where $n_0$ is a number of fictional points observed from a distribution with parameter $\natp_0$.
-$\bregman(\natp || \natp_0)$ is the Bregman divergence induced by $\logpart$ between $\natp$ and $\natp_0$
+where $n_0$ and $\natp_0$ are (hyper)parameters of the prior.
+Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\natp_0$.
+Finally, $\bregman(\natp || \natp_0)$ is the Bregman divergence induced by $\logpart$ between $\natp$ and $\natp_0$
 \begin{align}
     \bregman (\natp || \natp_0)
     & = \logpart(\natp) - \logpart(\natp_0) 
-    - \langle \meanp_0 , \natp - \natp_0 \rangle
+    - \langle \nabla \logpart(\natp_0)  , \natp - \natp_0 \rangle
 \end{align}
-with $\meanp_0 = \nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)}$ the mean parameter associated to the natural parameter $\natp_0$.
+with $\nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\natp_0$.
+
+\paragraph{MAP.}
 The negative log-likelihood of the prior is then
 \begin{align*}
     -\log \pi(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
@@ -111,7 +118,7 @@ such that the MAP is
     \nabla \logpart(\hat \natp) = \hat \meanp
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
 \end{align}
-The MAP estimate is a random quantity.
+The MAP estimate is a random quantity. We wish to bound its deviation the optimum $\natp^*$ or $\meanp^*$.
 
 
 \section{Straightforward Convergence Rate}
@@ -141,7 +148,7 @@ The question is: how does this quantity behave when $\natp$ is the maximum-likel
     \leq 2L \norm{\mu^* - \mu}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz.
-Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this is the convergence rate of the log-likelihood.
+Since the empirical average converges in expectation to the population mean at a rate of $1/\sqrt{n}$ in $\ell^2$ norm, we know that this bound applies to the log-likelihood.
 
 \paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
 \begin{align}
@@ -151,10 +158,10 @@ Since the empirical average converges in expectation to the population mean at a
 so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
 
 \paragraph{$\ell^2$-norm analysis}
-Let us make these statements more precise. 
-If $\Var T(X) = \sigma^2$, then 
+Let us make these statements more precise. A bound on the variance becomes a bound on the variance of the average
 \begin{align}
-	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}^2 = \frac{\sigma^2}{n} 
+	\Var T(X) = \E \norm{T(X) - \mu^*}^2 = \sigma^2 \\
+	\implies \E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}^2 = \frac{\sigma^2}{n} 
 \end{align}
 eg the variance of the mean is $n$ times smaller than the variance of the samples.
 Adding a reference mean $\mu_0$ to get the MAP yields
@@ -168,9 +175,9 @@ so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2
 In the limit, the MAP estimates reach the Cramer-Rao lower bound. This can be seen by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\mu^* || \mu) 
-    &= (\mu - \mu^*)^\top \nabla^2\conj(\mu^*)(\mu - \mu^*)  
+    &= \half (\mu - \mu^*)^\top \nabla^2\conj(\mu^*)(\mu - \mu^*)  
     + O(\norm{\mu - \mu^*}^3)\\
-    &= \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
+    &=\half  \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
     + O(\norm{\mu - \mu^*}^3)
 \end{align}
 where we introduced the Mahalanobis distance induced by the matrix 
@@ -199,12 +206,21 @@ Anyway that's all good for asymptotic results, but we are interested in a finite
 We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp || \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
 \begin{align}
     \hat \natp_{n+1} 
-    &= \argmin_\natp -\log p(x_{n+1}|\natp) + (n_0 + n) \bregman(\natp || \hat \natp_n) \\
-    &= \argmin_\natp f(\natp; x_{n+1}) +  \inv{\gamma_n}\bregman(\natp || \hat \natp_n) \; .
+    &= \argmin_\natp -\log p(x_{n}|\natp) + (n_0 + n) \bregman(\natp || \hat \natp_n) \\
+    &= \argmin_\natp f(\natp; x_{n}) +  \inv{\gamma_{n}}\bregman(\natp || \hat \natp_n) \; .
 \end{align}
 Hence the MAP estimate can also be seen as the result of a stochastic proximal Bregman point algorithm with step-size $\gamma_n = \inv{n_0 + n}$ at step $n$.
 
 This is similar to the online learning setup, and it may be possible to bound the regret, with approaches similar to Adagrad.
+
+The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
+\RLP{Write down the formulas going with this text.}
+Given the proof, the most straightforward such assumption is 
+\begin{align}
+\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
+\end{align}
+which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
+
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
@@ -397,7 +413,9 @@ This is just a remark. I don't think it can help us to get anywhere.
 \newpage
 \appendix
 
-\section{Three point lemma}
+\section{Three points lemma}
+\label{app:3points}
+
 Proofs of convergence for mirror descent with relative smoothness rely on a specific property of Bregman divergences, familiar to information geometry folks. If $x_+$ is solution to 
 \begin{align}
 	\min	_{x\in C} \overbrace{f(x) + \cB_h(x || y)}^{\phi(x)}
