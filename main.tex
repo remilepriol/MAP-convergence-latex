@@ -136,9 +136,9 @@ The relationship between Bregman divergences and Fenchel conjugacy is well expla
 The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability -- on the following quantities ?
 \begin{align}
 	\label{eq:bregmanMLE}
-	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(x_i) \right ) \; , \\
+	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right ) \; , \\
 	\label{eq:bregmanMAP}
-	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) \; .
+	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right ) \; .
 \end{align}
 
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
@@ -191,8 +191,11 @@ To exploit this approximation, let us extend the $\ell^2$ norm results to a Maha
 \begin{align}
 	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
 \end{align}
-where $\mSigma$ is the covariance of $T(X)$. This is equal to $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$. It is worth $\nicefrac{d}{n}$ when $\mM = \mSigma^{-1}$. \RLP{Maybe that is Cramer-Rao, but check again.} And for the MAP we  get 
-
+where $\mSigma$ is the covariance of $T(X)$. We retrieve $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$.  For the MLE we get
+\begin{align}
+	\E \bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right ) = \frac{d}{2n} + O(n^{- \frac{3}{2}})
+\end{align}
+\RLP{Maybe that is Cramer-Rao, but check again.} And for the MAP we  get 
 \begin{align}
 	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
 	&= \frac{n}{(n+n_0)^2} \Tr(\mSigma^{-1}\mSigma) +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
@@ -291,17 +294,18 @@ so that $\sigma$ is really a bound on the covariance of the sufficient statistic
 	\leq \lr_t\sigma^2 \\
 	=& \Cov(T(X_{t+1}), \nabla\conj \left(\lr_t T(X_{t+1}) + (1-\lr_t ) \mu_t \right) | X_{1\dots t}) \;.
 \end{align}
-In other words, we need for all $\lr\in(0,\inv{n})$, and all $\mu$ in the interior of the marginal polytope,
+In other words, we need for all $\lr\in(0,\inv{n})$, and $ \mu$ in the interior of the marginal polytope,
 \begin{align}
 \label{eq:hypvariance}
-	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr)\mu)\bigg	) 
+	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr) \mu)\bigg	) 
 	\leq \lr \sigma^2 \; .
 \end{align}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
-	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
+	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance}
+	 	\; \text{with}\; \mu=\inv{n-1}\smallsum_{j\neq i} T(x_j)  } ]  \leq \frac{\sigma^2}{n}
 \end{multline}
 where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. 
 In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. We can also apply this result to the MAP estimate $\hat \mu = \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n}$ but I did not manage to reach a satisfying conclusion about the bias. 
@@ -337,9 +341,11 @@ Sections on proximal point and mirror descent gave us the variance assumption
 \end{align}
 on the sufficient statistic and $\conj$. Unfortunately this bound is not trivially satisfied, even for simple exponential family members, such as centered gaussians $\cN(0,\sigma^2)$ with natural parameter $\lambda > 0$ the precision and sufficient statistic $T(X)= - \half x^2$. The mean parameter is $- \half \sigma^2$ and  the conjugate map is $\nabla \conj (- \half \sigma^2) = \inv{\sigma^2} = \lambda$. 
 \begin{align}
-	\logpart (\lambda) = -\half \log(\lambda)  + \half \log \pi \\
-	\conj(-\half \sigma^2) = -\half \log(\sigma^2) + \half (\log\frac{\pi}{2} - 1) \\
-	\KL(\hat \sigma ; \sigma_*) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \sigma^2}
+	X \sim \cN(0,\sigma^2) \ ; \quad T(X)= - \half x^2 \ ; \quad  \mu = - \half \sigma^2  \\
+	\natp = \lambda = \inv{\sigma^2} =  \nabla \conj (- \half \sigma^2) >0 \\
+	\logpart (\lambda) = -\half \log(\lambda)  + \cst \\% \half \log \pi \\
+	\conj(-\half \sigma^2) = -\half \log(\sigma^2) + \cst \\%\half (\log\frac{\pi}{2} - 1) \\
+	\KL(\hat \sigma^2 ; \sigma_*^2) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \hat \sigma^2}
 \end{align}
 
 We want to bound
@@ -426,7 +432,6 @@ Finally, if instead we were looking at a different function switching the role o
 This is just a remark. I don't think it can help us to get anywhere. 
 
 
-\bibsection
 \bibliographystyle{apalike}
 \bibliography{references.bib}
 
