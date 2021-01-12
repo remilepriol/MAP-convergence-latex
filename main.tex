@@ -303,6 +303,12 @@ When we plug this bound into the expected suboptimality formula~\eqref{eq:bregma
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
 	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
 \end{multline}
+\begin{multline}
+    \textcolor{red}{what about:}
+	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
+	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
+	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) \textcolor{red}{- \hat \mu_{n-1} + \hat \mu_{n-1}} - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
+\end{multline}
 where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. 
 In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. We can also apply this result to the MAP estimate $\hat \mu = \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n}$ but I did not manage to reach a satisfying conclusion about the bias. 
 Note $\tilde \mu = \E[\hat \mu] = \frac{n_0 \mu_0 + n \mu_*}{n_0+n}$ and $\gamma_0= \frac{n_0}{n_0+n}$ and the step-size $\gamma = \inv{n_0 + n}$ .
