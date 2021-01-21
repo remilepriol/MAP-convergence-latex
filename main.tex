@@ -198,7 +198,7 @@ where $\mSigma$ is the covariance of $T(X)$. We retrieve $\nicefrac{\sigma^2}{n}
 \RLP{Maybe that is Cramer-Rao, but check again.} And for the MAP we  get 
 \begin{align}
 	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
-	&= \frac{n}{(n+n_0)^2} \Tr(\mSigma^{-1}\mSigma) +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
+	&= \frac{n d}{(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
 	&= O\left(\frac{d}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
 \end{align}
 Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
@@ -253,16 +253,23 @@ where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$
 \subsection{Relative Smoothness for Mirror Descent}
 In the classic setting, SMD is studied under strong-convexity assumption on the mirror map $\logpart$ \citep{bubeck2015convex}.
 In our setting this is not always true -- eg gaussians.
-However a recent and fast-expanding body of work is concerned with a new assumption: relative smoothness and relative strong-convexity. $f$ is $\mu$ strongly-convex and $L$-smooth relative to $h$ if
+However a recent and fast-expanding body of work is concerned with a new assumption: relative smoothness and relative strong-convexity.
 \begin{align}
-	& f-\mu h \ \text{ convex and } Lh - f \ \text{convex} \\
-	\iff & f(x) + \langle \nabla f(x) , y-x \rangle + \mu \cB_h(y||x) \leq f(y) \\
-	&\text{and} \quad f(y) \leq 	f(x) + \langle \nabla f(x) , y-x \rangle + L\cB_h(y||x), \forall x,y \\
-	\iff & \mu\cB_h(y||x) \leq \cB_f(y||x) \leq L \cB_h(y||x), \forall x,y \\
-	\iff & \mu \nabla^2 h(x) \leq \nabla^2 f(x) \leq L \nabla^2 h(x),  \forall x
+	& \text{$f$ is $L$-smooth relative to $h$} \\
+	\iff & Lh - f \ \text{convex} \\
+	\iff & f(y) \leq 	f(x) + \langle \nabla f(x) , y-x \rangle + L\cB_h(y||x), \forall x,y \\
+	\iff & \cB_f(y||x) \leq L \cB_h(y||x), \forall x,y \\
+	\iff & \nabla^2 f(x) \leq L \nabla^2 h(x),  \forall x
 \end{align} 
-where the last equivalence holds only when $f$ and $h$ are twice differentiable. 
-This sweet generalization of smoothness and strong-convexity transfers the Loewner partial order on symmetric matrices to functions, via the Hessian. 
+where the last equivalence holds only when $f$ and $h$ are twice differentiable. In words, $f$ is upper bounded by it linear approximation plus the $h$-Bregman divergence, which can also be seen as a bound between divergences, or more locally as a bound between Hessians. Similarly, $f$ is $\mu$ strongly-convex relative to $h$ if
+\begin{align}
+	& f-\mu h \ \text{ convex} \\
+	\iff & f(x) + \langle \nabla f(x) , y-x \rangle + \mu \cB_h(y||x) \leq f(y)\forall x,y \\
+	\iff & \mu\cB_h(y||x) \leq \cB_f(y||x) \forall x,y \\
+	\iff & \mu \nabla^2 h(x) \leq \nabla^2 f(x)  \forall x \; .
+\end{align} 
+
+Another way to view this elegant generalization of smoothness and strong-convexity is as a transfer of the Loewner partial order on symmetric matrices to functions, via the Hessian. 
 As such it can be applied to many functions that were out of reach for $\ell^2$ norm, by taking the appropriate reference function.  For instance $h(x) = -\log(x)$ or $h(x) = x^4$. 
 As early as 2011, \citet{birnbaum2011distributed} showed $O(\inv{t})$ convergence rate for mirror descent under smoothness assumption relative to the mirror map. 
 More precisely, he proved that when $f$ is $L$-smooth relative to $h$, then the suboptimality of the sequence 
@@ -307,8 +314,8 @@ When we plug this bound into the expected suboptimality formula~\eqref{eq:bregma
 	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance}
 	 	\; \text{with}\; \mu=\inv{n-1}\smallsum_{j\neq i} T(x_j)  } ]  \leq \frac{\sigma^2}{n}
 \end{multline}
+\textcolor{red}{what about:}
 \begin{multline}
-    \textcolor{red}{what about:}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ||\hat \mu) }
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
 	+ \inv{n}\sum_i \E[\underbrace{\E[\langle  T(X_i) \textcolor{red}{- \hat \mu_{n-1} + \hat \mu_{n-1}} - \mu_*; \nabla\conj (\hat \mu) \rangle | X_j, j\neq i]}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance} } ]  \leq \frac{\sigma^2}{n}
@@ -345,13 +352,28 @@ Sections on proximal point and mirror descent gave us the variance assumption
 	\Cov(T(x_{n}) , \natp_{n+1}) = \Cov_X \bigg(T(X), \nabla \conj (\lr_n T(X) + (1-\lr_n)\mu_n)\bigg	) 
 	\leq \lr_n M \; .
 \end{align}
-on the sufficient statistic and $\conj$. Unfortunately this bound is not trivially satisfied, even for simple exponential family members, such as centered gaussians $\cN(0,\sigma^2)$ with natural parameter $\lambda > 0$ the precision and sufficient statistic $T(X)= - \half x^2$. The mean parameter is $- \half \sigma^2$ and  the conjugate map is $\nabla \conj (- \half \sigma^2) = \inv{\sigma^2} = \lambda$. 
+on the sufficient statistic and $\conj$. Unfortunately this bound is not trivially satisfied, even for simple exponential family members, such as centered gaussians $\cN(0,\sigma^2)$, when we are aiming to estimate the variance.
+The density of a centered normal variable is
 \begin{align}
-	X \sim \cN(0,\sigma^2) \ ; \quad T(X)= - \half x^2 \ ; \quad  \mu = - \half \sigma^2  \\
-	\natp = \lambda = \inv{\sigma^2} =  \nabla \conj (- \half \sigma^2) >0 \\
-	\logpart (\lambda) = -\half \log(\lambda)  + \cst \\% \half \log \pi \\
-	\conj(-\half \sigma^2) = -\half \log(\sigma^2) + \cst \\%\half (\log\frac{\pi}{2} - 1) \\
-	\KL(\hat \sigma^2 ; \sigma_*^2) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \hat \sigma^2}
+	X \sim \cN(0,\sigma^2) \implies p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}} \; .
+\end{align}
+Using the $X^2$ as a sufficient statistic we get the variance as a mean parameter and minus half the precision as a natural parameter
+\begin{align}
+	\quad T(X)= x^2 \ ; \quad  \mu = \sigma^2 \ ; \quad   \natp = -\inv{2 \sigma^2} = -\half \lambda \; .
+\end{align}
+Nw we can match the log-likelihood with the exponential family template to get the log-partition function.
+\begin{align}
+	-\log p(x) = \frac{x^2}{2 \sigma^2} - \half \log(2\inv{2\sigma^2}) + \half \log(2 \pi) 
+	= -x^2 \lambda + \logpart(\lambda) \\
+	\implies \logpart (\lambda) = -\half \log(-\lambda)  + \half \log(\pi)
+\end{align}
+We can then use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
+\begin{align}
+	\conj(\sigma^2) = -\half \log(\sigma^2) + \half \log\frac{\pi}{2} - \half \\
+\end{align}
+Remark that both the entropy and the log-partition have the same shape $z\mapsto -\inv{2z}$. Which yields the same Bregman divergence
+\begin{align}
+	\KL(\hat \sigma^2 ; \sigma_*^2) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \hat \sigma^2} \; .
 \end{align}
 
 We want to bound
