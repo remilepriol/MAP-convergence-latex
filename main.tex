@@ -32,6 +32,7 @@
 
 \newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
 \newcommand{\violet}[1]{\textcolor{violet}{#1}}
+\newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
 % my packages
 \usepackage{math_commands}
@@ -359,29 +360,50 @@ The density of a centered normal variable is
 \end{align}
 Using the $X^2$ as a sufficient statistic we get the variance as a mean parameter and minus half the precision as a natural parameter
 \begin{align}
-	\quad T(X)= x^2 \ ; \quad  \mu = \sigma^2 \ ; \quad   \natp = -\inv{2 \sigma^2} = -\half \lambda \; .
+	\quad T(X)= x^2 \ ; \quad  \mu = \sigma^2 \ ; \quad   \natp = -\inv{2 \sigma^2} = -\inv{2 \mu}\; .
 \end{align}
-Nw we can match the log-likelihood with the exponential family template to get the log-partition function.
+Now we can match the log-likelihood with the exponential family template to get the log-partition function.
 \begin{align}
 	-\log p(x) = \frac{x^2}{2 \sigma^2} - \half \log(2\inv{2\sigma^2}) + \half \log(2 \pi) 
-	= -x^2 \lambda + \logpart(\lambda) \\
-	\implies \logpart (\lambda) = -\half \log(-\lambda)  + \half \log(\pi)
+	= -x^2 \natp + \logpart(\natp) \\
+	\implies \logpart (\natp) = -\half \log(-\natp)  + \half \log(\pi)
 \end{align}
 We can then use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
 \begin{align}
-	\conj(\sigma^2) = -\half \log(\sigma^2) + \half \log\frac{\pi}{2} - \half \\
+	\conj(\mu) = -\half \log(\mu) + \half \log\frac{\pi}{2} - \half \\
 \end{align}
-Remark that both the entropy and the log-partition have the same shape $z\mapsto -\inv{2z}$. Which yields the same Bregman divergence
+Remark that both the entropy and the log-partition have the same shape $z\mapsto -\inv{2z}$. Which yields the same shape of Bregman divergence, as visible below (all three lines are equal)
 \begin{align}
-	\KL(\hat \sigma^2 ; \sigma_*^2) = \half \log \frac{\hat \sigma^2}{\sigma_*^{2}} + \frac{\sigma_*^2 - \hat \sigma^2}{2 \hat \sigma^2} \; .
+	\KL( \sigma_n^2 ; \sigma_*^2) 
+	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right) \\
+	\bregmanconj( \mu_*; \mu_n) 
+	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) \\
+	\bregman( \natp_n; \natp_* ) 
+	&=  \half \left ( \frac{ \natp_n}{\natp_*} - 1 - \log  \frac{ \natp_n}{\natp_*} \right) \; .
 \end{align}
-
-We want to bound
+In other words, this is divergence measures the discrepancy between the ratio $\frac{ \natp_n}{\natp_*} =  \frac{\mu_*}{ \mu_n}  $ and $1$ via the function $\phi(z)= \half (z - 1 - \log(z))$.
+\begin{align}
+	\phi(z) := \half (z - 1 - \log(z)) 
+	\quad \text{ and } \quad
+	\frac{ \natp_n}{\natp_*} =  \frac{\mu_*}{ \mu_n}  \\
+	\implies \bregman( \natp_n; \natp_* )   = \phi(\frac{ \natp_n}{\natp_*}) =  \phi(\frac{\mu_*}{ \mu_n})
+\end{align}
+The covariance  \eqref{eq:hypvariance} we want to bound is equal to
 \begin{align}
 	\half \expect{\frac{\sigma_*^2 - X^2 }{ X^2 \lr + (1-\lr) \sigma_0^2 }}
 	\approx \lr (1-\lr)^{-2} \left (\frac{\sigma_*}{\sigma_0} \right)^4
 \end{align}
-using a first order approximation of the inverse , eg a first order approximation of $\nabla \conj$. This can explode for small values of $\sigma_0$. In fact it does as illustrated experimentally.
+using a first order approximation of the inverse, eg a first order approximation of $\nabla \conj$ that holds when $\lr X^2 \ll (1-\lr) \sigma_0^2$. This does not hold for $\sigma_0\ll 1$, which is precisely when the covariance  explodes, as illustrated in Figure \TODO{}.
+
+\paragraph{Prior} A conjugate prior over the natural parameter $\natp$ is 
+\begin{align}
+	-\log \pi(\natp)
+	&= n_0 \bregman(\natp ; \natp_0) + \cst \\
+	&= n_0 \logpart(\natp) - n_0\mu_0 \natp + \cst \\
+	&= -\half[n_0] \log(-\natp) + n_0\mu_0 (-\natp) + \cst \; . \\
+	\pi(\natp) &= (-\natp)^{1 + \half[n_0] - 1} e^{- n_0 \mu_0 (-\natp)} / Z
+\end{align}
+In words, $-\natp$ is a random variable from the exponential family with sufficient statistics $(-\natp, \log(-\natp))$ and with natural parameters $(-n_0 \mu_0, \half[n_0])$. This is the definition of a gamma distribution with shape parameter $1 + \half[n_0]$ and with rate parameter $n_0 \mu_0$.
 
 \section{Self-Concordance}
 
