@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage[top=2cm, bottom=2cm]{geometry}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -173,7 +174,7 @@ Adding a reference mean $\mu_0$ to get the MAP yields
 \end{align}
 so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. Let's see if we can get similar estimates for arbitrary exponential families !
 
-In the limit, the MAP estimates reach the Cramer-Rao lower bound. This can be seen by approximating the Bregman divergence using a second order Taylor expansion
+In the limit, the MAP estimates reach a rate $O(1/2n)$. This is shown by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &= \half (\mu - \mu^*)^\top \nabla^2\conj(\mu^*)(\mu - \mu^*)  
@@ -196,14 +197,26 @@ where $\mSigma$ is the covariance of $T(X)$. We retrieve $\nicefrac{\sigma^2}{n}
 \begin{align}
 	\E \bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right ) = \frac{d}{2n} + O(n^{- \frac{3}{2}})
 \end{align}
-\RLP{Maybe that is Cramer-Rao, but check again.} And for the MAP we  get 
+and for the MAP we  get 
 \begin{align}
 	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
 	&= \frac{n d}{(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
 	&= O\left(\frac{d}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
 \end{align}
 Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
+Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
+
+\subsection{Cramer-Rao Lower Bound}
+In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
+\begin{align}
+    \Cov(\hat \natp_n)  
+    &\succeq \inv{n} \cI(\natp_*)^{-1} \\
+    \iff
+    \expect[\cD\sim \natp_*]{(\hat \natp_n - \natp_*)(\hat \natp_n - \natp_*)^T}
+    &\succeq \inv{n} \expect[X\sim \natp_*]{-\nabla^2 \log p(X|\natp_*)}^{-1} \; .
+\end{align}
+This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy of an estimator, via its covariance. In contrast, here we are concerned with the quality of the estimator in terms of KL-divergence, eg "how accurately am I modeling this distribution?"
 
 \subsection{Posterior Expected Loss}
 
@@ -219,6 +232,7 @@ Given this posterior, a natural quantity to consider is the expected loss. Thus 
 \begin{align}
     \expect[\cD\sim\natp_*]{\expect[\pi(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
 \end{align}
+This quantity is even harder to estimate than the expected MAP suboptimality, because of the double integral. We can get a closed form for the age-old $\ell^2$ loss of $\cN(\mu, 1)$, which yields the exact rate $\inv{n}$. This is exactly twice the expected loss of the MAP.
 
 \section{Stochastic Bregman Proximal Point}
 We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
@@ -417,7 +431,7 @@ using a first order approximation of the inverse, eg a first order approximation
 	&= -\half[n_0] \log(-\natp) + n_0\mu_0 (-\natp) + \cst \; . \\
 	\pi (\natp) &= (-\natp)^{1 + \half[n_0] -1 } e^{-n_0 \mu_0 (-\natp)} / Z
 \end{align}
-In words, $-\natp$ is a random variable from the exponential family with sufficient statistics $(-\natp, \log(-\natp))$ and with natural parameters $(-n_0 \mu_0, \half[n_0])$. This is the definition of a gamma distribution with shape parameter $1 + \half[n_0]$ and with rate parameter $n_0 \mu_0$.
+In words, $-\natp$ is a random variable from the exponential family with sufficient statistics $(-\natp, \log(-\natp))$ and with natural parameters $(-n_0 \mu_0, \half[n_0])$. This is the definition of a Gamma distribution with shape parameter $1 + \half[n_0]$ and with rate parameter $n_0 \mu_0$.
 
 \section{Self-Concordance}
 
