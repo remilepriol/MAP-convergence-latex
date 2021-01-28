@@ -218,6 +218,8 @@ In statistics, there is this famous theorem known as the Cramer-Rao lower bound.
 \end{align}
 This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy of an estimator, via its covariance. In contrast, here we are concerned with the quality of the estimator in terms of KL-divergence, eg "how accurately am I modeling this distribution?"
 
+Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
+
 \subsection{Posterior Expected Loss}
 
 A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is 
@@ -373,8 +375,6 @@ The question remains of : when is such a bound valid? For which values of $\sigm
 
 The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
 
-Also \citet{raskutti2015information} only gives asymptotic results.
-
 \section{Variance bound for centered gaussians}
 Sections on proximal point and mirror descent gave us the variance assumption 
 \begin{align}
@@ -508,6 +508,16 @@ Finally, if instead we were looking at a different function switching the role o
     &= \Var_{p(X|\natp)}[(\natp - \natp^*)^T T(X)] \; .
 \end{align}
 This is just a remark. I don't think it can help us to get anywhere. 
+
+
+\section{Related Work}
+Exponential families became mainstream in the machine learning community to generalize frameworks such as linear regression \citep{mccullagh1989generalized} or PCA \citep{collins2001generalization} to diverse data types and distributions.
+\citet[Chapter 3]{wainwright2008graphical} give a great overview of exponential families and their dual structure. 
+\citet{agarwal2010geometric} highlight that the MAP problem of exponential families is also a Bregman median problem. They then use this equivalence to justify the use of conjugate prior in Bayesian estimation and hybrid generative-discriminative modeling.
+Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors. 
+\citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
+\citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of relative smoothness \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
+
 
 
 \bibliographystyle{apalike}
