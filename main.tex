@@ -370,12 +370,14 @@ That's for the bregman, but the scalar product is harder to bound. Hopefully it 
 
 This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which applies here. However it does not give interesting conclusions.
 
-\paragraph{TODO}
-The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
+\paragraph{Open questions}
+The question remains of : when is such a bound valid?  what does $\sigma^2$ depend on ? To answer these questions and more, we need to turn to examples, see  Section~\ref{sec:gaussian-variance}. 
 
-The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
+\TODO{This bound might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}?
+\citet{lu2019relative} derive another convergence rate for SMD under another relative continuity and gradient variance assumption. Can we exploit it ?}
 
 \section{Variance bound for centered gaussians}
+\label{sec:gaussian-variance}
 Sections on proximal point and mirror descent gave us the variance assumption 
 \begin{align}
 	\Cov(T(x_{n}) , \natp_{n+1}) = \Cov_X \bigg(T(X), \nabla \conj (\lr_n T(X) + (1-\lr_n)\mu_n)\bigg	) 
@@ -511,10 +513,10 @@ This is just a remark. I don't think it can help us to get anywhere.
 
 
 \section{Related Work}
-Exponential families became mainstream in the machine learning community to generalize frameworks such as linear regression \citep{mccullagh1989generalized} or PCA \citep{collins2001generalization} to diverse data types and distributions.
+Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
 \citet[Chapter 3]{wainwright2008graphical} give a great overview of exponential families and their dual structure. 
 \citet{agarwal2010geometric} highlight that the MAP problem of exponential families is also a Bregman median problem. They then use this equivalence to justify the use of conjugate prior in Bayesian estimation and hybrid generative-discriminative modeling.
-Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors. 
+Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors yet critical as it does not hold for multivariate normals with unknown covariance. 
 \citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
 \citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of relative smoothness \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
 
