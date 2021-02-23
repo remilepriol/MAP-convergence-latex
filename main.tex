@@ -341,6 +341,7 @@ In other words, we need for all $\lr\in(0,\inv{n})$, and $ \mu$ in the interior 
 	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr) \mu)\bigg	) 
 	\leq \lr \sigma^2 \; .
 \end{align}
+\RLP{should we get a bound that depends on mu instead ? or split between $\mu$ smaller or larger than $\varepsilon$}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ;\hat \mu) }
@@ -515,6 +516,11 @@ Finally, if instead we were looking at a different function switching the role o
     &= \Var_{p(X|\natp)}[(\natp - \natp^*)^T T(X)] \; .
 \end{align}
 This is just a remark. I don't think it can help us to get anywhere. 
+
+\section{Alternative Research Track}
+Weakly supervised : missing part of $x_i$ for each $i$.
+
+Structured prediction : graphical model on $X$.
 
 
 \section{Related Work}
