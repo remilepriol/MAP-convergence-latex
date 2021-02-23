@@ -29,7 +29,7 @@
 
 \usepackage[round]{natbib}
 \renewcommand{\bibname}{References}
-\renewcommand{\bibsection}{\subsection*{\bibname}}ni
+\renewcommand{\bibsection}{\subsection*{\bibname}}
 
 \newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
 \newcommand{\violet}[1]{\textcolor{violet}{#1}}
@@ -66,10 +66,10 @@ for the exponential family}
 
 \paragraph{Motivation.} 
 We do not know general convergence rates on the KL for maximum likelihood estimates of the exponential family.  We want the simplest one.
-We hope  to get a new result by combining tools from statistics and optimization. 
+We hope  to get a new result by combining tools from statistics and optimization. \TODO{Introduce Gaussian variance right from the start.}
 
 \paragraph{Exponential Family.}
-The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model
+The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model 
 \begin{align}
     p(X|\natp) &= \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
 \end{align}
@@ -83,7 +83,9 @@ Recall that $\logpart$ verifies the two following identities.
     \nabla^2 \logpart(\natp) &= \Cov_\natp[T(X)] > 0
 \end{align}
 where $\meanp$ is called the mean parameter.
+If the sufficient statistic $T$ is minimal, then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
 The second identity entails that $\logpart$ is strictly-convex.
+For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}. \TODO{Add standard illustration} 
 
 \paragraph{Conjugate Prior}
 The conjugate prior for $p(X|\natp)$ is
@@ -98,7 +100,13 @@ Finally, $\bregman(\natp ; \natp_0)$ is the Bregman divergence induced by $\logp
     & = \logpart(\natp) - \logpart(\natp_0) 
     - \langle \nabla \logpart(\natp_0)  , \natp - \natp_0 \rangle
 \end{align}
-with $\nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\natp_0$.
+with $\nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\natp_0$. We can re-write this prior as 
+\begin{align}
+    \pi(\natp) \propto 
+    \exp( -n_0 \logpart (\natp) 
+    + \langle n_0 \mu_0, \natp \rangle ) \; ,
+\end{align}
+which is the formula for the exponential family with sufficient statistics $(\natp , \logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
 
 \paragraph{MAP.}
 The negative log-likelihood of the prior is then
@@ -120,10 +128,10 @@ such that the MAP is
     \nabla \logpart(\hat \natp) = \hat \meanp
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
 \end{align}
-The MAP estimate is a random quantity. We wish to bound its deviation the optimum $\natp^*$ or $\meanp^*$.
+The MAP estimate is a random quantity. We wish to bound its deviation from the optimum $\natp^*$ or $\meanp^*$.
 
 
-\section{Straightforward Convergence Rate}
+\section{Problem}
 In the realizable case, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{align}
     &\expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*)}\\
@@ -133,16 +141,19 @@ In the realizable case, the suboptimality on the population log-likelihood is ex
     =& \conj(\mu^*) + \logpart(\natp) - \langle \natp , \mu^* \rangle
     %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
 \end{align}
-\RLP{Add details for 11 12}
+\TODO{Add details for 11 12}
 where $\conj$ is the entropy, the convex conjugate of the log-partition.
-The relationship between Bregman divergences and Fenchel conjugacy is well explained in \citet{wainwright2008graphical}, and \citet{agarwal2010geometric}. 
 The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability -- on the following quantities ?
 \begin{align}
 	\label{eq:bregmanMLE}
 	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right ) \; , \\
 	\label{eq:bregmanMAP}
-	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right ) \; .
+	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right ) \; ,
 \end{align}
+where the randomness is coming from the dataset $X_1, \dots, X_n$.
+
+\section{Comparison with  Euclidean Distance}
+Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mean parameter space.
 
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
@@ -160,7 +171,7 @@ Since the empirical average converges in expectation to the population mean at a
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic. In expectation, it should converge at a rate $1/n$.
 
-\paragraph{$\ell^2$-norm analysis}
+\paragraph{$\ell^2$-norm Analysis}
 Let us make these statements more precise. A bound on the variance becomes a bound on the variance of the average
 \begin{align}
 	\Var T(X) = \E \norm{T(X) - \mu^*}^2 = \sigma^2 \\
@@ -175,6 +186,7 @@ Adding a reference mean $\mu_0$ to get the MAP yields
 \end{align}
 so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. Let's see if we can get similar estimates for arbitrary exponential families !
 
+\section{Asymptotic Behaviour}
 In the limit, the MAP estimates reach a rate $O(1/2n)$. This is shown by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
@@ -207,55 +219,6 @@ and for the MAP we  get
 Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
 Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
-
-\subsection{Cramer-Rao Lower Bound}
-In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
-\begin{align}
-    \Cov(\hat \natp_n)  
-    &\succeq \inv{n} \cI(\natp_*)^{-1} \\
-    \iff
-    \expect[\cD\sim \natp_*]{(\hat \natp_n - \natp_*)(\hat \natp_n - \natp_*)^T}
-    &\succeq \inv{n} \expect[X\sim \natp_*]{-\nabla^2 \log p(X|\natp_*)}^{-1} \; .
-\end{align}
-This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy of an estimator, via its covariance. In contrast, here we are concerned with the quality of the estimator in terms of KL-divergence, eg "how accurately am I modeling this distribution?"
-
-Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
-
-\subsection{Posterior Expected Loss}
-
-A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is 
-\begin{align}
-    \pi(\natp) 
-    \propto \exp(-n_0 \bregman(\natp ; \natp_0)) 
-    \propto \exp(-n_0 \logpart(\natp) + \langle n_0 \mu_0 ; \natp \rangle)
-\end{align}
-so we see that $\pi$ is part of the exponential family, with sufficient statistic $(\natp, \logpart(\natp))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $\pi(\natp | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
-
-Given this posterior, a natural quantity to consider is the expected loss. Thus we might ask "what is the expectation of the posterior expected suboptimality?"
-\begin{align}
-    \expect[\cD\sim\natp_*]{\expect[\pi(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
-\end{align}
-This quantity is even harder to estimate than the expected MAP suboptimality, because of the double integral. We can get a closed form for the age-old $\ell^2$ loss of $\cN(\mu, 1)$, which yields the exact rate $\inv{n}$. This is exactly twice the expected loss of the MAP.
-
-\section{Stochastic Bregman Proximal Point}
-We see that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
-\begin{align}
-    \hat \natp_{n+1} 
-    &= \argmin_\natp -\log p(x_{n}|\natp) + (n_0 + n) \bregman(\natp ; \hat \natp_n) \\
-    &= \argmin_\natp f(\natp; x_{n}) +  \inv{\gamma_{n}}\bregman(\natp ; \hat \natp_n) \; .
-\end{align}
-Hence the MAP estimate can also be seen as the result of a stochastic proximal Bregman point algorithm with step-size $\gamma_n = \inv{n_0 + n}$ at step $n$.
-
-This is similar to the online learning setup, and it may be possible to bound the regret, with approaches similar to Adagrad.
-
-The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
-\RLP{Write down the formulas going with this text.}
-Given the proof, the most straightforward such assumption is 
-\begin{align}
-\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
-\end{align}
-which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
-
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
@@ -325,7 +288,10 @@ Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), an
 	&= \expect{\langle - g_t, \natp_{t+1} \rangle}  - \langle \E[-g_t], \E[\natp_{t+1}] \rangle   \\
 	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}
 \end{align}
-where $\gamma_t$ is the step-size and expectations are conditional on the past. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. In our case, 
+where $\gamma_t$ is the step-size and expectations are conditional on the past. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
+
+\subsection{Transferring SMD's covariance assumption to MAP estimates}
+In our setting, 
 \begin{align}
 	\nabla f(\natp_t) - g_t =  T(X_{t+1})	- \E[T(X)]
 \end{align}
@@ -343,7 +309,7 @@ In other words, we need for all $\lr\in(0,\inv{n})$, and $ \mu$ in the interior 
 \end{align}
 We study this assumption in Section \ref{sec:gaussian_variance} where we show that it cannot hold in general for the $\mu$ we care about. 
 \RLP{should we get a bound that depends on mu instead ? or split between $\mu$ smaller or larger than $\varepsilon$}
-When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
+When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(X)$ belong to the marginal polytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ;\hat \mu) }
 	=\conj(\mu_*) \overbrace{- \E[\conj(\hat \mu)]}^{\leq - \conj(\E[\hat \mu])} \\
@@ -379,7 +345,7 @@ This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a
 \citet{lu2019relative} define relative continuity to tackle non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and $\ell^2$ distance. Although this hypothesis is far from intuitive, it does yield convergence rates very similar to typical SGD analysis. In this work we are first concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters.
 
 \paragraph{Open questions}
-The question remains of : when is such a bound valid?  what does $\sigma^2$ depend on ? To answer these questions and more, we need to turn to examples, see  Section~\ref{sec:gaussian-variance}. 
+The question remains of : when is such a bound valid?  what does $\sigma^2$ depend on ? To answer these questions and more, we need to turn to examples, see  Section~\ref{sec:gaussian_variance}. 
 
 \TODO{This bound might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}?}
 
@@ -688,6 +654,36 @@ Note that this equivalence holds only if sufficient statistics are within $\dom 
 \newpage
 \appendix
 
+\section{Cramer-Rao Lower Bound}
+In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
+\begin{align}
+    \Cov(\hat \natp_n)  
+    &\succeq \inv{n} \cI(\natp_*)^{-1} \\
+    \iff
+    \expect[\cD\sim \natp_*]{(\hat \natp_n - \natp_*)(\hat \natp_n - \natp_*)^T}
+    &\succeq \inv{n} \expect[X\sim \natp_*]{-\nabla^2 \log p(X|\natp_*)}^{-1} \; .
+\end{align}
+This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy of an estimator, via its covariance. In contrast, here we are concerned with the quality of the estimator in terms of KL-divergence, eg "how accurately am I modeling this distribution?"
+
+Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
+
+\section{Posterior Expected Loss}
+
+A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is 
+\begin{align}
+    \pi(\natp) 
+    \propto \exp(-n_0 \bregman(\natp ; \natp_0)) 
+    \propto \exp(-n_0 \logpart(\natp) + \langle n_0 \mu_0 ; \natp \rangle)
+\end{align}
+so we see that $\pi$ is part of the exponential family, with sufficient statistic $(\natp, \logpart(\natp))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $\pi(\natp | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
+
+Given this posterior, a natural quantity to consider is the expected loss. Thus we might ask "what is the expectation of the posterior expected suboptimality?"
+\begin{align}
+    \expect[\cD\sim\natp_*]{\expect[\pi(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
+\end{align}
+This quantity is even harder to estimate than the expected MAP suboptimality, because of the double integral. We can get a closed form for the age-old $\ell^2$ loss of $\cN(\mu, 1)$, which yields the exact rate $\inv{n}$. This is exactly twice the expected loss of the MAP.
+
+
 \section{Three points lemma}
 \label{app:3points}
 
@@ -724,6 +720,25 @@ This property is an analog of the Pythagorean theorem for generalized projection
 	\end{align}
 	which concludes the proof.
 \end{proof}
+
+\section{Stochastic Bregman Proximal Point}
+Remark that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
+\begin{align}
+    \hat \natp_{n+1} 
+    &= \argmin_\natp -\log p(x_{n}|\natp) + (n_0 + n) \bregman(\natp ; \hat \natp_n) \\
+    &= \argmin_\natp f(\natp; x_{n}) +  \inv{\gamma_{n}}\bregman(\natp ; \hat \natp_n) \; .
+\end{align}
+Hence the MAP estimate can also be seen as the result of a stochastic proximal Bregman point algorithm with step-size $\gamma_n = \inv{n_0 + n}$ at step $n$.
+
+This is similar to the online learning setup, and it may be possible to bound the regret, with approaches similar to Adagrad.
+
+The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
+Given the proof, the most straightforward such assumption (see paper notes) is 
+\begin{align}
+\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
+\end{align}
+which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
+
 
 \section{Fenchel conjugate motivation to self-concordance}
 
