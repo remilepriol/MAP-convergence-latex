@@ -133,6 +133,7 @@ In the realizable case, the suboptimality on the population log-likelihood is ex
     =& \conj(\mu^*) + \logpart(\natp) - \langle \natp , \mu^* \rangle
     %& = \logpart(\natp) - \logpart(\natp^*) - \meanp^{*\top}(\natp - \natp^*) \; .
 \end{align}
+\RLP{Add details for 11 12}
 where $\conj$ is the entropy, the convex conjugate of the log-partition.
 The relationship between Bregman divergences and Fenchel conjugacy is well explained in \citet{wainwright2008graphical}, and \citet{agarwal2010geometric}. 
 The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability -- on the following quantities ?
@@ -316,7 +317,9 @@ These notions were rediscovered and expanded by \citet{bauschke2017descent} and 
 \subsection{Relative smoothness for SMD}
 Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 
-This is very interesting for us, but the variance hyper-parameter is oddly defined. Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the descent direction $\natp_{t+1} - \natp_t = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t ) - \natp_t $ that should hold for all time steps  
+This is very interesting to us.
+Let us have a look at their variance assumption \citep[Assumption 5.1]{hanzely2018fastest}.
+Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the descent direction $\natp_{t+1} - \natp_t = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t ) - \natp_t $ that should hold for all time steps  
 \begin{align}
 	&\Cov(- g_t,\natp_{t+1} - \natp_t | X_{1 \dots t}) \leq \lr_t \sigma^2 \\
 	&= \expect{\langle - g_t, \natp_{t+1} \rangle}  - \langle \E[-g_t], \E[\natp_{t+1}] \rangle   \\
@@ -339,6 +342,7 @@ In other words, we need for all $\lr\in(0,\inv{n})$, and $ \mu$ in the interior 
 	\leq \lr \sigma^2 \; .
 \end{align}
 We study this assumption in Section \ref{sec:gaussian_variance} where we show that it cannot hold in general for the $\mu$ we care about. 
+\RLP{should we get a bound that depends on mu instead ? or split between $\mu$ smaller or larger than $\varepsilon$}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ;\hat \mu) }
@@ -371,14 +375,16 @@ That's for the bregman, but the scalar product is harder to bound. Hopefully it 
 
 This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which applies here. However it does not give interesting conclusions.
 
-\paragraph{TODO}
-The question remains of : when is such a bound valid? For which values of $\sigma^2$. To answer such questions, we need to turn to examples. 
+\paragraph{Relative Continuity}
+\citet{lu2019relative} define relative continuity to tackle non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and $\ell^2$ distance. Although this hypothesis is far from intuitive, it does yield convergence rates very similar to typical SGD analysis. In this work we are first concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters.
 
-The other article \citet{lu2019relative} derives another convergence rate for SMD under another gradient variance assumption. 
+\paragraph{Open questions}
+The question remains of : when is such a bound valid?  what does $\sigma^2$ depend on ? To answer these questions and more, we need to turn to examples, see  Section~\ref{sec:gaussian-variance}. 
+
+\TODO{This bound might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}?}
 
 \section{Variance bound for centered gaussians}
 \label{sec:gaussian_variance}
-
 Sections on proximal point and mirror descent gave us the variance assumption 
 \begin{align}
 	\Cov(T(x_{n}) , \natp_{n+1}) = \Cov_X \bigg(T(X), \nabla \conj (\lr_n T(X) + (1-\lr_n)\mu_n)\bigg	) 
@@ -512,12 +518,17 @@ Finally, if instead we were looking at a different function switching the role o
 \end{align}
 This is just a remark. I don't think it can help us to get anywhere. 
 
+\section{Alternative Research Track}
+Weakly supervised : missing part of $x_i$ for each $i$.
+
+Structured prediction : graphical model on $X$.
+
 
 \section{Related Work}
-Exponential families became mainstream in the machine learning community to generalize frameworks such as linear regression \citep{mccullagh1989generalized} or PCA \citep{collins2001generalization} to diverse data types and distributions.
+Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
 \citet[Chapter 3]{wainwright2008graphical} give a great overview of exponential families and their dual structure. 
 \citet{agarwal2010geometric} highlight that the MAP problem of exponential families is also a Bregman median problem. They then use this equivalence to justify the use of conjugate prior in Bayesian estimation and hybrid generative-discriminative modeling.
-Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors. 
+Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors yet critical as it does not hold for multivariate normals with unknown covariance. 
 \citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
 \citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of relative smoothness \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
 
