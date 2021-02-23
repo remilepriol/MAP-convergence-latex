@@ -347,7 +347,6 @@ where $\mSigma_* = \Cov_{\mu_*}(T(X))$.
 The order of terms $\bregmanconj (\mu_* ; \tilde \mu)  \neq \bregmanconj (\tilde \mu ; \mu_* ) $ only affects third order terms.
 That's for the bregman, but the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
 
-This article \url{http://davidpfau.com/assets/generalized_bvd_proof.pdf} gives a bias variance decomposition which applies here. However it does not give interesting conclusions.
 
 \paragraph{Relative Continuity}
 \citet{lu2019relative} define relative continuity to tackle non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and $\ell^2$ distance. Although this hypothesis is far from intuitive, it does yield convergence rates very similar to typical SGD analysis. In this work we are first concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters.
@@ -645,20 +644,23 @@ Finally, if instead we were looking at a different function switching the role o
 \end{align}
 This is just a remark. I don't think it can help us to get anywhere. 
 
-\section{Alternative Research Track}
-Weakly supervised : missing part of $x_i$ for each $i$.
-
-Structured prediction : graphical model on $X$.
-
-
 \section{Related Work}
 Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
 \citet[Chapter 3]{wainwright2008graphical} give a great overview of exponential families and their dual structure. 
+
 \citet{agarwal2010geometric} highlight that the MAP problem of exponential families is also a Bregman median problem. They then use this equivalence to justify the use of conjugate prior in Bayesian estimation and hybrid generative-discriminative modeling.
 Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors yet critical as it does not hold for multivariate normals with unknown covariance. 
 \citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
+
 \citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of relative smoothness \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
 
+\citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
+
+\subsection{Alternative Research Tracks}
+\begin{itemize}
+	\item Weakly supervised : missing part of $x_i$ for each $i$.
+	\item Structured prediction : graphical model on $X$ or other kind of structure.
+\end{itemize}
 
 
 \bibliographystyle{apalike}
