@@ -341,6 +341,7 @@ In other words, we need for all $\lr\in(0,\inv{n})$, and $ \mu$ in the interior 
 	\Cov_X \bigg(T(X), \nabla \conj (\lr T(X) + (1-\lr) \mu)\bigg	) 
 	\leq \lr \sigma^2 \; .
 \end{align}
+We study this assumption in Section \ref{sec:gaussian_variance} where we show that it cannot hold in general for the $\mu$ we care about. 
 \RLP{should we get a bound that depends on mu instead ? or split between $\mu$ smaller or larger than $\varepsilon$}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, assuming all $T(x)$ belong to the marginal polytope, we get
 \begin{multline}
@@ -383,7 +384,7 @@ The question remains of : when is such a bound valid?  what does $\sigma^2$ depe
 \TODO{This bound might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}?}
 
 \section{Variance bound for centered gaussians}
-\label{sec:gaussian-variance}
+\label{sec:gaussian_variance}
 Sections on proximal point and mirror descent gave us the variance assumption 
 \begin{align}
 	\Cov(T(x_{n}) , \natp_{n+1}) = \Cov_X \bigg(T(X), \nabla \conj (\lr_n T(X) + (1-\lr_n)\mu_n)\bigg	) 
@@ -429,7 +430,7 @@ The covariance  \eqref{eq:hypvariance} we want to bound is equal to
 	\half \expect{\frac{\sigma_*^2 - X^2 }{ X^2 \lr + (1-\lr) \sigma_0^2 }}
 	\approx \lr (1-\lr)^{-2} \left (\frac{\sigma_*}{\sigma_0} \right)^4
 \end{align}
-using a first order approximation of the inverse, eg a first order approximation of $\nabla \conj$ that holds when $\lr X^2 \ll (1-\lr) \sigma_0^2$. This does not hold for $\sigma_0\ll 1$, which is precisely when the covariance  explodes, as illustrated in Figure \TODO{}.
+using a first order approximation of the inverse, eg a first order approximation of $\nabla \conj$ that holds when $\lr X^2 \ll (1-\lr) \sigma_0^2$. This does not hold for $\sigma_0\ll 1$, which is precisely when the covariance  explodes, as illustrated in Figure \TODO{}. This is a problem, because we need this bound to hold  for all values of $\sigma_0$ in the support of $X^2$, meaning on the whole $[0,+\infty[$, which is impossible because $1/X^2$ diverges, so we need to process this integral differently.   
 
 \paragraph{Prior} A conjugate prior over the natural parameter $\natp$ is 
 \begin{align}
