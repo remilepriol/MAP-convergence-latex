@@ -162,6 +162,7 @@ We can re-write this prior as
     + \langle n_0 \mu_0, \natp \rangle ) \; ,
 \end{align}
 which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
+The posterior given $\cD=(X_1,\dots, X_n)$ is then part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
 
 \begin{example}
 In the case of $\cN(0,\sigma^2)$, the logpartition function is $\logpart(\natp) = -\log(-\natp) /2 + \cst$, thus the conjugate prior is the exponential family with sufficient statistic $(\natp, \log(-\natp) )$, eg a negative \href{https://en.wikipedia.org/wiki/Gamma_distribution}{Gamma distribution}.
@@ -174,10 +175,10 @@ In particular,
     &\propto \exp( \half[n_0] \log(-\natp) + n_0\mu_0 \natp ) \\
 	&\propto (-\natp)^{1 + \half[n_0] -1 } e^{-n_0 \mu_0 (-\natp)} / Z
 \end{align}
-from which we infer the shape parameter $\alpha=1 + \half[n_0]$ and the rate parameter $\beta = n_0 \mu_0$.
+from which we infer the shape parameter $\alpha=1 + \half[n_0]$ and the rate parameter $\beta = n_0 \mu_0$, eg $\natp \sim \Gamma (1+\half[n_0] , n_0 \mu_0)$. After seeing $n$ samples, the posterior is $\Gamma\left(1+\half[n_0+n] , n_0 \mu_0 + \sum_i T(X_i) \right)$.
 \end{example}
 
-\paragraph{MAP.}
+\paragraph{Maximum A Posteriori (MAP).}
 The negative log-likelihood of the prior is
 \begin{align*}
     -\log \pi(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
@@ -194,7 +195,7 @@ Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
 \end{align}
 such that the MAP is
 \begin{align}
-    \nabla \logpart(\hat \natp) = \hat \meanp
+    \nabla \logpart(\hat \natp_\text{MAP}) = \hat \meanp_\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
 \end{align}
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
@@ -239,6 +240,10 @@ The question is: how does this quantity behave when $\natp$ is the maximum-likel
 \end{align}
 where the randomness is coming from the dataset $X_1, \dots, X_n$.
 \end{important}
+
+\paragraph{Remark.}
+What we are looking for is really akin to concentration inequality, expressed with a Bregman divergence instead of a norm. A key difference though, is that the random variable $T(X)$ is connected to the metric $\logpart$. Indeed expressions~\eqref{eq:bregmanMLE} or~\eqref{eq:bregmanMAP} can be infinite for another choice of random variable. For instance, if we plug in $\conj(\mu)= -\log(\mu)$, which defines a divergence on positive numbers, and $T(X) \sim \cN(0,1)$ which can be negative.
+
 \begin{example}
 	For $\cN(0,\sigma^2)$, both the entropy and the log-partition are roughly negative logarithm $z\mapsto - \log(z)$. Which yields the same shape of Bregman divergence, as visible below (all three lines are equal)
 \begin{align}
@@ -399,6 +404,19 @@ Remark how the variance does not even appear, only the dimension divided by $n$ 
 Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
 
+\section{Conjecture}
+
+We know that asymptotically, the convergence rate is dominated by $O(n^{-1})$ variance term. To this we may add a bias term in $O(n^{-2})$. 
+We also know from the $\cN(0,\mu_*)$ example that the MLE can have infinite loss when there is not enough samples. This is not the case of the MAP which always has a bounded loss, since it can never reach the boundary of the marginal polytope (the domain of $\mu$). Thus we may have a bias term which is infinite for $n_0=0$ (eg no prior, MLE), and that decreases as $n_0$ increases, except that the convergence speed gets worse and worse for larger $n_0$, eg
+\begin{align}
+    \frac{d}{2n} +  \log \left (\inv{n_0} \right) \left(1+ \frac{n}{n_0} \right)^{-2} \bregman(\natp_*; \natp_0)
+\end{align}
+We also know that this expression should dominate the asymptote.
+Only the variance is responsible for the infinite behavior, except it gets controlled when $n_0>0$.
+
+I really want to get a bound for the MAP of a Gaussian variance, to get inspiration from its shape. 
+
+
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
 Let $f(\natp) := \expect[x]{-\log p(x|\natp)} = - \langle \mu_*, \natp\rangle + \logpart(\natp)$. In words, $f$ is linear modification of a convex function $\logpart$, which we can access only through noisy estimates of $\mu_*$. It turns out that the MAP estimate can also be seen as the iterates of stochastic mirror descent with mirror map $\logpart$. First let's recall mirror descent iteration
@@ -511,8 +529,7 @@ When we plug this bound into the expected suboptimality formula~\eqref{eq:bregma
 where we used the decomposition $\hat \mu = \inv{n}T(X_i) + (1-\inv{n}) \inv{n-1} \sum_{j\neq i}T(X_j)$ to apply~\eqref{eq:hypvariance}. 
 In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a bound on the suboptimality. 
 
-This is too simple to be true.
-Indeed we study assumption \eqref{eq:hypvariance} for the special case of the variance of a Gaussian in Section \ref{sec:gaussian_variance}.
+This is too simple to be true, as shown on our trailing example.
 In particular we show that it cannot hold for all possible values of $\mu$ within the double expectation in~\eqref{eq:MLE_bound}.
 The mean parameter $\mu$ take values arbitrarily close from $0$, which makes the covariance explode.
 \RLP{should we get a functional bound $\sigma^2(\mu)$ instead ? or split between $\mu$ smaller or larger than $\varepsilon$.}
@@ -546,7 +563,13 @@ No we cannot because $\mu$ takes every possible values as a random variable with
 To avoid gradient variance assumption, we can take inspiration from expected smoothness, which is a consequence of convexity and smoothness, and which yields a general analysis of SGD. Can we get something similar with relativity and SMD? 
 The analog of gradient norm is the Bregman between iterates, similar to the Homeomorphic EM rate. 
 
+% todo: idee: adapter la preuve de stochastic gradient descent a stochastic mirror descent. Exploiter un parralele entre ces deux preuves pour obtenir une preuve pour stochastic mirror descent dans le cas ou f est relatively smooth w.r.t. A*. ce qu'on veut, c'est une hypothese analogue a expected smoothness (see paper of nico loizou) pour le relatively smooth.
+% SGD: General Analysis and Improved Rates gower et al -- section 2 and 3 see equation (9) in particular (expected smoothnesS)
+% Relatively-Smooth Convex Optimization by First-Order Methods, and Applications,  -- Section 3
 
+
+
+\section{Gaussian Variance}
 \subsection{A big calculus in this specific setting}
 
 Indeed we know the distribution of $\mu$ it is linked with the chi-square distribution. We also know the expression of the excess of risk. So we could do a big calculus to get the exact expression of the averaged excess of risk.
