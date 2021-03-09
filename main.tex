@@ -274,9 +274,9 @@ as illustrated in Figure~\ref{fig:phi}.
 	\centering
 	\includegraphics[width=.54\textwidth]{figs/asymptote.pdf}
 	\includegraphics[width=.43\textwidth]{figs/fewsamples.pdf}
-	\caption{Suboptimality of a gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, ligth shade is min-max interval.  
+	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval.  
 	\textbf{Left:} as $n$ increases, the suboptimality matches the $1/2N$ asymptote.
-	\textbf{Right:} the first few samples significantly deviate from this behavior, can we bound this deviation ? 
+	\textbf{Right:} the first few samples significantly deviate from this behavior. In fact, for $n=1$ and $n=2$, the expected value is infinite, but we have a closed form solution and a simple upper-bound for $n>2$.
 	}
 	\label{fig:curves}
 \end{figure}
@@ -300,7 +300,7 @@ as illustrated in Figure~\ref{fig:phi}.
 	Consequently the suboptimality of the MLE has a closed form solution
 	\begin{align}
 	\expect{\bregmanconj( \mu_*; \mu_n) }
-	&= \half \expect{\frac{\mu_*}{ \mu_n} - 1 + \log(\frac{\mu_n}{\mu_*} } \\
+	&= \half \expect{\frac{\mu_*}{ \mu_n} - 1 + \log \left(\frac{\mu_n}{\mu_*} \right) } \\
 	& =
 	\begin{cases}
 		\half \left ( \frac{2}{n-2} +\psi(\half[n]) - \log(\half[n]) \right )  \ \text{ if } n>2, \\
