@@ -73,6 +73,9 @@ for the exponential family}
 \author{R\'emi Le Priol}
 \date{October 2020}
 
+%% Faster processing
+\renewcommand\appendix{\end{document}}
+
 
 \begin{document}
 
@@ -107,9 +110,9 @@ Mean and natural parameters are roughly inverse of each other
 \end{align}
 Now we can match the log-likelihood with the exponential family template to get the log-partition function.
 \begin{align}
-	\log p(x) = \frac{x^2}{2 \sigma^2} - \half \log(2 \pi \sigma^2 ) 
+	\log p(x) = - \frac{x^2}{2 \sigma^2} - \half \log(2 \pi \sigma^2 ) 
 	= x^2 \natp - \logpart(\natp) \\
-	\implies \logpart (\natp) = \half \left( -\log(-\natp)  + \log(\pi) \right)
+	\implies \logpart (\natp) = - \half \log(-\natp)  + \half \log(\pi) 
 \end{align}
 \end{example}
 
@@ -136,10 +139,16 @@ For a full review of exponential families and their duality, see \citet[Chapter 
 	\label{fig:duality}
 \end{figure}
 \begin{example}
-		For $\cN(0,\sigma^2)$,we can use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
+For $\cN(0,\sigma^2)$,we can use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
 \begin{align}
 	\conj(\mu) = \half\left( -\log(\mu) + \log\frac{\pi}{2} - 1 \right) \; .
 \end{align}
+We can also take gradient and derivative of $\logpart(\natp)$ to retrieve the mean and covariance of the sufficient statistic $X^2$
+\begin{align}
+	\nabla\logpart(\natp) &= \frac{-1}{2 \natp} = \sigma^2 = \mu = \E[X^2] \\
+	\nabla^2\logpart(\natp) &= \frac{1}{2 \natp^2} = 2 \sigma^4 = 2 \mu^2 = \Var(X^2) 
+\end{align}
+which we confirm thank to wikipedia since $\E[X^4] = 3 \sigma^4$ and thus $\Var(X^2) = \E[X^4] - \E[X^2]^2 = 3 \sigma^4 - \sigma^4 = 2 \sigma^4$.
 \end{example}
 
 \paragraph{Conjugate Prior}
@@ -231,14 +240,14 @@ so in the end the suboptimality is a divergence, which can either be seen as a K
 }
 \end{align}
 \begin{important}
-The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds -- in expectation or high-probability -- on the following quantities ?
+The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds on the following quantities
 \begin{align}
 	\label{eq:bregmanMLE}
-	\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right ) \; , \\
+	\expect[X_i\sim \natp^*]{\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right )} \leq \ ? \; , \\
 	\label{eq:bregmanMAP}
-	\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right ) \; ,
+	\expect[X_i\sim \natp^*]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} \leq \ ? \; ,
 \end{align}
-where the randomness is coming from the dataset $X_1, \dots, X_n$.
+where the outer expectation is on the dataset $X_1, \dots, X_n$?
 \end{important}
 
 \paragraph{Remark.}
@@ -286,15 +295,16 @@ as illustrated in Figure~\ref{fig:phi}.
 	\paragraph{Exact computation}
 	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \sum_i X_i^2 /n$. The ratio to the optimum  $\frac{\mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$ divided by $n$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
 	\begin{align}
-		\expect{\frac{\mu_*}{ \mu_n} } =
+		\expect{\frac{\mu_*}{ \mu_n}  - 1} 
+		= \expect{\frac{n}{\chi^2(n)} - 1} =
 		\begin{cases}
-			\frac{n}{n-2} \ \text{ if } n>2, \\
+			\frac{n}{n-2} -1 = \frac{2}{n-2} \ \text{ if } n>2, \\
 			+\infty \  \text{ otherwise. }
 		\end{cases}
 	\end{align}
 	There is also a closed form solution for the expected logarithm of a Chi-squared\citep{pav2015moments}
 	\begin{align}
-		\expect{\log \frac{\mu_n}{\mu_*}} = \log(2) + \psi(\half[n]) - \log(n)
+		\expect{\log \frac{\mu_n}{\mu_*}} = \psi(\half[n]) - \log(\half[n])
 	\end{align}
 	where $\psi$ is the \href{https://en.wikipedia.org/wiki/Digamma_function}{digamma function.}
 	Consequently the suboptimality of the MLE has a closed form solution
@@ -404,18 +414,32 @@ Remark how the variance does not even appear, only the dimension divided by $n$ 
 Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
 
+\section{Bias-Variance Decomposition}
+Using Jensen inequality, we have the following analog of the bias-variance decomposition:
+
+\newcommand{\bias}[1]{\textcolor{Red}{\underbrace{\textcolor{black}{#1}}_{\text{bias}}}}
+\newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
+
+\begin{align}
+	& \expect{\bregmanconj(\mu^* ; \hat \mu_n)} \\
+	& \leq \bias{\bregmanconj(\mu^*; \mu_n)}
+	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle 
+	+ \frac{1}{n+n_0} \smallsum_i \variance{\expect{\langle \hat \natp_n ; T(X_i) - \mu^* \rangle } }
+\end{align}
+where $\hat \mu_n$ is the MAP estimate,
+$\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$,
+and $\theta_n = \nabla \conj(\mu_n)$.
+
 \section{Conjecture}
 
 We know that asymptotically, the convergence rate is dominated by $O(n^{-1})$ variance term. To this we may add a bias term in $O(n^{-2})$. 
-We also know from the $\cN(0,\mu_*)$ example that the MLE can have infinite loss when there is not enough samples. This is not the case of the MAP which always has a bounded loss, since it can never reach the boundary of the marginal polytope (the domain of $\mu$). Thus we may have a bias term which is infinite for $n_0=0$ (eg no prior, MLE), and that decreases as $n_0$ increases, except that the convergence speed gets worse and worse for larger $n_0$, eg
+We also know from the $\cN(0,\mu_*)$ example that the MLE can have infinite loss when there is not enough samples. This is not the case of the MAP which always has a bounded loss, since it can never reach the boundary of the marginal polytope (the domain of $\mu$). 
+I really want to get a bound for the MAP of a Gaussian variance, to get inspiration from its shape. 
+Thus we may have a bias term which is infinite for $n_0=0$ (eg no prior, MLE), and that decreases as $n_0$ increases, except that the convergence speed gets worse and worse for larger $n_0$, eg
 \begin{align}
     \frac{d}{2n} +  \log \left (\inv{n_0} \right) \left(1+ \frac{n}{n_0} \right)^{-2} \bregman(\natp_*; \natp_0)
 \end{align}
-We also know that this expression should dominate the asymptote.
-Only the variance is responsible for the infinite behavior, except it gets controlled when $n_0>0$.
-
-I really want to get a bound for the MAP of a Gaussian variance, to get inspiration from its shape. 
-
+Besides this bias term should be visible from a simple mirror descent, with no noise or variance. Yet it is not trivial to get a $O(n^{-2})$ rate in this setting. See note by Frederik.
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
@@ -563,158 +587,23 @@ No we cannot because $\mu$ takes every possible values as a random variable with
 To avoid gradient variance assumption, we can take inspiration from expected smoothness, which is a consequence of convexity and smoothness, and which yields a general analysis of SGD. Can we get something similar with relativity and SMD? 
 The analog of gradient norm is the Bregman between iterates, similar to the Homeomorphic EM rate. 
 
+
 % todo: idee: adapter la preuve de stochastic gradient descent a stochastic mirror descent. Exploiter un parralele entre ces deux preuves pour obtenir une preuve pour stochastic mirror descent dans le cas ou f est relatively smooth w.r.t. A*. ce qu'on veut, c'est une hypothese analogue a expected smoothness (see paper of nico loizou) pour le relatively smooth.
 % SGD: General Analysis and Improved Rates gower et al -- section 2 and 3 see equation (9) in particular (expected smoothnesS)
 % Relatively-Smooth Convex Optimization by First-Order Methods, and Applications,  -- Section 3
 
-
-
-\section{Gaussian Variance}
-\subsection{A big calculus in this specific setting}
-
-Indeed we know the distribution of $\mu$ it is linked with the chi-square distribution. We also know the expression of the excess of risk. So we could do a big calculus to get the exact expression of the averaged excess of risk.
-
-Recall the expression of the Gamma integral
+\subsection{Convergence of Mirror Descent}
+To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
 \begin{align}
-  \Gamma(\alpha):=\int_0^\infty t^{\alpha-1} \exp(-t) d t
+	f(\natp^{t+1}) 
+	&\leq \ell_f(\natp^{t+1}, \natp^{t})  + L \bregman(\natp^{t+1}; \natp^{t})
+	& \text{(Relative $L$-smoothness)} \\
+	& \leq \ell_f(\natp^{*}, \natp^{t})  + L \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
+	& \text{(3 Points Lemma w. $x=\natp^*$)} \\
+	& \leq f(\natp^*) + (L - m) \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
+	& \text{(Relative $m$-strong convexity)}
 \end{align}
-Recall also that
-\begin{align}
-    \int x^q \exp(-nx^p) dx
-    &= n^{-(q+1)/p} \int (n^{1/p}x)^q \exp(-(n^{1/p}x)^p) d(n^{1/p}x)\\
-    &= n^{-(q+1)/p} \int u^q \exp(-u^p) du\\
-    &= n^{-(q+1)/p} \int t^{q/p} \exp(-t) d(t^{1/p})\\
-    &= n^{-(q+1)/p} \int p^{-1} t^{(q+1)/p - 1} \exp(-t) dt\\
-    &= n^{-(q+1)/p} p^{-1} \Gamma((q+1)/p).
-\end{align}
-Finally if there is problem in zero with the logarithm appearing in Eq. (75, at time of writing), we can have a Taylor expansion of the log 
-\[
-  \log(x) = \sum_{i=1}^\infty \frac{(-1)^{i+1}(x-1)^i}{i},
-\]
-and show convergence with some Fubini's theorem on series-integral.
-
-\subsection{Generic approach}
-
-In this subsection, I detailed a generic approach to get non-asymptotic rates.
-It is based on the calibration inequality Eq. (18, at time of writing).
-The next step would be to detailed those derivations and have precise results for the specific case of only looking at the variance.
-
-\paragraph{Calibration inequality.}
-One of the main difficulty of the proof is that $\theta_n = (\nabla A)^{-1}(\mu_n)$ can be really big, meaning that we can not apply directly ``calibration inequality'' between the Bregman divergence ${\cal B}_{A^*}(\mu^*; \mu)$ and $\norm{\mu - \mu^*}^2$.
-However, if we restrict ourselves to the domain $\theta'\in {\cal B}(0, R)$ with $R = \max(\norm{\theta}, \norm{\theta^*})$, we have that $A$ is $2^{-1}R^{-2}$-strongly convex. Therefore using Eq.~(18, at the time of writing), we have 
-\begin{align}
-    {\cal B}_{A^*}(\mu^*; \mu) 
-    &\leq 2^{-1}R^{-2} \norm{\mu^* - \mu}^2\\
-    &= 2 \max(\norm{\theta}, \norm{\theta^*})^2\norm{\mu^* - \mu}^2\\
-    &= 2 \max(\norm{(\nabla A)^{-1}(\mu)}, \norm{(\nabla A)^{-1}(\mu^*)})^2\norm{\mu^* - \mu}^2.
-\end{align}
-With will proceed with this equation, we might get better equations. For example by considering a constant of strong convexity on the segment $[\norm{\theta}, \norm{\theta^*}]$ rather than the ball ${\cal B}(0, R)$.
-The behavior of the max, will be similar to the behavior of the sum of the two elements since $\max(a, b) \leq a + b \leq 2\max(a, b)$, therefore, we proceed
-with
-\begin{align}
-    {\cal B}_{A^*}(\mu^*; \mu) 
-    &\leq 2 \norm{(\nabla A)^{-1}(\mu^*)}^2 \norm{\mu^* - \mu}^2
-    + 2 \norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu^* - \mu}^2.
-\end{align}
-The first term is easy to control in expectation, see Eqs. (19-20, at time of writing), it is $\Var{T(X)} / n$. It is really the second part that we want to study. 
-Because of the structure $\norm{(\nabla A)^{-1}(\mu)} \simeq \norm{\mu}^{-1}$
-We have to take care of the event ``$\mu = n^{-1} \sum_{i\leq n} T(X_i)$ too small''.
-We know that $\mu$ concentrate towards $\mu^*$ so this event should not happen too often.
-So we want to study $\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2$.
-
-\paragraph{Tail bound or average excess of risk?}
-If we think with concentration inequality, we will get tail bound on the excess of risk, and not an average excess of risk.
-However, recall that
-\begin{align}
-  \E[X] = \E[\int_{0}^{\infty} 1_{X > t} dt]
-  = \int_{0}^\infty \E[1_{X>t}] dt
-  = \int_0^\infty \mathbb{P}(X > t) dt.
-\end{align}
-So we can translate tail bound into average.
-
-\paragraph{Concentration of a product.}
-We want to study $\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2$, it is a product of two term, we can proceed with the fact that if $A$ and $B$ are two random variables from a sample space $(\Omega, \mu)$ to $\mathbb{R}$, we have
-\[
-    \{ \omega \in \Omega \vert A(\omega) B(\omega) > t\}
-    \subset 
-    \{ \omega \in \Omega \vert A(\omega) > s\}
-    \cup
-    \{ \omega \in \Omega \vert A(\omega) > t/s\}
-\]
-Which results from the fact that if $ab > t$ than either $a > s$, either $b > t/s$.
-In our case, it means that for any $t > 0$, we have the deviation bound
-\begin{align}
-  \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2 > t)
-  &\leq \inf_{s>0} \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)}^2 > 1/s)
-  + \mathbb{P}(\norm{\mu - \mu^*}^2 > st)\\
-  &= \inf_{s>0} \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > s^{1/2})
-  + \mathbb{P}(\norm{\mu - \mu^*} > (st)^{1/2}).
-\end{align}
-So we are left with the study of 
-\begin{align}
-  \mathbb{P}(\norm{\mu - \mu^*} > t)
-  \qquad\text{and}\qquad 
-  \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > t).
-\end{align}
-
-\paragraph{Concentration on $\mu - \mu^*$.}
-Most likely $T(X)$ is sub-Gaussian (do hand-derivations or look at works like \url{https://arxiv.org/pdf/1011.3027.pdf} or \url{https://arxiv.org/pdf/1902.03736.pdf}) and Bernstein concentration inequality leads to a tail bound of the type, with $\sigma^2$ a variance parameter 
-($\sigma^2 = \Var_{\theta^*}(T(X))$)
-\begin{align}
-    \mathbb{P}_{(X_i)_{i\leq n}}(\norm{\mu - \mu^*} > t) \leq \exp(-n t^2 / \sigma^2).
-\end{align}
-Normally, in Bernstein inequality there is an additional term in $n$, but the convergence rates will not depend on this additional term, so I am omitting it for simplicity.
-Note that when we will integrate that we will get
-\begin{align}
-    \int_0^\infty \mathbb{P}_{(X_i)_{i\leq n}}(\norm{\mu - \mu^*} > t^{-1/2}) dt
-    &=\int_0^\infty \exp(-n t / \sigma^2) dt\\
-    &= \sigma^2 n^{-1}\int_0^\infty \exp(- nt / \sigma^2) d(nt\sigma^{-2})\\
-    &= \sigma^2 n^{-1} \int_0^\infty \exp(-x) dx =\sigma^2 n^{-1}.
-\end{align}
-
-\paragraph{Probability that $\mu$ is close to zero.}
-Intuitively, we should study $\mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > t)$, which should relates to $\mathbb{P}(\norm{\mu} < t)$, which can be express exactly as we know the cumulative distribution function of the chi-square and that $\mu$ is a variant of the chi-square.
-It seems to me that here we will not get optimal rates, because the calibration inequality is too harsh when $\mu$ goes to $0$, as I develop in the next paragraph.
-
-\subsection{Big picture.}
-Intuitively, we have summarize in the part in $\mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} < t)$, the problem that arise with ${\cal B}_{A^*}(\mu^*; \mu)$ when $\mu$ is small. 
-We could make this intuition more formal with
-\begin{align}
-   {\cal B}_{A^*}(\mu^*; \mu)
-   &= 1_{\norm{\mu} \geq s} {\cal B}_{A^*}(\mu^*; \mu)
-   + 1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu)\\
-   &\leq \sup_{\norm{\mu'} \geq s}(\norm{(\nabla A)^{-1}(\mu')})^2 \norm{\mu - \mu^*}^2
-   + 1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu).
-\end{align}
-Suppose the $\sup$ is finite, the first term is easy to control.
-The second term is what we should take care of. We have
-\begin{align}
-    1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu) 
-    &=  1_{\norm{\mu} < s} (A^*(\mu^*) - A^*(\mu) - <\nabla A^*(\mu), \mu^* - \mu>)\\
-    &\leq  1_{\norm{\mu} < s} (A^*(\mu^*) - \inf_{\norm{\mu'} < s} A^*(\mu') + \norm{\nabla A^*(\mu)} \sup_{\norm{\mu''} < s} \norm{\mu^* - \mu''}).
-\end{align}
-We know that, under some strict convexity condition, $\nabla A^* = (\nabla A)^{-1}$ (similar to Eq. (25) at time of writing). Therefore we really have to study, with harsh notation
-\begin{align}
-    \int_{0}^s \norm{(\nabla A)^{-1}(\mu)} d\mathbb{P}(\norm{\mu} < t)
-    =\int_{0}^s \norm{(\nabla A)^{-1}(\mu)} \mathbb{P}(\norm{\mu} \in [t, t+dt]).
-\end{align}
-It seems to me that with the precedent development we were implicitly studying
-\begin{align}
-    \int_{0}^s \norm{(\nabla A)^{-1}(\mu)}^2 d\mathbb{P}(\norm{\mu} < t),
-\end{align}
-which of course is worse.
-The study can be done precisely as we know the distribution of $\mu$.
-In terms of rates, in my current view, this path is tight if and only if $<\nabla A^*(\mu), \mu^* - \mu>$ do behave like $\norm{(\nabla A)^{-1}(\mu)}$ towards $0$. In terms of constants, we have done pretty harsh majoration in order to get back to $c\norm{\mu-\mu^*}$ with constants $c$ that are clearly suboptimal.
-
-\paragraph{Tail bound or average risk?}
-Note that, if $\mu$ is sub-Gaussian concentrating towards $\mu^*$,
-we can give a simpler result than average risk, 
-which is that we can that that 
-with proba $1 - \mathbb{P}(\norm{\mu} < 1/2\norm{\mu^*}) = 1 - \exp(-c\norm{\mu^*}^2 n)$, 
-we have a tail bound $\mathbb{P}(\norm{\mu}^{-2}\norm{\mu - \mu^*}^2 > t) = \exp(-cnt / \norm{\mu^*})$.
-This means that we can say that 
-with proba $1 - \exp(-c\norm{\mu^*}^2 n) - \delta$ for any $\delta >0$, 
-we have that $B_{A^*}(\mu^*; \mu) < cn^{-1}\log(1/\delta) / \norm{\mu^*}$.
+Applying the 3 points lemma with \TODO{f}
 
 \section{Self-Concordance}
 \subsection{Motivation}
@@ -922,6 +811,154 @@ Given the proof, the most straightforward such assumption (see paper notes) is
 \expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
 \end{align}
 which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
+
+
+\section{Vivien's approach}
+\subsection{A big calculus in this specific setting}
+
+Indeed we know the distribution of $\mu$ it is linked with the chi-square distribution. We also know the expression of the excess of risk. So we could do a big calculus to get the exact expression of the averaged excess of risk.
+
+Recall the expression of the Gamma integral
+\begin{align}
+  \Gamma(\alpha):=\int_0^\infty t^{\alpha-1} \exp(-t) d t
+\end{align}
+Recall also that
+\begin{align}
+    \int x^q \exp(-nx^p) dx
+    &= n^{-(q+1)/p} \int (n^{1/p}x)^q \exp(-(n^{1/p}x)^p) d(n^{1/p}x)\\
+    &= n^{-(q+1)/p} \int u^q \exp(-u^p) du\\
+    &= n^{-(q+1)/p} \int t^{q/p} \exp(-t) d(t^{1/p})\\
+    &= n^{-(q+1)/p} \int p^{-1} t^{(q+1)/p - 1} \exp(-t) dt\\
+    &= n^{-(q+1)/p} p^{-1} \Gamma((q+1)/p).
+\end{align}
+Finally if there is problem in zero with the logarithm appearing in Eq. (75, at time of writing), we can have a Taylor expansion of the log 
+\[
+  \log(x) = \sum_{i=1}^\infty \frac{(-1)^{i+1}(x-1)^i}{i},
+\]
+and show convergence with some Fubini's theorem on series-integral.
+
+\subsection{Generic approach}
+
+In this subsection, I detailed a generic approach to get non-asymptotic rates.
+It is based on the calibration inequality Eq. (18, at time of writing).
+The next step would be to detailed those derivations and have precise results for the specific case of only looking at the variance.
+
+\paragraph{Calibration inequality.}
+One of the main difficulty of the proof is that $\theta_n = (\nabla A)^{-1}(\mu_n)$ can be really big, meaning that we can not apply directly ``calibration inequality'' between the Bregman divergence ${\cal B}_{A^*}(\mu^*; \mu)$ and $\norm{\mu - \mu^*}^2$.
+However, if we restrict ourselves to the domain $\theta'\in {\cal B}(0, R)$ with $R = \max(\norm{\theta}, \norm{\theta^*})$, we have that $A$ is $2^{-1}R^{-2}$-strongly convex. Therefore using Eq.~(18, at the time of writing), we have 
+\begin{align}
+    {\cal B}_{A^*}(\mu^*; \mu) 
+    &\leq 2^{-1}R^{-2} \norm{\mu^* - \mu}^2\\
+    &= 2 \max(\norm{\theta}, \norm{\theta^*})^2\norm{\mu^* - \mu}^2\\
+    &= 2 \max(\norm{(\nabla A)^{-1}(\mu)}, \norm{(\nabla A)^{-1}(\mu^*)})^2\norm{\mu^* - \mu}^2.
+\end{align}
+With will proceed with this equation, we might get better equations. For example by considering a constant of strong convexity on the segment $[\norm{\theta}, \norm{\theta^*}]$ rather than the ball ${\cal B}(0, R)$.
+The behavior of the max, will be similar to the behavior of the sum of the two elements since $\max(a, b) \leq a + b \leq 2\max(a, b)$, therefore, we proceed
+with
+\begin{align}
+    {\cal B}_{A^*}(\mu^*; \mu) 
+    &\leq 2 \norm{(\nabla A)^{-1}(\mu^*)}^2 \norm{\mu^* - \mu}^2
+    + 2 \norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu^* - \mu}^2.
+\end{align}
+The first term is easy to control in expectation, see Eqs. (19-20, at time of writing), it is $\Var{T(X)} / n$. It is really the second part that we want to study. 
+Because of the structure $\norm{(\nabla A)^{-1}(\mu)} \simeq \norm{\mu}^{-1}$
+We have to take care of the event ``$\mu = n^{-1} \sum_{i\leq n} T(X_i)$ too small''.
+We know that $\mu$ concentrate towards $\mu^*$ so this event should not happen too often.
+So we want to study $\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2$.
+
+\paragraph{Tail bound or average excess of risk?}
+If we think with concentration inequality, we will get tail bound on the excess of risk, and not an average excess of risk.
+However, recall that
+\begin{align}
+  \E[X] = \E[\int_{0}^{\infty} 1_{X > t} dt]
+  = \int_{0}^\infty \E[1_{X>t}] dt
+  = \int_0^\infty \mathbb{P}(X > t) dt.
+\end{align}
+So we can translate tail bound into average.
+
+\paragraph{Concentration of a product.}
+We want to study $\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2$, it is a product of two term, we can proceed with the fact that if $A$ and $B$ are two random variables from a sample space $(\Omega, \mu)$ to $\mathbb{R}$, we have
+\[
+    \{ \omega \in \Omega \vert A(\omega) B(\omega) > t\}
+    \subset 
+    \{ \omega \in \Omega \vert A(\omega) > s\}
+    \cup
+    \{ \omega \in \Omega \vert A(\omega) > t/s\}
+\]
+Which results from the fact that if $ab > t$ than either $a > s$, either $b > t/s$.
+In our case, it means that for any $t > 0$, we have the deviation bound
+\begin{align}
+  \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)}^2 \norm{\mu - \mu^*}^2 > t)
+  &\leq \inf_{s>0} \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)}^2 > 1/s)
+  + \mathbb{P}(\norm{\mu - \mu^*}^2 > st)\\
+  &= \inf_{s>0} \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > s^{1/2})
+  + \mathbb{P}(\norm{\mu - \mu^*} > (st)^{1/2}).
+\end{align}
+So we are left with the study of 
+\begin{align}
+  \mathbb{P}(\norm{\mu - \mu^*} > t)
+  \qquad\text{and}\qquad 
+  \mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > t).
+\end{align}
+
+\paragraph{Concentration on $\mu - \mu^*$.}
+Most likely $T(X)$ is sub-Gaussian (do hand-derivations or look at works like \url{https://arxiv.org/pdf/1011.3027.pdf} or \url{https://arxiv.org/pdf/1902.03736.pdf}) and Bernstein concentration inequality leads to a tail bound of the type, with $\sigma^2$ a variance parameter 
+($\sigma^2 = \Var_{\theta^*}(T(X))$)
+\begin{align}
+    \mathbb{P}_{(X_i)_{i\leq n}}(\norm{\mu - \mu^*} > t) \leq \exp(-n t^2 / \sigma^2).
+\end{align}
+Normally, in Bernstein inequality there is an additional term in $n$, but the convergence rates will not depend on this additional term, so I am omitting it for simplicity.
+Note that when we will integrate that we will get
+\begin{align}
+    \int_0^\infty \mathbb{P}_{(X_i)_{i\leq n}}(\norm{\mu - \mu^*} > t^{-1/2}) dt
+    &=\int_0^\infty \exp(-n t / \sigma^2) dt\\
+    &= \sigma^2 n^{-1}\int_0^\infty \exp(- nt / \sigma^2) d(nt\sigma^{-2})\\
+    &= \sigma^2 n^{-1} \int_0^\infty \exp(-x) dx =\sigma^2 n^{-1}.
+\end{align}
+
+\paragraph{Probability that $\mu$ is close to zero.}
+Intuitively, we should study $\mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} > t)$, which should relates to $\mathbb{P}(\norm{\mu} < t)$, which can be express exactly as we know the cumulative distribution function of the chi-square and that $\mu$ is a variant of the chi-square.
+It seems to me that here we will not get optimal rates, because the calibration inequality is too harsh when $\mu$ goes to $0$, as I develop in the next paragraph.
+
+\subsection{Big picture.}
+Intuitively, we have summarize in the part in $\mathbb{P}(\norm{(\nabla A)^{-1}(\mu)} < t)$, the problem that arise with ${\cal B}_{A^*}(\mu^*; \mu)$ when $\mu$ is small. 
+We could make this intuition more formal with
+\begin{align}
+   {\cal B}_{A^*}(\mu^*; \mu)
+   &= 1_{\norm{\mu} \geq s} {\cal B}_{A^*}(\mu^*; \mu)
+   + 1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu)\\
+   &\leq \sup_{\norm{\mu'} \geq s}(\norm{(\nabla A)^{-1}(\mu')})^2 \norm{\mu - \mu^*}^2
+   + 1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu).
+\end{align}
+Suppose the $\sup$ is finite, the first term is easy to control.
+The second term is what we should take care of. We have
+\begin{align}
+    1_{\norm{\mu} < s} {\cal B}_{A^*}(\mu^*; \mu) 
+    &=  1_{\norm{\mu} < s} (A^*(\mu^*) - A^*(\mu) - <\nabla A^*(\mu), \mu^* - \mu>)\\
+    &\leq  1_{\norm{\mu} < s} (A^*(\mu^*) - \inf_{\norm{\mu'} < s} A^*(\mu') + \norm{\nabla A^*(\mu)} \sup_{\norm{\mu''} < s} \norm{\mu^* - \mu''}).
+\end{align}
+We know that, under some strict convexity condition, $\nabla A^* = (\nabla A)^{-1}$ (similar to Eq. (25) at time of writing). Therefore we really have to study, with harsh notation
+\begin{align}
+    \int_{0}^s \norm{(\nabla A)^{-1}(\mu)} d\mathbb{P}(\norm{\mu} < t)
+    =\int_{0}^s \norm{(\nabla A)^{-1}(\mu)} \mathbb{P}(\norm{\mu} \in [t, t+dt]).
+\end{align}
+It seems to me that with the precedent development we were implicitly studying
+\begin{align}
+    \int_{0}^s \norm{(\nabla A)^{-1}(\mu)}^2 d\mathbb{P}(\norm{\mu} < t),
+\end{align}
+which of course is worse.
+The study can be done precisely as we know the distribution of $\mu$.
+In terms of rates, in my current view, this path is tight if and only if $<\nabla A^*(\mu), \mu^* - \mu>$ do behave like $\norm{(\nabla A)^{-1}(\mu)}$ towards $0$. In terms of constants, we have done pretty harsh majoration in order to get back to $c\norm{\mu-\mu^*}$ with constants $c$ that are clearly suboptimal.
+
+\paragraph{Tail bound or average risk?}
+Note that, if $\mu$ is sub-Gaussian concentrating towards $\mu^*$,
+we can give a simpler result than average risk, 
+which is that we can that that 
+with proba $1 - \mathbb{P}(\norm{\mu} < 1/2\norm{\mu^*}) = 1 - \exp(-c\norm{\mu^*}^2 n)$, 
+we have a tail bound $\mathbb{P}(\norm{\mu}^{-2}\norm{\mu - \mu^*}^2 > t) = \exp(-cnt / \norm{\mu^*})$.
+This means that we can say that 
+with proba $1 - \exp(-c\norm{\mu^*}^2 n) - \delta$ for any $\delta >0$, 
+we have that $B_{A^*}(\mu^*; \mu) < cn^{-1}\log(1/\delta) / \norm{\mu^*}$.
 
 
 \section{Fenchel conjugate motivation to self-concordance}
