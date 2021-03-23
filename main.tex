@@ -421,14 +421,28 @@ Using Jensen inequality, we have the following analog of the bias-variance decom
 \newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
 
 \begin{align}
-	& \expect{\bregmanconj(\mu^* ; \hat \mu_n)} \\
+	& \expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	= \conj(\mu^* ) 
+	- \underbrace{\expect{\conj(\hat \mu_n)}}_{\leq \conj(\mu_n) \text{ (Jensen)} } 
+	\pm \langle \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
+	- \E[\langle \hat \natp_n ; \mu^* - \hat \mu_n  \rangle ] \\
+	& \leq \conj(\mu^* ) 
+	- \conj(\mu_n) 
+	- \langle \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
+	+ \frac{n_0}{n+n_0} \langle \natp_n ; \mu^* - \mu_0 \rangle \nonumber\\
+	& \quad \quad \quad 
+	- \frac{n_0}{n+n_0} \langle \E[\hat \natp_n] ; \mu^*- \mu_0  \rangle
+	- \inv{n+n_0} \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
 	& \leq \bias{\bregmanconj(\mu^*; \mu_n)}
 	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle 
 	+ \frac{1}{n+n_0} \smallsum_i \variance{\expect{\langle \hat \natp_n ; T(X_i) - \mu^* \rangle } }
 \end{align}
-where $\hat \mu_n$ is the MAP estimate,
-$\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$,
-and $\theta_n = \nabla \conj(\mu_n)$.
+where $\hat \mu_n$ is the mean MAP estimate, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ is the natural MAP estimate, 
+$\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$ is the expected MAP estimate,
+and $\theta_n = \nabla \conj(\mu_n)$ is the natural parameter of this expectation.
+
+Note that unless $\conj$ is $\ell^2$, or degenerate 0 variance cases, $\theta_n \neq \expect{\hat \theta_n}$.
+In fact, $\theta_n - \expect{\hat \theta_n} = \nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]$
 
 \section{Conjecture}
 
