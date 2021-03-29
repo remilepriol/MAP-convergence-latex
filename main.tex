@@ -408,14 +408,18 @@ and for the MAP we  get
 \begin{align}
 	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
 	&= \frac{n d}{(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
-	&= O\left(\frac{d}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
+	&= \frac{d}{n} + O\left(\frac{1 + \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
+\end{align}
+or 
+\begin{align}
+	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) = \frac{d}{2n} + O(n^{- \frac{3}{2}})
 \end{align}
 Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
 Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
 
 \section{Bias-Variance Decomposition}
-Using Jensen inequality, we have the following analog of the bias-variance decomposition:
+Using Jensen inequality and inserting the right quantities, we obtain the following analog of the bias-variance decomposition:
 
 \newcommand{\bias}[1]{\textcolor{Red}{\underbrace{\textcolor{black}{#1}}_{\text{bias}}}}
 \newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
@@ -432,17 +436,47 @@ Using Jensen inequality, we have the following analog of the bias-variance decom
 	+ \frac{n_0}{n+n_0} \langle \natp_n ; \mu^* - \mu_0 \rangle \nonumber\\
 	& \quad \quad \quad 
 	- \frac{n_0}{n+n_0} \langle \E[\hat \natp_n] ; \mu^*- \mu_0  \rangle
-	- \inv{n+n_0} \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
+	- \inv{n+n_0} \smallsum_i \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
 	& \leq \bias{\bregmanconj(\mu^*; \mu_n)}
 	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle 
-	+ \frac{1}{n+n_0} \smallsum_i \variance{\expect{\langle \hat \natp_n ; T(X_i) - \mu^* \rangle } }
+	+ \frac{n}{n+n_0} \variance{\expect{\langle \hat \natp_n  ; T(X_0) - \mu^* \rangle } }
 \end{align}
 where $\hat \mu_n$ is the mean MAP estimate, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ is the natural MAP estimate, 
 $\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$ is the expected MAP estimate,
 and $\theta_n = \nabla \conj(\mu_n)$ is the natural parameter of this expectation.
 
+The interpretation of the bias term should be clear.
+The variance term is called as such because it is the covariance between $\hat \natp_n$ and $T(X)$
+\begin{align}
+	\Cov \bigg(T(X_0), \nabla \conj \big(\frac{\smallsum_i T(X_i) +n_0 \mu_0}{n+n_0} \big)\bigg	) \; .
+\end{align}
+The mixed bias variance term is might be negative. 
+\TODO{add figure.}
 Note that unless $\conj$ is $\ell^2$, or degenerate 0 variance cases, $\theta_n \neq \expect{\hat \theta_n}$.
-In fact, $\theta_n - \expect{\hat \theta_n} = \nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]$
+In fact, $\theta_n - \expect{\hat \theta_n} = \nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]$ is sort of a commuting bracket. 
+
+\subsection{Asymptotes}
+Using the quadratic approximation of the Bregman divergence near $\mu^*$, we get a $O(n^{-2})$ rate for the pure bias term
+\begin{align}
+	\bregmanconj(\mu^*; \mu_n) 
+	= \frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}}}{2(1 + \frac{n}{n_0})^{-2} } + O(n^{-3}) \; .
+\end{align}
+Using a linear approximation of the mirror map, we also get a $O(n^{-1})$ rate for the variance term
+\begin{align}
+	&\nabla \conj(\mu)  
+	= \nabla \conj(\mu^*) + \nabla^2\conj(\mu^*)(\mu - \mu^*) + O(\norm{\mu - \mu^*}^2) \\
+	\implies &\hat \natp_n 
+	= \natp^* + \Sigma^{-1} (\hat \mu_n - \mu^*)  O(\norm{\hat \mu_n - \mu^*}^2) \\
+	\implies &\Cov(\hat \natp_n ; T(X) ) 
+	= \inv{n+n_0} \E[ \norm{T(X) - \mu^*}^2_{\Sigma^{-1}}]   + O(n^{-2}) \\
+	\implies &\Cov(\hat \natp_n ; T(X) ) 
+	 = \frac{d}{n+n_0} + O(n^{-2}) \; .
+\end{align}
+where we lost the factor $2$ compared to the straightforward asymptotic analysis, probably because of the Jensen upper inequality.
+
+Finally, we can use this same linear approximation to bound the mixed bias-variance term
+
+
 
 \section{Conjecture}
 
