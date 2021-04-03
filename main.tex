@@ -412,18 +412,18 @@ and for the MAP we  get
 \end{align}
 or 
 \begin{align}
-	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) = \frac{d}{2n} + O(n^{- \frac{3}{2}})
+\label{eq:MAP_asymptote}
+	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
+	= \frac{d}{2n} + O(n^{- \frac{3}{2}})
 \end{align}
 Remark how the variance does not even appear, only the dimension divided by $n$ really matters. I find this result quite spectacular : the convergence speed of MLE is not affected by the covariance of sufficient statistics, and for MAP it matters only in the $O(n^{-2})$ term.
 Indeed this is because it is hidden within the Bregman divergence loss. 
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
 
 \section{Bias-Variance Decomposition}
-Using Jensen inequality and inserting the right quantities, we obtain the following analog of the bias-variance decomposition:
-
+Using Jensen inequality and inserting appropriate quantities, we obtain the following analog of the bias-variance decomposition:
 \newcommand{\bias}[1]{\textcolor{Red}{\underbrace{\textcolor{black}{#1}}_{\text{bias}}}}
 \newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
-
 \begin{align}
 	& \expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
 	= \conj(\mu^* ) 
@@ -441,41 +441,93 @@ Using Jensen inequality and inserting the right quantities, we obtain the follow
 	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle 
 	+ \frac{n}{n+n_0} \variance{\expect{\langle \hat \natp_n  ; T(X_0) - \mu^* \rangle } }
 \end{align}
-where $\hat \mu_n$ is the mean MAP estimate, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ is the natural MAP estimate, 
+where $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i T(X_i)}{n_0 + n}$ is the MAP estimate of the mean parameter, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ is the corresponding natural parameter, 
 $\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$ is the expected MAP estimate,
 and $\theta_n = \nabla \conj(\mu_n)$ is the natural parameter of this expectation.
+Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat \mu_n$ a Dirac, $\theta_n \neq \expect{\hat \theta_n}$.
+At the last line, we used the property that all data points play a symmetric role to remove the sum over $i$.
 
-The interpretation of the bias term should be clear.
-The variance term is called as such because it is the covariance between $\hat \natp_n$ and $T(X)$
-\begin{align}
-	\Cov \bigg(T(X_0), \nabla \conj \big(\frac{\smallsum_i T(X_i) +n_0 \mu_0}{n+n_0} \big)\bigg	) \; .
-\end{align}
-The mixed bias variance term is might be negative. 
 \TODO{add figure.}
-Note that unless $\conj$ is $\ell^2$, or degenerate 0 variance cases, $\theta_n \neq \expect{\hat \theta_n}$.
-In fact, $\theta_n - \expect{\hat \theta_n} = \nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]$ is sort of a commuting bracket. 
 
-\subsection{Asymptotes}
+
+
+\subsection{Pure Bias Term}
+The pure bias term measures the divergence between the optimum and the expected MAP estimate $\bregmanconj(\mu^*; \mu_n)$.
+
+\paragraph{Aymptote.}
 Using the quadratic approximation of the Bregman divergence near $\mu^*$, we get a $O(n^{-2})$ rate for the pure bias term
 \begin{align}
 	\bregmanconj(\mu^*; \mu_n) 
 	= \frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}}}{2(1 + \frac{n}{n_0})^{-2} } + O(n^{-3}) \; .
 \end{align}
-Using a linear approximation of the mirror map, we also get a $O(n^{-1})$ rate for the variance term
+
+
+\subsection{Pure Variance Term}
+The pure variance term $\expect{\langle \hat \natp_n  ; T(X_0) - \mu^* \rangle }$ is the covariance between $\hat \natp_n$ and $T(X_0)$. 
+In a way it is a modified variance of $T(X)$, with the $\nabla \conj$ operator in between, and a $\inv{n+n_0}$ multiplicative factor within $\hat \natp_n = \nabla \conj( \frac{T(X_0)}{n+n_0} + \dots) $.
+
+\paragraph{Positivity.}
+It is positive thanks to the monotonicity of $\nabla \conj$
+\begin{align}
+&\langle \hat \natp_n - \natp_n ; \hat \mu_n - \mu_n \rangle 
+	= \langle \nabla \conj (\hat \mu_n) - \nabla \conj(\mu_n) ;  \hat \mu_n - \mu_n \rangle 
+	\geq 0
+\end{align}
+Taking the expectation, removing the constant $\theta_n$ from the covariance, and expanding $\hat \mu_n - \mu_n$ we get
+\begin{align}
+	\implies 
+	0 \leq \expect{\langle \hat \natp_n - \natp_n ; \hat \mu_n - \mu_n \rangle}
+	&= \expect{\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle} \\
+	&= \expect{\langle \hat \natp_n ; \frac{\sum_i T(X_i) - \mu^*}{n+n_0} \rangle}  \\
+	& = \frac{n}{n+n_0} \expect{\langle \hat \natp_n ; T(X_0) - \mu^*\rangle}
+\end{align}
+which concludes the proof of positivity.
+
+\paragraph{Asymptote.}
+Using a linear approximation of the mirror map, we get a $O(n^{-1})$ rate for the variance term
 \begin{align}
 	&\nabla \conj(\mu)  
 	= \nabla \conj(\mu^*) + \nabla^2\conj(\mu^*)(\mu - \mu^*) + O(\norm{\mu - \mu^*}^2) \\
 	\implies &\hat \natp_n 
-	= \natp^* + \Sigma^{-1} (\hat \mu_n - \mu^*)  O(\norm{\hat \mu_n - \mu^*}^2) \\
+	= \natp^* + \Sigma^{-1} (\hat \mu_n - \mu^*)  + O(\E[\norm{\hat \mu_n - \mu^*}^2]) \\
 	\implies &\Cov(\hat \natp_n ; T(X) ) 
 	= \inv{n+n_0} \E[ \norm{T(X) - \mu^*}^2_{\Sigma^{-1}}]   + O(n^{-2}) \\
 	\implies &\Cov(\hat \natp_n ; T(X) ) 
 	 = \frac{d}{n+n_0} + O(n^{-2}) \; .
 \end{align}
-where we lost the factor $2$ compared to the straightforward asymptotic analysis, probably because of the Jensen upper inequality.
+Note that we lost a factor $\half$ compared to the straightforward asymptotic analysis~\eqref{eq:MAP_asymptote}, probably because of the Jensen upper bound.
 
-Finally, we can use this same linear approximation to bound the mixed bias-variance term
+\subsection{Mixed Bias-Variance Term}
+The mixed bias variance term is $ \frac{n_0}{n+n_0} \langle  {\mu_* - \mu_0} ; {\natp_n - \E[\hat \natp_n]} \rangle $.
+Note that it might be negative !
+Let's focus on the right factor
+\begin{align}
+\theta_n - \expect{\hat \theta_n} = \nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]
+\end{align}
+is sort of a commuting bracket between $\nabla \conj$ and the expectation over $\hat \mu_n$. It will be large if $\nabla \conj$ is highly non linear over the distribution of $\hat \mu_n$.
 
+\paragraph{Asymptote.}
+A linear approximation of $\nabla \conj$ shows that the mixed term is in $O(n^{-3})$, since the linear function commutes with the expectation.
+We need to use a quadratic approximation of $\nabla \conj$ to get a non-trivial approximation
+\begin{align}
+	&\nabla \conj(\mu)  
+	= \nabla \conj(\mu^*) + \nabla^2\conj(\mu^*)(\mu - \mu^*) +  \half \nabla^3 \conj(\mu^*) [ (\mu - \mu^*)  ; (\mu - \mu^*) ]
+	+ O(\norm{\mu - \mu^*}^3) \\
+	&\implies 
+	\nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]
+	= \half \nabla^3 \conj (\mu^*) \Cov(\hat \mu_n) 
+	+ O(\E[\norm{\hat \mu_n - \mu^*}^3]) \\
+	&\implies 
+	\nabla \conj(\E[\hat \mu_n]) - \E[\nabla \conj(\hat \mu_n)]
+	= \frac{\nabla^3 \conj (\mu^*) \Sigma}{2(n+n_0)^2} 
+	+ O(n^{-3}) \\
+\end{align}
+where the axis of the tensor product between third derivative and vector / matrix are all kept implicit for simplicity.
+Consequently the bias-variance term is 
+\begin{align}
+	\frac{n_0}{n+n_0} \langle  \bias{\mu^* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle
+	 = \frac{n_0}{(n+n_0)^3} (\mu^* - \mu_0)^\top \nabla^3 \conj (\mu^*) \Sigma + O(n^{-4}) = O(n^{-3}) \; .
+\end{align}
 
 
 \section{Conjecture}
