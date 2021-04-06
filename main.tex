@@ -132,7 +132,7 @@ At this point it is useful to introduce the \href{https://en.wikipedia.org/wiki/
 It turns out that $\conj$ matches the common notion of \textit{entropy} in information theory, so we will call it entropy.
 If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it is a bijection, and its inverse is the gradient of its dual $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
 For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}.
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics{figs/duality}
 	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$. Figure reproduced from \citet{kunstner2020homeomorphic}.}
@@ -271,7 +271,7 @@ In other words, this divergence measures the discrepancy between the ratio $\fra
 as illustrated in Figure~\ref{fig:phi}.
 \end{example}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=.4\textwidth]{figs/bregmandef.pdf}
 	\includegraphics[width=.4\textwidth]{figs/phi.pdf}
@@ -279,7 +279,7 @@ as illustrated in Figure~\ref{fig:phi}.
 	\label{fig:phi}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=.54\textwidth]{figs/asymptote.pdf}
 	\includegraphics[width=.43\textwidth]{figs/fewsamples.pdf}
@@ -342,7 +342,6 @@ as illustrated in Figure~\ref{fig:phi}.
 	\end{align}
 	Unfortunately, formulas for the MAP seem to be much less nice. There is also a closed form for the multivariate generalization, thanks to the \href{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}{inverse Wishart distribution} and the \href{https://en.wikipedia.org/wiki/Wishart_distribution#Log-expectation}{expectation of the log-determinant of a Wishart}. Again the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension. We do not perform these calculations for now as we want to focus on the simplest possible examples.
 \end{example}
-
 
 \tableofcontents
 
@@ -447,7 +446,12 @@ and $\theta_n = \nabla \conj(\mu_n)$ is the natural parameter of this expectatio
 Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat \mu_n$ a Dirac, $\theta_n \neq \expect{\hat \theta_n}$.
 At the last line, we used the property that all data points play a symmetric role to remove the sum over $i$.
 
-\TODO{add figure.}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.8\textwidth]{figs/bias-variance.png}
+	\caption{A schematic illustration of the different characters featured in the bias-variance decomposition.}
+	\label{fig:bias-variance}
+\end{figure}
 
 
 
@@ -497,6 +501,27 @@ Using a linear approximation of the mirror map, we get a $O(n^{-1})$ rate for th
 \end{align}
 Note that we lost a factor $\half$ compared to the straightforward asymptotic analysis~\eqref{eq:MAP_asymptote}, probably because of the Jensen upper bound.
 
+\begin{example}
+	For the gaussian variance MAP, the co-variance term is
+	\begin{align}
+		\frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X) )  
+		&= -\frac{n}{2} \expect{ \frac{X_0^2 - \mu^*}{\sum_i T(X_i)  + n_0 \mu_0} } \\
+		&=  \half \expect{ \frac{n - \chi^2(n)}{\chi^2(n) + n_0 \frac{\mu_0}{\mu^*}}} \\
+		& = \half[n] \expect{\inv{\chi^2(n) + a}} - \half \expect{\inv{1 + \frac{a}{\chi^2(n)}}}
+	\end{align}
+	where $a=n_0 \frac{\mu_0}{\mu^*}$, and at the second line we re-introduced the $X_i$ to form a chi-square. 
+	These expectations are not simple to solve, but using wolfram alpha, we get  some formulas :
+	\begin{align}
+		\expect{\inv{\chi^2(n) + a}}  = \half e^{\frac{a}{2}} \text{ExpIntegralE}[\half[n],\half[a]]
+	\end{align}
+	where the \href{https://reference.wolfram.com/language/ref/ExpIntegralE.html}{exponential integral function} is defined as 
+	\begin{align}
+		\text{ExpIntegralE}[n , z] = E_n(z) = \int_1^\infty \frac{e^{-z t} }{t^n} dt = z^{n-1} \Gamma(1-n , z)
+	\end{align}
+	with the upper incomplete gamma function.
+	Now our goal is to find a simple upper bound on this function.
+\end{example}
+
 \subsection{Mixed Bias-Variance Term}
 The mixed bias variance term is $ \frac{n_0}{n+n_0} \langle  {\mu_* - \mu_0} ; {\natp_n - \E[\hat \natp_n]} \rangle $.
 Note that it might be negative !
@@ -528,7 +553,6 @@ Consequently the bias-variance term is
 	\frac{n_0}{n+n_0} \langle  \bias{\mu^* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle
 	 = \frac{n_0}{(n+n_0)^3} (\mu^* - \mu_0)^\top \nabla^3 \conj (\mu^*) \Sigma + O(n^{-4}) = O(n^{-3}) \; .
 \end{align}
-
 
 \section{Conjecture}
 
