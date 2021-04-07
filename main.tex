@@ -427,24 +427,24 @@ Using Jensen inequality and inserting appropriate quantities, we obtain the foll
 	& \expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
 	= \conj(\mu^* ) 
 	- \underbrace{\expect{\conj(\hat \mu_n)}}_{\leq \conj(\mu_n) \text{ (Jensen)} } 
-	\pm \langle \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
-	- \E[\langle \hat \natp_n ; \mu^* - \hat \mu_n  \rangle ] \\
+	\pm \langle \underbrace{\nabla \conj( \mu_n)}_{=:\natp_n} ; \mu^* - \mu_n \rangle
+	+ \E[\langle \hat \natp_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] \\
 	& \leq \conj(\mu^* ) 
 	- \conj(\mu_n) 
-	- \langle \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
-	+ \frac{n_0}{n+n_0} \langle \natp_n ; \mu^* - \mu_0 \rangle \nonumber\\
-	& \quad \quad \quad 
-	- \frac{n_0}{n+n_0} \langle \E[\hat \natp_n] ; \mu^*- \mu_0  \rangle
-	- \inv{n+n_0} \smallsum_i \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
+	- \langle  \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
+	+ \langle \E[\hat \natp_n] - \natp_n ;  \mu_n - \mu^* \rangle
+	+ \E[\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle ]
+	\nonumber\\
+%	& \quad \quad \quad 
+%	- \inv{n+n_0} \smallsum_i \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
 	& \leq \bias{\bregmanconj(\mu^*; \mu_n)}
-	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle 
-	+ \frac{n}{n+n_0} \variance{\expect{\langle \hat \natp_n  ; T(X_0) - \mu^* \rangle } }
+	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_0 - \mu_*} ; \variance{\E[\hat \natp_n] - \natp_n} \rangle 
+	+ \variance{\Cov(\hat \natp_n ; \hat \mu_n ) }
 \end{align}
 where $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i T(X_i)}{n_0 + n}$ is the MAP estimate of the mean parameter, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ is the corresponding natural parameter, 
 $\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$ is the expected MAP estimate,
 and $\theta_n = \nabla \conj(\mu_n)$ is the natural parameter of this expectation.
 Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat \mu_n$ a Dirac, $\theta_n \neq \expect{\hat \theta_n}$.
-At the last line, we used the property that all data points play a symmetric role to remove the sum over $i$.
 
 \begin{figure}[ht]
 	\centering
@@ -467,25 +467,33 @@ Using the quadratic approximation of the Bregman divergence near $\mu^*$, we get
 
 
 \subsection{Pure Variance Term}
-The pure variance term $\expect{\langle \hat \natp_n  ; T(X_0) - \mu^* \rangle }$ is the covariance between $\hat \natp_n$ and $T(X_0)$. 
-In a way it is a modified variance of $T(X)$, with the $\nabla \conj$ operator in between, and a $\inv{n+n_0}$ multiplicative factor within $\hat \natp_n = \nabla \conj( \frac{T(X_0)}{n+n_0} + \dots) $.
-
-\paragraph{Positivity.}
-It is positive thanks to the monotonicity of $\nabla \conj$
+The pure variance term $\Cov(\hat \natp_n ; \hat \mu_n )$   can be seen as a non-linear variance of $\hat \mu_n$.
+Indeed, it is positive thanks to the monotonicity of $\nabla \conj$
 \begin{align}
 &\langle \hat \natp_n - \natp_n ; \hat \mu_n - \mu_n \rangle 
 	= \langle \nabla \conj (\hat \mu_n) - \nabla \conj(\mu_n) ;  \hat \mu_n - \mu_n \rangle 
 	\geq 0
 \end{align}
-Taking the expectation, removing the constant $\theta_n$ from the covariance, and expanding $\hat \mu_n - \mu_n$ we get
+Taking the expectation, (which allows removing the constant $\theta_n$) 
 \begin{align}
-	\implies 
-	0 \leq \expect{\langle \hat \natp_n - \natp_n ; \hat \mu_n - \mu_n \rangle}
-	&= \expect{\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle} \\
+	\expect{\langle \hat \natp_n - \natp_n ; \hat \mu_n - \mu_n \rangle} 
+	= \Cov(\hat \natp_n ; \hat \mu_n ) \geq 0
+\end{align}
+Consequently, we will now write about this covariance as a variance, with the monotone operator $\nabla \conj$ (or equivalently $\nabla \logpart$) plugged in the middle
+\begin{align}
+	\Var_{\nabla \conj}(\hat \mu_n) := \Cov(\nabla\conj(\hat \mu_n) ; \hat \mu_n ) \geq 0 \; .
+\end{align}
+
+\paragraph{Expansion}
+We can expand  $\hat \mu_n - \mu_n$ to get another formulation of this variance
+\begin{align}
+	\expect{\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle}
 	&= \expect{\langle \hat \natp_n ; \frac{\sum_i T(X_i) - \mu^*}{n+n_0} \rangle}  \\
 	& = \frac{n}{n+n_0} \expect{\langle \hat \natp_n ; T(X_0) - \mu^*\rangle}
+	= \frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X_0) ) 
 \end{align}
-which concludes the proof of positivity.
+where we used the property that all data points play a symmetric role to remove the sum over $i$.
+
 
 \paragraph{Asymptote.}
 Using a linear approximation of the mirror map, we get a $O(n^{-1})$ rate for the variance term
