@@ -67,6 +67,9 @@
 \newcommand{\linear}{\ell} % linearization of a function
 \newcommand{\lr}{\gamma} % learning rate, or step-size
 
+\newcommand{\MAPm}{\hat \mu_n}
+\newcommand{\MAPt}{\hat \natp_n}
+
 
 \title{Convergence rate of MAP estimates \\
 for the exponential family}
@@ -453,6 +456,63 @@ Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat 
 	\label{fig:bias-variance}
 \end{figure}
 
+\begin{example}
+		We need a formula  for $\E[\MAPt]$ the expectation of the natural MAP estimate
+	\begin{align}
+		\E[\MAPt] &= -\frac{n+n_0}{2}\expect{\inv{n_0 \mu_0 + \sum_i X_i^2}}  \\
+		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
+		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{a + \chi^2(n)}}
+	\end{align}
+	where $\sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
+	\begin{align}
+			a=n_0 \frac{\mu_0}{\mu^*} \; .
+	\end{align}
+	This expectations is not simple to solve, but using wolfram, we get  the formula :
+	\begin{align}
+		\expect{\inv{a + \chi^2(n)}}  = \half e^{\frac{a}{2}} E_{\half[n]}(\half[a])
+	\end{align}
+	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
+	\begin{align}
+		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
+	\end{align}
+	Now our goal is to bound this function with simpler functions.
+	Fortunately, mathematicians have been working on these integrals for decades.
+	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8#E1}{verifies the bound}
+	\begin{align}
+		\half \log(1 + \frac{2}{x}) 
+		\leq e^x E_1(x) 
+		\leq \log(1+\inv{x}) \leq \inv{x} \; .
+	\end{align}
+	For larger $n$, we have \href{https://dlmf.nist.gov/8.19#E21}{the general bound}
+	\begin{align}
+		\inv{x+n}
+		\leq e^x E_k(x) 
+		\leq \inv{x + k - 1}
+	\end{align}
+	so that 
+	\begin{align}
+		\inv{a+n}
+		\leq \expect{\inv{a + \chi^2(n)}}
+		\leq \inv{a + n - 2}
+	\end{align}
+	so that
+	\begin{align}
+		\frac{n +n_0}{2 \mu^* (a + n)}	
+		&\leq - \E[\MAPt]
+		\leq \frac{n +n_0}{2 \mu^* (a + n - 2)}	\\
+		\iff \inv{2 \mu_n}
+		&\leq - \E[\MAPt]
+		\leq \inv{2 \mu_n - \frac{4 \mu^*}{n + n_0}}
+		\label{eq:theta_expectation_bound}
+	\end{align}
+	because $\frac{\mu^* (a + n)}{n +n_0} = \mu_n$. Remark how we almost bounded the deviation between $\E[\MAPt]$ and $\natp_n$.
+\end{example}
+
+	\begin{figure}[ht]
+    	\centering
+	    \includegraphics[width=.7\textwidth]{figs/wolfram.png}
+    	\label{fig:wolfram}
+	\end{figure}
 
 
 \subsection{Pure Bias Term}
@@ -465,6 +525,14 @@ Using the quadratic approximation of the Bregman divergence near $\mu^*$, we get
 	= \frac{\norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}}}{2(1 + \frac{n}{n_0})^{-2} } + O(n^{-3}) \; .
 \end{align}
 
+\begin{example}
+	\begin{align}
+		\bregmanconj(\mu^*; \mu_n)
+		 &= \frac{\mu^*}{\mu_n} -1  - \log \frac{\mu^*}{\mu_n}  \\
+		 & = \frac{n+n_0}{a + n} - 1 - \log \frac{n+n_0}{a +n} \\
+		 & = \frac{n_0 - a}{a + n} - \log \frac{n+n_0}{a +n} \\		 
+	\end{align}
+\end{example}
 
 \subsection{Pure Variance Term}
 The pure variance term $\Cov(\hat \natp_n ; \hat \mu_n )$   can be seen as a non-linear variance of $\hat \mu_n$.
@@ -510,24 +578,24 @@ Using a linear approximation of the mirror map, we get a $O(n^{-1})$ rate for th
 Note that we lost a factor $\half$ compared to the straightforward asymptotic analysis~\eqref{eq:MAP_asymptote}, probably because of the Jensen upper bound.
 
 \begin{example}
-	For the gaussian variance MAP, the co-variance term is
-	\begin{align}
-		\frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X) )  
-		&= -\frac{n}{2} \expect{ \frac{X_0^2 - \mu^*}{\sum_i T(X_i)  + n_0 \mu_0} } \\
-		&=  \half \expect{ \frac{n - \chi^2(n)}{\chi^2(n) + n_0 \frac{\mu_0}{\mu^*}}} \\
-		& = \half[n] \expect{\inv{\chi^2(n) + a}} - \half \expect{\inv{1 + \frac{a}{\chi^2(n)}}}
+	For the gaussian variance MAP, the variance term is
+		\begin{align}
+			\Cov(\hat \natp_n ; \hat \mu_n )  
+			= \E[\MAPt \MAPm] - \E[\MAPt] \E[\MAPm] 
+			=  - \half - \E[\MAPt] \mu_n
 	\end{align}
-	where $a=n_0 \frac{\mu_0}{\mu^*}$, and at the second line we re-introduced the $X_i$ to form a chi-square. 
-	These expectations are not simple to solve, but using wolfram alpha, we get  some formulas :
+	where we used the fact that $\natp \mu = -\half$ for all valid pairs $(\natp, \mu)$. 
+	Plugging-in \eqref{eq:theta_expectation_bound} yield
 	\begin{align}
-		\expect{\inv{\chi^2(n) + a}}  = \half e^{\frac{a}{2}} \text{ExpIntegralE}[\half[n],\half[a]]
+		-\half + \frac{\mu_n}{2 \mu_n}
+		&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		\leq -\half + \half \frac{a + n}{a + n - 2} \\
+		\iff 0&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		\leq \half \frac{a+n - (a + n -2)}{a + n - 2} \\
+		\iff 0&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		\leq \inv{a +n - 2}
 	\end{align}
-	where the \href{https://reference.wolfram.com/language/ref/ExpIntegralE.html}{exponential integral function} is defined as 
-	\begin{align}
-		\text{ExpIntegralE}[n , z] = E_n(z) = \int_1^\infty \frac{e^{-z t} }{t^n} dt = z^{n-1} \Gamma(1-n , z)
-	\end{align}
-	with the upper incomplete gamma function.
-	Now our goal is to find a simple upper bound on this function.
+	which is exactly the kind of upper bounds we were looking for !
 \end{example}
 
 \subsection{Mixed Bias-Variance Term}
@@ -562,6 +630,28 @@ Consequently the bias-variance term is
 	 = \frac{n_0}{(n+n_0)^3} (\mu^* - \mu_0)^\top \nabla^3 \conj (\mu^*) \Sigma + O(n^{-4}) = O(n^{-3}) \; .
 \end{align}
 
+\begin{example}
+	As we have the tight bounds \eqref{eq:theta_expectation_bound} for the expectation of the natural parameter of the MAP, we can bound above and below this mixed term
+	\begin{align}
+		0
+		\leq \natp_n - \E[\MAPt]
+		\leq \frac{n_0 +n}{2 \mu^*} \left ( \inv{a+n-2} - \inv{a+n} \right)
+		 = \frac{n_0+n}{\mu^*(a+n)(a+n-2)}	 \in O(n^{-1}) \; .
+	\end{align} 
+	Remark how this asymptotic class differs from the $O(n^{-2})$ I expected. Is this bound less tight than I thought, or are my calculus wrong ? 
+	Also remark that $\natp_n$ is always greater than $\E[\MAPt]$, which is a good sanity-check because $\nabla \conj(\mu) = - \inv{2\mu}$ is a concave function.
+
+	The rate on the mixed term depends on the sign of $\mu^* - \mu_0 $
+	\begin{align}
+		\frac{n_0}{n+n_0} \langle  \mu^* - \mu_0 ; \natp_n - \E[\hat \natp_n] \rangle
+		\leq \begin{cases}
+			0 \ \text{ if } \ \mu^*\leq \mu_0, \\
+			\frac{n_0 - a}{(a+n)(a+n-2)} \ \text{ otherwise.}
+		\end{cases}
+	\end{align}
+\end{example}
+
+
 \section{Conjecture}
 
 We know that asymptotically, the convergence rate is dominated by $O(n^{-1})$ variance term. To this we may add a bias term in $O(n^{-2})$. 
@@ -572,6 +662,25 @@ Thus we may have a bias term which is infinite for $n_0=0$ (eg no prior, MLE), a
     \frac{d}{2n} +  \log \left (\inv{n_0} \right) \left(1+ \frac{n}{n_0} \right)^{-2} \bregman(\natp_*; \natp_0)
 \end{align}
 Besides this bias term should be visible from a simple mirror descent, with no noise or variance. Yet it is not trivial to get a $O(n^{-2})$ rate in this setting. See note by Frederik.
+
+\section{Stochastic Bregman Proximal Point}
+Remark that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
+\begin{align}
+    \hat \natp_{n+1} 
+    &= \argmin_\natp -\log p(x_{n}|\natp) + (n_0 + n) \bregman(\natp ; \hat \natp_n) \\
+    &= \argmin_\natp f(\natp; x_{n}) +  \inv{\gamma_{n}}\bregman(\natp ; \hat \natp_n) \; .
+\end{align}
+Hence the MAP estimate can also be seen as the result of a stochastic proximal Bregman point algorithm with step-size $\gamma_n = \inv{n_0 + n}$ at step $n$.
+
+This is similar to the online learning setup, and it may be possible to bound the regret, with approaches similar to Adagrad.
+
+The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
+Given the proof, the most straightforward such assumption (see paper notes) is 
+\begin{align}
+\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
+\end{align}
+which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
+
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
@@ -825,6 +934,8 @@ Note that this equivalence holds only if sufficient statistics are within $\dom 
 
 \citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
 
+\citet{ostrovskii2021finite}  shows a convergence rate for the MLE (or other $M$-estimators)   when  the log-likelihood is self-concordant. This convergence rate holds only after a given number of samples have been seen. This is because they use the fact that self-concordant losses are upper bounded by a quadratic in a neighborhood of the optimum. 
+
 \subsection{Alternative Research Tracks}
 \begin{itemize}
 	\item Weakly supervised : missing part of $x_i$ for each $i$.
@@ -925,25 +1036,6 @@ This property is an analog of the Pythagorean theorem for generalized projection
 	\end{align}
 	which concludes the proof.
 \end{proof}
-
-\section{Stochastic Bregman Proximal Point}
-Remark that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
-\begin{align}
-    \hat \natp_{n+1} 
-    &= \argmin_\natp -\log p(x_{n}|\natp) + (n_0 + n) \bregman(\natp ; \hat \natp_n) \\
-    &= \argmin_\natp f(\natp; x_{n}) +  \inv{\gamma_{n}}\bregman(\natp ; \hat \natp_n) \; .
-\end{align}
-Hence the MAP estimate can also be seen as the result of a stochastic proximal Bregman point algorithm with step-size $\gamma_n = \inv{n_0 + n}$ at step $n$.
-
-This is similar to the online learning setup, and it may be possible to bound the regret, with approaches similar to Adagrad.
-
-The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
-Given the proof, the most straightforward such assumption (see paper notes) is 
-\begin{align}
-\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
-\end{align}
-which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which gives more weight to the first iterates. It does not immediately apply to the last iterate.
-
 
 \section{Vivien's approach}
 \subsection{A big calculus in this specific setting}
