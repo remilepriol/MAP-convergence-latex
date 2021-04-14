@@ -271,6 +271,12 @@ In other words, this divergence measures the discrepancy between the ratio $\fra
 	\phi(z) := \half (z - 1 - \log(z)) \\
 	\bregman( \natp_n; \natp_* )   = \phi(\frac{ \natp_n}{\natp_*}) =  \phi(\frac{\mu_*}{ \mu_n})
 \end{align}
+as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bound thanks to the inequality
+\begin{align}
+	1 - \inv{z} \leq \log(z) 
+	\label{eq:log_bound}\\
+	\implies \phi(z) &\leq \half (z + \inv{z}) - 1 = \frac{(z-1)^2}{2 z}
+\end{align}
 as illustrated in Figure~\ref{fig:phi}.
 \end{example}
 
@@ -295,7 +301,7 @@ as illustrated in Figure~\ref{fig:phi}.
 
 
 \begin{example}
-	\paragraph{Exact computation}
+	\paragraph{MLE exact computation}
 	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \sum_i X_i^2 /n$. The ratio to the optimum  $\frac{\mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$ divided by $n$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
 	\begin{align}
 		\expect{\frac{\mu_*}{ \mu_n}  - 1} 
@@ -345,6 +351,83 @@ as illustrated in Figure~\ref{fig:phi}.
 	\end{align}
 	Unfortunately, formulas for the MAP seem to be much less nice. There is also a closed form for the multivariate generalization, thanks to the \href{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}{inverse Wishart distribution} and the \href{https://en.wikipedia.org/wiki/Wishart_distribution#Log-expectation}{expectation of the log-determinant of a Wishart}. Again the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension. We do not perform these calculations for now as we want to focus on the simplest possible examples.
 \end{example}
+
+\begin{example}
+	\paragraph{MAP upper bound.}
+	Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ but it does for $\expect{\frac{\mu^*}{\MAPm}} = \expect{\frac{\MAPt}{\natp^*}}$. 
+	To start, let us plug in the definition of $\MAPm$
+	\begin{align}
+		\E[\MAPt] &= -\frac{n+n_0}{2}\expect{\inv{n_0 \mu_0 + \sum_i X_i^2}}  \\
+		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
+		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{a + \chi^2(n)}}
+	\end{align}
+	where $\sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
+	\begin{align}
+			a=n_0 \frac{\mu_0}{\mu^*} \; .
+	\end{align}
+	This expectations is not simple to solve, but using wolfram, we get  the formula :
+	\begin{align}
+		\expect{\inv{a + \chi^2(n)}}  = \half e^{\frac{a}{2}} E_{\half[n]}(\half[a])
+		\label{eq:wolfram_input}
+	\end{align}
+	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
+	\begin{align}
+		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
+	\end{align}
+	Now our goal is to bound this function with simpler functions.
+	Fortunately, mathematicians have been working on these integrals for decades.
+	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8#E1}{verifies the bound}
+	\begin{align}
+		\half \log(1 + \frac{2}{x}) 
+		\leq e^x E_1(x) 
+		\leq \log(1+\inv{x}) \leq \inv{x} \; .
+	\end{align}
+	For larger $n$, we have \href{https://dlmf.nist.gov/8.19#E21}{the general bound}
+	\begin{align}
+		\inv{x+n}
+		\leq e^x E_k(x) 
+		\leq \inv{x + k - 1}
+	\end{align}
+	so that 
+	\begin{align}
+		\inv{a+n}
+		\leq \expect{\inv{a + \chi^2(n)}}
+		\leq \inv{a + n - 2}
+	\end{align}
+	so that
+	\begin{align}
+		\frac{n +n_0}{2 \mu^* (a + n)}	
+		&\leq - \E[\MAPt]
+		\leq \frac{n +n_0}{2 \mu^* (a + n - 2)}	\\
+		\iff \inv{2 \mu_n}
+		&\leq - \E[\MAPt]
+		\leq \inv{2 \mu_n - \frac{4 \mu^*}{n + n_0}}	\\
+		\iff \frac{\mu^*}{\mu_n}
+		&\leq \expect{\frac{\mu^*}{\MAPm}} 
+		\leq \frac{\mu^*}{\mu_n - \frac{4 \mu^*}{n + n_0}}  
+		\label{eq:theta_expectation_bound}
+	\end{align}
+	because $\frac{\mu^* (a + n)}{n +n_0} = \mu_n$.
+Now using the bound \eqref{eq:log_bound} on the logarithm, we get
+\begin{align}
+	2\expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \expect{\frac{\mu^*}{\MAPm}}  + \expect{\frac{\MAPm}{\mu^*}} - 1 \\
+	&\leq \frac{\mu^*}{\mu_n - \frac{4 \mu^*}{n + n_0}}   + \frac{\mu_n}{\mu^*} - 1 \\
+	&= \frac{n_0 + n}{a +n - 2} + \frac{a+n}{n_0 + n} - 2 \\
+	&= \frac{n_0 - a + 2}{a +n - 2} + \frac{a - n_0}{n_0 + n} \\
+	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)}
+\end{align}
+where we remind you that $a=n_0\frac{\mu_0}{\mu^*}$. This inequality highlights a clear variance-bias decomposition, to compare with the MLE.
+\end{example}
+
+	\begin{figure}[ht]
+    	\centering
+	    \includegraphics[width=.7\textwidth]{figs/wolfram.png}
+	    \caption{Output of Wolfram when queried for the integral \eqref{eq:wolfram_input}}
+    	\label{fig:wolfram}
+	\end{figure}
+
+
 
 \tableofcontents
 
@@ -456,65 +539,6 @@ Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat 
 	\label{fig:bias-variance}
 \end{figure}
 
-\begin{example}
-		We need a formula  for $\E[\MAPt]$ the expectation of the natural MAP estimate
-	\begin{align}
-		\E[\MAPt] &= -\frac{n+n_0}{2}\expect{\inv{n_0 \mu_0 + \sum_i X_i^2}}  \\
-		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
-		&= -\frac{n+n_0}{2 \mu^*}\expect{\inv{a + \chi^2(n)}}
-	\end{align}
-	where $\sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
-	\begin{align}
-			a=n_0 \frac{\mu_0}{\mu^*} \; .
-	\end{align}
-	This expectations is not simple to solve, but using wolfram, we get  the formula :
-	\begin{align}
-		\expect{\inv{a + \chi^2(n)}}  = \half e^{\frac{a}{2}} E_{\half[n]}(\half[a])
-	\end{align}
-	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
-	\begin{align}
-		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
-	\end{align}
-	Now our goal is to bound this function with simpler functions.
-	Fortunately, mathematicians have been working on these integrals for decades.
-	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8#E1}{verifies the bound}
-	\begin{align}
-		\half \log(1 + \frac{2}{x}) 
-		\leq e^x E_1(x) 
-		\leq \log(1+\inv{x}) \leq \inv{x} \; .
-	\end{align}
-	For larger $n$, we have \href{https://dlmf.nist.gov/8.19#E21}{the general bound}
-	\begin{align}
-		\inv{x+n}
-		\leq e^x E_k(x) 
-		\leq \inv{x + k - 1}
-	\end{align}
-	so that 
-	\begin{align}
-		\inv{a+n}
-		\leq \expect{\inv{a + \chi^2(n)}}
-		\leq \inv{a + n - 2}
-	\end{align}
-	so that
-	\begin{align}
-		\frac{n +n_0}{2 \mu^* (a + n)}	
-		&\leq - \E[\MAPt]
-		\leq \frac{n +n_0}{2 \mu^* (a + n - 2)}	\\
-		\iff \inv{2 \mu_n}
-		&\leq - \E[\MAPt]
-		\leq \inv{2 \mu_n - \frac{4 \mu^*}{n + n_0}}
-		\label{eq:theta_expectation_bound}
-	\end{align}
-	because $\frac{\mu^* (a + n)}{n +n_0} = \mu_n$. Remark how we almost bounded the deviation between $\E[\MAPt]$ and $\natp_n$.
-\end{example}
-
-	\begin{figure}[ht]
-    	\centering
-	    \includegraphics[width=.7\textwidth]{figs/wolfram.png}
-    	\label{fig:wolfram}
-	\end{figure}
-
-
 \subsection{Pure Bias Term}
 The pure bias term measures the divergence between the optimum and the expected MAP estimate $\bregmanconj(\mu^*; \mu_n)$.
 
@@ -526,12 +550,19 @@ Using the quadratic approximation of the Bregman divergence near $\mu^*$, we get
 \end{align}
 
 \begin{example}
+We can use the classical lower bound on the logarithm to upper bound the pure bias term 
 	\begin{align}
 		\bregmanconj(\mu^*; \mu_n)
 		 &= \frac{\mu^*}{\mu_n} -1  - \log \frac{\mu^*}{\mu_n}  \\
-		 & = \frac{n+n_0}{a + n} - 1 - \log \frac{n+n_0}{a +n} \\
-		 & = \frac{n_0 - a}{a + n} - \log \frac{n+n_0}{a +n} \\		 
+		 &\leq \frac{(\mu^*- \mu_n)^2}{2 \mu^* \mu_n} 
+		 = \half ( \frac{\mu^*}{\mu_n} + \frac{\mu_n}{\mu^*	}) - 1 \\		 
+		 & =  \half (\frac{n_0 + n}{a + n} -1 + \frac{a +n}{n_0+n} -1) \\
+		 & =  \half (\frac{n_0 - a}{a+n} + \frac{a - n_0}{n_0 + n}) \\
+		 & = \half[n_0-a] (\inv{a+n} - \inv{n_0+n}) \\
+		 &= \half[n_0-a] \frac{n_0 + n - a- n}{(a+n)(n_0+n)} \\
+		 &= \frac{(n_0-a)^2}{2(a+n)(n_0+n)}
 	\end{align}
+	which is a $O(n^{-2})$ term, worth $0$ when $n_0=a$, eg $\mu_0=\mu^*$, exactly as we expected.
 \end{example}
 
 \subsection{Pure Variance Term}
@@ -651,6 +682,16 @@ Consequently the bias-variance term is
 	\end{align}
 \end{example}
 
+
+\subsection{Putting it all together}
+\begin{example}
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	\leq \bias{\frac{(n_0-a)^2}{2(a+n)(n_0+n)}}
+	+ \frac{\max(n_0 - a , 0)}{(a+n)(a+n-2)}
+	+ \variance{\frac{1}{a+n-2}}
+\end{align}
+\end{example}
 
 \section{Conjecture}
 
