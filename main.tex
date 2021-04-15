@@ -706,17 +706,6 @@ Consequently the bias-variance term is
 \end{align}
 \end{example}
 
-\section{Conjecture}
-
-We know that asymptotically, the convergence rate is dominated by $O(n^{-1})$ variance term. To this we may add a bias term in $O(n^{-2})$. 
-We also know from the $\cN(0,\mu_*)$ example that the MLE can have infinite loss when there is not enough samples. This is not the case of the MAP which always has a bounded loss, since it can never reach the boundary of the marginal polytope (the domain of $\mu$). 
-I really want to get a bound for the MAP of a Gaussian variance, to get inspiration from its shape. 
-Thus we may have a bias term which is infinite for $n_0=0$ (eg no prior, MLE), and that decreases as $n_0$ increases, except that the convergence speed gets worse and worse for larger $n_0$, eg
-\begin{align}
-    \frac{d}{2n} +  \log \left (\inv{n_0} \right) \left(1+ \frac{n}{n_0} \right)^{-2} \bregman(\natp_*; \natp_0)
-\end{align}
-Besides this bias term should be visible from a simple mirror descent, with no noise or variance. Yet it is not trivial to get a $O(n^{-2})$ rate in this setting. See note by Frederik.
-
 \section{Stochastic Bregman Proximal Point}
 Remark that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
 \begin{align}
