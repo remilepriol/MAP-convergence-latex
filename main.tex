@@ -415,9 +415,22 @@ Now using the bound \eqref{eq:log_bound} on the logarithm, we get
 	&\leq \frac{\mu^*}{\mu_n - \frac{4 \mu^*}{n + n_0}}   + \frac{\mu_n}{\mu^*} - 1 \\
 	&= \frac{n_0 + n}{a +n - 2} + \frac{a+n}{n_0 + n} - 2 \\
 	&= \frac{n_0 - a + 2}{a +n - 2} + \frac{a - n_0}{n_0 + n} \\
-	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)}
+	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)} \\
+	\implies \expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a)^2}{2(a+n-2)(n_0 + n)} 
 \end{align}
-where we remind you that $a=n_0\frac{\mu_0}{\mu^*}$. This inequality highlights a clear variance-bias decomposition, to compare with the MLE.
+where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
+This inequality highlights a clear variance-bias decomposition, to compare with the MLE. Unfortunately it is not tight asymptotically as the inequality \eqref{eq:log_bound} is far from tight. We are basically losing a factor 2 compared to $1/2n$. 
+
+\paragraph{MLE Loose Upper Bound.}
+If we apply \eqref{eq:log_bound} to the MLE instead, we get the upper bound
+\begin{align}
+	\expect{\bregmanconj(\mu^*; \MAPm^\text{MLE})}
+	&\leq  \half \left( \expect{\frac{n}{\chi^2(n)}} + \expect{\frac{\chi^2(n)}{n}} - 2 \right ) \\
+	&= \half \left( \frac{n}{n-2} + 1 - 2 \right)  
+	= \frac{1}{n-2}
+\end{align}
+which is exactly $1/2n$ larger than \eqref{eq:tight_bounds} which we got thanks to an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
 \end{example}
 
 	\begin{figure}[ht]
