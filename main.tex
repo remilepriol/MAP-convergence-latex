@@ -706,6 +706,52 @@ Consequently the bias-variance term is
 \end{align}
 \end{example}
 
+\section{Optimization Perspective}
+\paragraph{Problem.}
+Our goal is to solve the following problem
+\begin{align}
+	\min_\natp f(\natp) := -\langle \mu^* ; \natp \rangle + \logpart(\natp)
+\end{align}
+where $\logpart$ is a convex function and we only have access to stochastic oracles $X \sim p(X | \natp^*)$, meaning we can compute stochastic values and gradients 
+\begin{align}
+	f(\natp ; X) &= -\langle T(X) ; \natp \rangle + \logpart(\natp) \\
+	\nabla f(\natp ; X) &= A(\natp) - T(X)
+\end{align}
+such that $T(X) = \mu^*$.
+
+\paragraph{Algorithms.}
+We observe $n$ data points $X_i$. 
+We are studying two algorithms to solve this problem : the MLE and the MAP
+\begin{align}
+	\MAPm^\text{MLE} &= \inv{n}\sum_{i=1}^n T(X_i) 
+	&\MAPt^\text{MLE} &= \nabla\logpart^{-1}(\MAPm^\text{MLE}) \\
+	\MAPm^\text{MAP} &= \frac{n_0\mu_0 + \smallsum_{i=1}^n T(X_i)}{n_0 + n}
+	&\MAPt^\text{MAP} &= \nabla\logpart^{-1}(\MAPm^\text{MAP})	
+\end{align}
+
+\paragraph{Interpretation.}
+As we will see in the two upcoming sections, MAP can be seen as an application of more generic iterative algorithms. 
+\begin{itemize}
+	\item stochastic bregman proximal point with divergence $\bregman$, initialization $\natp_0$, and learning rate $\inv{n_0+n}$,
+	\item stochastic mirror descent with divergence $\bregman$, initialization $\natp_0$, and learning rate  $\inv{n_0+n +1}$.
+\end{itemize}
+In both cases, $f(\natp)$ is convex and 1-smooth / 1-strongly convex relative to the potential $\logpart$. Be cautious that the learning rate is decreasing.
+
+
+\paragraph{Other assumptions.}
+An assumption pointed out by Nicolas Loizou is 
+\begin{align}
+	f(\natp^*) - \E_{X\sim\natp^*}[\min_\natp f(\natp ; X)] < \infty
+\end{align}
+for which a sufficient condition is 
+\begin{align}
+\forall X, \min_\natp f(\natp ; X) >	 - \infty \iff \max_\natp p(X|\natp) < \infty
+\end{align}
+which holds in a lot of settings but not all. For instance, a gaussian $\cN(\mu,\sigma^2)$ can overfit on a single data point and give it infinite density -- eg converge to a Dirac. However we can overcome this issue by grouping data points : a gaussian can not overfit on two points. Aggregating points is simple : average sufficient statistics, exactly like in MLE or MAP $T'(X_1,X_2) = \frac{T(X_1) + T(X_2)}{2}$. 
+So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$. What kind of results can it give us my dear Nicolas Loizou ? ;)
+
+
+
 \section{Stochastic Bregman Proximal Point}
 Remark that the MAP estimate minimizes the sum of a stochastic loss $ -\log p(X|\natp)$ and a deterministic divergence to an initial point $n_0 \bregman(\natp ; \natp_0)$. This is a stochastic Bregman proximal step with step-size $\inv{n_0}$. This can also be seen at each step since
 \begin{align}
