@@ -318,7 +318,7 @@ To start, let us recall that the MAP of $\cN(0,\mu_*)$ is $\hat \mu_n = \frac{n_
 Its expectation is simply $\mu_n= \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$.
 We now present a lemma on its expected inverse.
 \begin{lemma}[Expected MAP natural parameter]
-	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
+	For any $n\geq 2$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
 	\begin{align}
 		\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
@@ -326,103 +326,18 @@ We now present a lemma on its expected inverse.
 		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n+n_0}} \; .
 	\end{align}
 \end{lemma}
-Using this lemma, along with~\eqref{eq:log_bound}, we get the following result.
+Not that the lower bound is a simple consequence of the convexity of the inverse function. Using this lemma, along with~\eqref{eq:log_bound}, we get the following result.
 \begin{theorem}[MAP Upper Bound]
- The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is 
+ Introducing $a=n_0 \frac{\mu_0}{\mu^*}$, the expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is 
 \begin{equation}
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
 	\leq \begin{cases}
 		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
-		\frac{1+n_0}{4} e^{\half[a]} \sqrt{\frac{2 \pi}{a}} \mathrm{erfc}(\sqrt{\half[a]})  - \half  + \frac{a - n_0}{2(1+n_0)} \ \text{if}\ n=1,\\
-		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} if n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
+		\bregmanconj( \mu_*; \mu_0) + \inv{a} \ \text{if}\ n=1,\\
+		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \ \text{if}\  n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
 	\end{cases}
 \end{equation}
 \end{theorem}
-
-\begin{proof}
-	Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ but it does for $\expect{\frac{\mu^*}{\MAPm}} = \expect{\frac{\MAPt}{\natp^*}}$. 
-	To start, let us plug in the definition of $\MAPm$
-	\begin{align}
-		\expect{\frac{\mu^*}{\MAPm}} 
-		= \expect{\frac{\MAPt}{\natp^*}} 
-		&= expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  \\
-		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
-		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
-	\end{align}
-	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
-	\begin{align}
-			a=n_0 \frac{\mu_0}{\mu^*} \; .
-	\end{align}
-	This expectations is not simple to solve, but using the trick
-	\begin{align}
-		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} 
-		\ \implies \ \inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt
-		\\
-		\implies 
-		&\inv{a+x} = \half e^{\frac{a+x}{2}} \int_1^\infty e^{- \frac{(a+x)t}{2}}dt \; ,
-	\end{align} 
-	we get  the formula :
-	\begin{align}
-		(n_0 +n) \expect{\inv{a + \chi^2(n)}}  = \half[n_0+n] e^{\frac{a}{2}} E_{\half[n]}(\half[a])
-		\label{eq:wolfram_input}
-	\end{align}
-	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
-	\begin{align}
-		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
-	\end{align}
-	Now our goal is to bound this function with simpler functions.
-	Fortunately, mathematicians have been working on these integrals for decades.
-	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8\#E1}{verifies the bound}
-	\begin{align}
-		\half \log(1 + \frac{2}{x}) 
-		\leq e^x E_1(x) 
-		\leq \log(1+\inv{x}) \leq \inv{x} \; .
-	\end{align}
-	or 
-	\begin{align}
-		E_{\half[1]}(\half[a]) = \sqrt{\frac{a}{2\pi}}
-	\end{align}
-	For larger $n$, we have \href{https://dlmf.nist.gov/8.19\#E21}{the general bound}
-	\begin{align}
-		\inv{x+k}
-		\leq e^x E_k(x) 
-		\leq \inv{x + k - 1}
-	\end{align}
-	so that 
-	\begin{align}
-		\inv{a+n}
-		\leq \expect{\inv{a + \chi^2(n)}}
-		\leq \inv{a + n - 2}
-	\end{align}
-	so that
-	\begin{align}
-		\frac{n +n_0}{2 \mu^* (a + n)}	
-		&\leq - \E[\MAPt]
-		\leq \frac{n +n_0}{2 \mu^* (a + n - 2)}	\\
-		\iff \inv{2 \mu_n}
-		&\leq - \E[\MAPt]
-		\leq \inv{2 \mu_n - \frac{4 \mu^*}{n + n_0}}	\\
-		\iff \frac{\mu^*}{\mu_n}
-		&\leq \expect{\frac{\mu^*}{\MAPm}} 
-		\leq \frac{\mu^*}{\mu_n - \frac{2 \mu^*}{n + n_0}}  
-		\label{eq:theta_expectation_bound}
-	\end{align}
-	because $\frac{\mu^* (a + n)}{n +n_0} = \mu_n$.
-Now using the bound \eqref{eq:log_bound} on the logarithm, we get
-\begin{align}
-	2\expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \expect{\frac{\mu^*}{\MAPm}}  + \expect{\frac{\MAPm}{\mu^*}} - 1 \\
-	&\leq \frac{\mu^*}{\mu_n - \frac{2 \mu^*}{n + n_0}}   + \frac{\mu_n}{\mu^*} - 1 \\
-	&= \frac{n_0 + n}{a +n - 2} + \frac{a+n}{n_0 + n} - 2 \\
-	&= \frac{n_0 - a + 2}{a +n - 2} + \frac{a - n_0}{n_0 + n} \\
-	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)} \\
-	\implies \expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a)^2}{2(a+n-2)(n_0 + n)} \\
-	&\leq \frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} 
-\end{align}
-where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
-This inequality highlights a clear variance-bias decomposition, to compare with the MLE. Unfortunately it is not tight asymptotically as the inequality \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$. 
-\end{proof}
 
 \end{example}
 
@@ -430,12 +345,11 @@ This inequality highlights a clear variance-bias decomposition, to compare with 
 \subsection{MLE Tight Upper Bound}
 	\begin{theorem}[MLE tight upper bound]
 	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \inv{n} \sum_i X_i^2 $.
-	Its expected suboptimality is infinite when $n\leq 2$ and 
+	Its expected suboptimality is infinite when $n\leq 2$ and otherwise
 	\begin{align}
 		 \expect{\bregmanconj( \mu_*; \mu_n) }
-			\leq \inv{2n} +\frac{2}{n(n-2)}
+			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
 	\end{align}
-	otherwise. Note that this upper bound is asymptotically tight.
 	\end{theorem}
 	
 	\begin{proof}
@@ -481,7 +395,6 @@ This inequality highlights a clear variance-bias decomposition, to compare with 
 	\end{align}
 	so we get a $O(n^{-2})$ lower bound and a $O(n^{-1}) + O(n^{-2})$ upper bound.
 	\end{proof}
-	
 	Using the \href{https://en.wikipedia.org/wiki/Digamma_function#Recurrence_formula_and_characterization}{Stirling series}, we can also get an asymptotic approximation
 	\begin{align}
 		\expect{\bregmanconj( \mu_*; \mu_n) }
@@ -499,9 +412,119 @@ If we apply \eqref{eq:log_bound} to the MLE, we get the upper bound
 \end{align}
 which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. This highlights the factor $2$ difference between the log-bound and an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
 
+\subsection{Expected MAP Natural Parameter}
+\begin{lemma}[Expected MAP natural parameter]
+	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
+	\begin{align}
+		\frac{\mu^*}{\mu_n}
+		\leq \expect{\frac{\mu^*}{\MAPm}} 
+		= \expect{\frac{\MAPt}{\natp^*}} 
+		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n+n_0}} \; .
+	\end{align}
+\end{lemma}
 
+\begin{proof}
+	To start, let us plug in the definition of $\MAPm$
+	\begin{align}
+		\expect{\frac{\mu^*}{\MAPm}} 
+		= \expect{\frac{\MAPt}{\natp^*}} 
+		&= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  \\
+		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
+		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
+	\end{align}
+	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
+	\begin{align}
+			a=n_0 \frac{\mu_0}{\mu^*} \; .
+	\end{align}
+	We reformulate this expectation with the trick
+	\begin{align}
+		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
+		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
+		\implies &\inv{a+x} = \half e^{\frac{a+x}{2}} \int_1^\infty e^{- \frac{(a+x)t}{2}}dt \; ,
+	\end{align} 
+	to get two integrals instead of one
+	\begin{align}
+		2^{\half[n]}\Gamma(\half[n]) \expect{\inv{a + \chi^2(n)}}  
+		&= \int_0^\infty \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{a+x} dx \\
+		&= \int_0^\infty dx x^{\frac{n}{2}-1}e^{-\half[x]} \half e^{\half[a+x]} \int_1^\infty  dt  e^{-\half[(a+x)t]}  \\
+		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
+	\end{align}
+	where we used Fubini to switch integrals, without further justification.
+	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes \TODO{finish}.
+	we get  the formula :
+	\begin{align}
+		(n_0 +n) \expect{\inv{a + \chi^2(n)}}  = \half[n_0+n] e^{\frac{a}{2}} E_{\half[n]}(\half[a])
+		\label{eq:wolfram_input}
+	\end{align}
+	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
+	\begin{align}
+		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
+	\end{align}
+	Now our goal is to bound this function with simpler functions.
+	Fortunately, mathematicians have been working on these integrals for decades.
+	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8\#E1}{verifies the bound}
+	\begin{align}
+		\half \log(1 + \frac{2}{x}) 
+		\leq e^x E_1(x) 
+		\leq \log(1+\inv{x}) \leq \inv{x} \; .
+	\end{align}
+	When $n=1$, the integral can be written with the complementary error function
+	\begin{align}
+		E_{\half[1]}(\half[a]) = \sqrt{\frac{2\pi}{a}} \mathrm{erfc}(\sqrt{\half[a]}) \; .
+	\end{align}
+	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19\#E21}{the general bound}
+	\begin{align}
+		\inv{x+k}
+		\leq e^x E_k(x) 
+		\leq \inv{x + k - 1}
+	\end{align}
+	so that 
+	\begin{align}
+		\inv{a+n}
+		&\leq \expect{\inv{a + \chi^2(n)}}
+		\leq \inv{a + n - 2} \\
+		\iff \frac{n +n_0}{a + n}	
+		&\leq  \expect{\frac{\mu^*}{\MAPm}} 
+		\leq \frac{n +n_0}{a + n - 2}	\\
+		\iff \frac{\mu^*}{\mu_n}
+		&\leq \expect{\frac{\mu^*}{\MAPm}} 
+		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n + n_0}}  
+		\label{eq:theta_expectation_bound}
+	\end{align}
+	where we used $\frac{a + n}{n +n_0} = \mu_n$.
+\end{proof}
 
+\subsection{MAP Upper Bound}
+\begin{theorem}[MAP Upper Bound]
+ The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is 
+\begin{equation}
+	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
+	\leq \begin{cases}
+		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
+		\bregmanconj( \mu_*; \mu_0) +\inv{a} \ \text{if}\ n=1,\\
+		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} if n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
+	\end{cases}
+\end{equation}
+\end{theorem}
 
+$\frac{1+n_0}{4} e^{\half[a]} \sqrt{\frac{2 \pi}{a}} \mathrm{erfc}(\sqrt{\half[a]})  - \half  + \frac{a - n_0}{2(1+n_0)} $
+
+\begin{proof}
+		Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ so we focus solely on the simpler upper bound given Now using the bound \eqref{eq:log_bound} on the logarithm, we get
+\begin{align}
+	2\expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \expect{\frac{\mu^*}{\MAPm}}  + \expect{\frac{\MAPm}{\mu^*}} - 1 \\
+	&\leq \frac{\mu^*}{\mu_n - \frac{2 \mu^*}{n + n_0}}   + \frac{\mu_n}{\mu^*} - 1 \\
+	&= \frac{n_0 + n}{a +n - 2} + \frac{a+n}{n_0 + n} - 2 \\
+	&= \frac{n_0 - a + 2}{a +n - 2} + \frac{a - n_0}{n_0 + n} \\
+	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)} \\
+	\implies \expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a)^2}{2(a+n-2)(n_0 + n)} \\
+	&\leq \frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} 
+\end{align}
+where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
+This inequality highlights a clear variance-bias decomposition, to compare with the MLE. Unfortunately it is not tight asymptotically as the inequality \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$. by~\eqref{eq:log_bound}.
+\end{proof}
 
 \tableofcontents
 
