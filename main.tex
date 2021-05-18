@@ -36,20 +36,26 @@
 \newcommand{\violet}[1]{\textcolor{violet}{#1}}
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
-\definecolor{light-gray}{gray}{0.9}
-\usepackage[framemethod=TikZ]{mdframed} % frames with colored background
-\newenvironment{example}{
-	\begin{mdframed}[backgroundcolor=light-gray, roundcorner=5pt]
-}{		
-	\end{mdframed}
-}
+% frames with colored background
+\definecolor{light-gray}{gray}{0.85}
 \definecolor{myblue}{RGB}{199, 235, 255}
-\newenvironment{important}{
-	\begin{mdframed}[backgroundcolor=myblue, roundcorner=5pt]
-}{		
-	\end{mdframed}
-}
+\usepackage[framemethod=TikZ]{mdframed} 
+\usetikzlibrary{shadows}
 
+\newmdenv[% box with grey background
+    backgroundcolor=gray!15,
+    linewidth=0pt,
+    roundcorner=5pt,
+    shadow=true,
+	shadowsize=4pt
+]{example}
+\newmdenv[
+	backgroundcolor=myblue,
+	roundcorner=5pt, 
+	linewidth=0pt, 
+	shadow=true,
+	shadowsize=4pt
+]{important}
 
 % my packages
 \usepackage{math_commands}
@@ -92,9 +98,9 @@ We want the simplest one.
 We hope  to get a new result by combining tools from statistics and optimization. 
 \paragraph{Exponential Family.}
 The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model 
-\begin{align}
-    p(X|\natp) &= \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
-\end{align}
+\begin{equation}
+	 p(X|\natp) = \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
+\end{equation}
 where $\logpart$ is the log-partition function (aka normalization factor) 
 \begin{align}
     \logpart(\natp) = \log \int e^{\natp^\top T(x)} dx \; .
@@ -433,9 +439,11 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. T
 		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
 	\end{align}
 	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
+\begin{important}
 	\begin{align}
 			a=n_0 \frac{\mu_0}{\mu^*} \; .
 	\end{align}
+\end{important}
 	We reformulate this expectation with the trick
 	\begin{align}
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
@@ -446,15 +454,22 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. T
 	\begin{align}
 		2^{\half[n]}\Gamma(\half[n]) \expect{\inv{a + \chi^2(n)}}  
 		&= \int_0^\infty \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{a+x} dx \\
-		&= \int_0^\infty dx x^{\frac{n}{2}-1}e^{-\half[x]} \half e^{\half[a+x]} \int_1^\infty  dt  e^{-\half[(a+x)t]}  \\
+		&= \int_0^\infty dx\  x^{\frac{n}{2}-1}e^{-\half[x]} \half e^{\half[a+x]} \int_1^\infty  dt\  e^{-\half[(a+x)t]}  \\
 		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
 	\end{align}
 	where we used Fubini to switch integrals, without further justification.
-	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes \TODO{finish}.
-	we get  the formula :
+	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes
 	\begin{align}
-		(n_0 +n) \expect{\inv{a + \chi^2(n)}}  = \half[n_0+n] e^{\frac{a}{2}} E_{\half[n]}(\half[a])
-		\label{eq:wolfram_input}
+		\expect{\inv{a + \chi^2(n)}}  
+		&= \frac{e^{\half[a]} }{2^{\half[n]+1}\Gamma(\half[n]) }\int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty 2\frac{dy}{t} \  (2\frac{y}{t})^{\frac{n}{2}-1} e^{-y} \\
+		&= \frac{e^{\half[a]} }{2\Gamma(\half[n]) } 
+		\underbrace{\int_1^\infty  \frac{e^{-\half[a t]}}{t^{\frac{n}{2}}}  dt}_{E_{\half[n]}(\half[a])  } \ 
+		\underbrace{\int_0^\infty  y^{\frac{n}{2}-1} e^{-y} dy}_{\Gamma(\half[n])}
+	\end{align}
+	so we finally get  the formula valid for all $n\geq 1$
+	\begin{align}
+		\boxed{\expect{\inv{a + \chi^2(n)}}  = \half e^{\frac{a}{2}} E_{\half[n]}(\half[a])}
+		\label{eq:hard_expectation}
 	\end{align}
 	where the \href{https://dlmf.nist.gov/8.19}{generalized exponential integral function} is defined as 
 	\begin{align}
@@ -462,15 +477,11 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. T
 	\end{align}
 	Now our goal is to bound this function with simpler functions.
 	Fortunately, mathematicians have been working on these integrals for decades.
-	When $n=2$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8\#E1}{verifies the bound}
+	When $n=2$, eg $k=1$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8\#E1}{verifies the bound}
 	\begin{align}
 		\half \log(1 + \frac{2}{x}) 
 		\leq e^x E_1(x) 
 		\leq \log(1+\inv{x}) \leq \inv{x} \; .
-	\end{align}
-	When $n=1$, the integral can be written with the complementary error function
-	\begin{align}
-		E_{\half[1]}(\half[a]) = \sqrt{\frac{2\pi}{a}} \mathrm{erfc}(\sqrt{\half[a]}) \; .
 	\end{align}
 	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19\#E21}{the general bound}
 	\begin{align}
@@ -491,8 +502,25 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. T
 		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n + n_0}}  
 		\label{eq:theta_expectation_bound}
 	\end{align}
-	where we used $\frac{a + n}{n +n_0} = \mu_n$.
+	where we used $\frac{a + n}{n +n_0} = \frac{\mu_n}{\mu^*}$.
 \end{proof}
+
+We are left with a special case when  $n=1$, eg $k=\half$. Then the integral can be written with the complementary error function, or \href{https://dlmf.nist.gov/7.8#E1}{Mill's ratio} $M(x) = e^{x^2} \int_x^\infty e^{-t^2} dt$. Indeed, taking $t= x \sqrt{u}$
+\begin{align}
+	\int_x^\infty e^{-t^2} dt = x \int_1^\infty \frac{e^{-x^2 u}}{\sqrt{u}} du = x E_{\half}(x^2) \\
+	\implies M(x) = x e^{x^2} E_{\half}(x^2)
+\end{align}
+so that 
+\begin{align}
+		\half e^{\half[a]} E_{\half[1]}(\half[a]) 
+		= \half \sqrt{\frac{2}{a}} M(\sqrt{\half[a]})
+		= \inv{a} \sqrt{\half[a]} M(\sqrt{\half[a]}) \; .
+\end{align}
+and \href{https://dlmf.nist.gov/7.8#E5}{we known that} $x M(x) < \half$ so we get 
+\begin{align}
+	\expect{\inv{a + X^2}} < \inv{2 a}
+\end{align}
+FUCK That's  trivial as  it's true for 1/a.
 
 \subsection{MAP Upper Bound}
 \begin{theorem}[MAP Upper Bound]
