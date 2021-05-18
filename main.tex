@@ -715,7 +715,7 @@ Our goal is to solve the following problem
 where $\logpart$ is a convex function and we only have access to stochastic oracles $X \sim p(X | \natp^*)$, meaning we can compute stochastic values and gradients 
 \begin{align}
 	f(\natp ; X) &= -\langle T(X) ; \natp \rangle + \logpart(\natp) \\
-	\nabla f(\natp ; X) &= A(\natp) - T(X)
+	\nabla f(\natp ; X) &= \nabla A(\natp) - T(X)
 \end{align}
 such that $T(X) = \mu^*$.
 
