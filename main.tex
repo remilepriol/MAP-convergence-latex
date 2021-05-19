@@ -313,7 +313,7 @@ as illustrated in Figure~\ref{fig:phi}.
 	\begin{align}
 		 \expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE}) }
 			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
-			\label{eq:tight_bounds}
+			\label{eq:MLE_rate}
 	\end{align}
 \end{theorem}
 Note that this upper bound is asymptotically tight.
@@ -332,7 +332,7 @@ We now present a lemma on its expected inverse.
 		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n+n_0}} \; .
 	\end{align}
 \end{lemma}
-Not that the lower bound is a simple consequence of the convexity of the inverse function. Using this lemma, along with~\eqref{eq:log_bound}, we get the following result.
+Not that the lower bound is a simple consequence of the convexity of the inverse function. Using this lemma, along withthe los upper bound on the logarithm~\eqref{eq:log_bound}, we get a convergence rate for the MAP. We relate this rate convergence rate with the rate of MLE in Figure~\ref{fig:MAP_rate}.
 \begin{theorem}[MAP Upper Bound]
  Introducing $a=n_0 \frac{\mu_0}{\mu^*}$, the expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is 
 \begin{equation}
@@ -342,10 +342,32 @@ Not that the lower bound is a simple consequence of the convexity of the inverse
 		\bregmanconj( \mu_*; \mu_0) + \inv{a} \ \text{if}\ n=1,\\
 		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \ \text{if}\  n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
 	\end{cases}
+	\label{eq:MAP_rate}
 \end{equation}
 \end{theorem}
+Using the same bound on the log~\eqref{eq:log_bound}, we can also get a loose bound on the MLE, which is useful for comparison purposes.
+\begin{equation}
+	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE}) }
+	\leq \inv{n-2} \; .
+	\label{eq:MLE_loose_rate}
+\end{equation}
 
 \end{example}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.7\textwidth]{figs/MAP_rates/MAP_rate_n0=5.pdf}
+	\caption{
+	Convergence rate of MAP~\eqref{eq:MAP_rate} 
+	\label{fig:MAP_rate} against the ratio between initialization and optimum $ \frac{\mu_0}{\mu^*}$. 
+	We also report the tight convergence rate of MLE~\eqref{eq:MLE_rate} (dash-dotted horizontal lines), and the loose upper bound~\eqref{eq:MLE_loose_rate} (horizontal lines). 
+	We report these curves for various values of $n$, and $n_0=5$. 
+	We observe that the rate of MAP is significantly better (lower) than the rate of MLE, only when we guessed $\mu_0$ right, within an order of magnitude from $\mu^*$, and for a small number of sample ($n<10$). 
+	This observation hints towards the optimality of MLE for large $n$. 
+	It makes me feel very interested in convergence rates of MAP in the overparametrized regime $n<\dim(T(X))$.
+	}
+\end{figure}
+
 
 \section{Proofs for Gaussian Variance}
 \subsection{MLE Tight Upper Bound}
@@ -416,7 +438,7 @@ If we apply \eqref{eq:log_bound} to the MLE, we get the upper bound
 	&= \half \left( \frac{n}{n-2} + 1 - 2 \right)  
 	= \frac{1}{n-2}
 \end{align}
-which is exactly  an additive term $1/2n$ larger than \eqref{eq:tight_bounds}. This highlights the factor $2$ difference between the log-bound and an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
+which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This highlights the factor $2$ difference between the log-bound and an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
 
 \subsection{Expected MAP Natural Parameter}
 \begin{lemma}[Expected MAP natural parameter]
@@ -631,6 +653,7 @@ Indeed this is because it is hidden within the Bregman divergence loss.
 Anyway that's all good for asymptotic results, but we are interested in a finite sample analysis. How do we get this ?
 
 \section{Bias-Variance Decomposition}
+\paragraph{Covariance.}
 Using Jensen inequality and inserting appropriate quantities, we obtain the following analog of the bias-variance decomposition:
 \newcommand{\bias}[1]{\textcolor{Red}{\underbrace{\textcolor{black}{#1}}_{\text{bias}}}}
 \newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
@@ -639,15 +662,13 @@ Using Jensen inequality and inserting appropriate quantities, we obtain the foll
 	= \conj(\mu^* ) 
 	- \underbrace{\expect{\conj(\hat \mu_n)}}_{\leq \conj(\mu_n) \text{ (Jensen)} } 
 	\pm \langle \underbrace{\nabla \conj( \mu_n)}_{=:\natp_n} ; \mu^* - \mu_n \rangle
-	+ \E[\langle \hat \natp_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] \\
+	+ \E[\langle \hat \natp_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] \nonumber \\
 	& \leq \conj(\mu^* ) 
 	- \conj(\mu_n) 
 	- \langle  \nabla \conj( \mu_n) ; \mu^* - \mu_n \rangle
 	+ \langle \E[\hat \natp_n] - \natp_n ;  \mu_n - \mu^* \rangle
 	+ \E[\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle ]
-	\nonumber\\
-%	& \quad \quad \quad 
-%	- \inv{n+n_0} \smallsum_i \E[\langle \hat \natp_n ; \mu^* - T(X_i)  \rangle]\\
+	\nonumber \\
 	& \leq \bias{\bregmanconj(\mu^*; \mu_n)}
 	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_0 - \mu_*} ; \variance{\E[\hat \natp_n] - \natp_n} \rangle 
 	+ \variance{\Cov(\hat \natp_n ; \hat \mu_n ) }
@@ -662,6 +683,57 @@ Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat 
 	\includegraphics[width=.8\textwidth]{figs/bias-variance.png}
 	\caption{A schematic illustration of the different characters featured in the bias-variance decomposition.}
 	\label{fig:bias-variance}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{figs/numerical_schema.pdf}
+	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
+	\label{fig:bias-variance-numerical}
+\end{figure}
+
+\paragraph{No Jensen.}
+In fact this previous decomposition is highly suboptimal. 
+We do not need to use Jensen inequality.
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	&= \conj(\mu^* ) 
+	\pm \conj(\mu_n)
+	-  \expect{\conj(\hat \mu_n)}
+	+ \E[\langle \hat \natp_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] \\
+	&= \conj(\mu^* ) 
+	- \conj(\mu_n)  + \E[\bregmanconj(\mu_n, \MAPm)]
+	+ \langle \E[\hat \natp_n] \pm \nabla \conj(\mu_n) ;  \mu_n - \mu^* \rangle
+	\nonumber\\
+	& = \bias{\bregmanconj(\mu^*; \mu_n)}
+	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_0 - \mu_*} ; \variance{\E[\hat \natp_n] - \natp_n} \rangle 
+	+ \variance{\E[\bregmanconj(\mu_n, \MAPm)]}
+\end{align}
+With Jensen, we were losing a Bregman term, as per the 3 point property, the covariance is equal to the symmetrized Bregman.
+\begin{align}
+	\Cov(\hat \natp_n ; \hat \mu_n )  
+	=\expect{\bregmanconj(\MAPm ; \mu_n)
+	+ \bregmanconj(\mu_n ; \MAPm)}
+\end{align}
+
+\paragraph{No Mixed Term.}
+In fact, it is possible to have no mixed term using the central point $\tilde \mu_n = \nabla \logpart(\E[\MAPt])$ instead of $\mu_n = \E[\MAPm]$,  exactly as described by \citet[Theorem 0.1]{pfau2013generalized}.
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	= \bias{\bregmanconj(\mu^* ; \tilde \mu_n)}
+	+ \variance{\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
+\end{align}
+Now the big question, is : what kind of results do I get with such quantities ? In general, it seems that $\tilde \mu_n$ is a very central and interesting quantity to consider.  We show these decompositions in Figure~\ref{fig:experimental_decomposition}.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/biasvariance/ratio=0.8_n0=10}.pdf}
+	\caption{
+	\textbf{Left:} training curves and analytic upper bound. 
+	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
+	}
+	\label{fig:experimental_decomposition}
 \end{figure}
 
 \subsection{Pure Bias Term}
@@ -1199,7 +1271,7 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 		\leq 
 		\inv{n} + \frac{4}{n(n-2)}
 	\end{align}
-	which is about twice the MLE bounds~\eqref{eq:tight_bounds}, exactly like as we observed for the gaussian mean.
+	which is about twice the MLE bounds~\eqref{eq:MLE_rate}, exactly like as we observed for the gaussian mean.
 \end{example}
 
 
