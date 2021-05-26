@@ -687,7 +687,7 @@ Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat 
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=\textwidth]{figs/numerical_schema.pdf}
+	\includegraphics[width=\textwidth]{figs/numerical_schema_n=3.pdf}
 	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
 	\label{fig:bias-variance-numerical}
 \end{figure}
@@ -720,21 +720,36 @@ With Jensen, we were losing a Bregman term, as per the 3 point property, the cov
 In fact, it is possible to have no mixed term using the central point $\tilde \mu_n = \nabla \logpart(\E[\MAPt])$ instead of $\mu_n = \E[\MAPm]$,  exactly as described by \citet[Theorem 0.1]{pfau2013generalized}.
 \begin{align}
 	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
-	= \bias{\bregmanconj(\mu^* ; \tilde \mu_n)}
-	+ \variance{\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
+	&= \bias{\bregmanconj(\mu^* ; \tilde \mu_n)}
+	+ \variance{\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}} \\
+	\expect{\bregman(\MAPt; \natp^*)} 
+	&= \bias{\bregman(\E[\MAPt]; \natp^*)}
+	+ \variance{\expect{\bregman(\MAPt; \E[\MAPt])}} 
 \end{align}
-Now the big question, is : what kind of results do I get with such quantities ? In general, it seems that $\tilde \mu_n$ is a very central and interesting quantity to consider.  We show these decompositions in Figure~\ref{fig:experimental_decomposition}.
+Now the big question, is : what kind of results do I get with such quantities ? In general, it seems that $\tilde \mu_n$ is a very central and interesting quantity to consider.  We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=\textwidth]{{figs/biasvariance/ratio=0.8_n0=10}.pdf}
+	\includegraphics[width=\textwidth]{{figs/biasvariance/linear_ratio=0.8_n0=10}.pdf}
 	\caption{
-	\textbf{Left:} training curves and analytic upper bound. 
+	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
 	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
 	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
 	}
-	\label{fig:experimental_decomposition}
+	\label{fig:variance_decomposition}
 \end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/gaussians/log_n0=1}.pdf}
+	\caption{
+	\textbf{Full gaussian $\cN(\mu, \sigma^2)$ example. Left:} training curves and analytic upper bound. 
+	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+	\textbf{Right:} bias-variance decomposition, using the generalized mean.
+	}
+	\label{fig:gaussian_decomposition}
+\end{figure}
+
 
 \subsection{Pure Bias Term}
 The pure bias term measures the divergence between the optimum and the expected MAP estimate $\bregmanconj(\mu^*; \mu_n)$.
