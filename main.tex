@@ -41,20 +41,34 @@
 \definecolor{myblue}{RGB}{199, 235, 255}
 \usepackage[framemethod=TikZ]{mdframed} 
 \usetikzlibrary{shadows}
+% Using the pgf-blur package instead 
+% https://ctan.math.illinois.edu/graphics/pgf/contrib/pgf-blur/pgf-blur.pdf
+\usetikzlibrary{shadows.blur}
+
+\mdfdefinestyle{blurry-shadow}{
+	linewidth=0pt,
+    roundcorner=0pt,
+	shadow=true,
+ 	apptotikzsetting={\tikzset{mdfshadow/.style={blur shadow={%
+ 		shadow xshift=1pt,
+ 		shadow yshift=-1pt,
+ 		shadow scale=1.00,
+ 		shadow opacity = 50,
+ 		%shadow blur extra rounding,
+ 		shadow blur steps = 10,
+ 		shadow blur radius = 5pt,
+ 		every shadow
+ 	}}}},
+	linewidth=0pt,
+ }
 
 \newmdenv[% box with grey background
+	style=blurry-shadow,
     backgroundcolor=gray!15,
-    linewidth=0pt,
-    roundcorner=5pt,
-    shadow=true,
-	shadowsize=4pt
 ]{example}
 \newmdenv[
+	style=blurry-shadow,
 	backgroundcolor=myblue,
-	roundcorner=5pt, 
-	linewidth=0pt, 
-	shadow=true,
-	shadowsize=4pt
 ]{important}
 
 % my packages
@@ -685,9 +699,12 @@ Note that unless $\conj$ is $\ell^2$, or we are in a degenerate case with $\hat 
 	\label{fig:bias-variance}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[p]
 	\centering
-	\includegraphics[width=\textwidth]{figs/numerical_schema_n=3.pdf}
+	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=1.pdf}
+	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=2.pdf}
+	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=3.pdf}
+	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=10.pdf}
 	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
 	\label{fig:bias-variance-numerical}
 \end{figure}
