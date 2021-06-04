@@ -1139,6 +1139,43 @@ The analog of gradient norm is the Bregman between iterates, similar to the Home
 % SGD: General Analysis and Improved Rates gower et al -- section 2 and 3 see equation (9) in particular (expected smoothnesS)
 % Relatively-Smooth Convex Optimization by First-Order Methods, and Applications,  -- Section 3
 
+\subsection{Three points lemma}
+\label{app:3points}
+
+Proofs of convergence for mirror descent with relative smoothness rely on a specific property of Bregman divergences, familiar to information geometry folks. If $x_+$ is solution to 
+\begin{align}
+	x_+ \in \argmin	_{x\in C} \overbrace{f(x) + \cB_h(x ; y)}^{\phi(x)}
+\end{align}
+where $C$ is a closed convex set, $f$ is a convex function, $\cB_h$ is the Bregman divergence induce by some convex function $h$ (we will drop the index, and use a semicolon instead of double bars to lighten the notation), and $y$ is some reference vector. Then 
+\begin{align}
+	\forall x, f(x) + \cB(x ;y) \geq f(x_+) + \cB(x ; x_+) +\cB(x_+ ; y) \; .
+\end{align}
+This property is an analog of the Pythagorean theorem for generalized projections (setting $f=0$ and $h=\|.\|^2$).
+
+\begin{proof}
+	The first order optimality condition is
+	\begin{align}
+		&\langle \nabla \phi (x_+) , x -  x_+ \rangle \geq 0, \forall x \\
+		=& \langle \nabla f(x_+) + \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  
+	\end{align}
+	This proof relies on another property called three point property 
+	\begin{align}
+		\langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  =\cB(x;y) -\cB(x;x_+) - \cB(x_+;y) 
+	\end{align}
+	which can be proved by expanding the right hand side.
+	By convexity of $f$ we also have 
+	\begin{align}
+		 f(x_+) + \langle \nabla f(x_+), x - x_+ \rangle \leq f(x) \; .
+	\end{align} 
+	Putting it all together we get
+	\begin{align}
+		0 
+		&\leq  \langle \nabla f(x_+), x - x_+ \rangle + \langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
+		&\leq f(x) - f(x_+) + \cB(x;y) -\cB(x;x_+) - \cB(x_+;y)
+	\end{align}
+	which concludes the proof.
+\end{proof}
+
 \subsection{Convergence of Mirror Descent}
 To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
 \begin{align}
@@ -1307,42 +1344,6 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 \end{example}
 
 
-\section{Three points lemma}
-\label{app:3points}
-
-Proofs of convergence for mirror descent with relative smoothness rely on a specific property of Bregman divergences, familiar to information geometry folks. If $x_+$ is solution to 
-\begin{align}
-	\min	_{x\in C} \overbrace{f(x) + \cB_h(x ; y)}^{\phi(x)}
-\end{align}
-where $C$ is a closed convex set, $f$ is a convex function, $\cB_h$ is the Bregman divergence induce by some convex function $h$ (we will drop the index, and use a semicolon instead of double bars to lighten the notation), and $y$ is some reference vector. Then 
-\begin{align}
-	\forall x, f(x) + \cB(x ;y) \geq f(x_+) + \cB(x ; x_+) +\cB(x_+ ; y) \; .
-\end{align}
-This property is an analog of the Pythagorean theorem for generalized projections (setting $f=0$ and $h=\|.\|^2$).
-
-\begin{proof}
-	The first order optimality condition is
-	\begin{align}
-		&\langle \nabla \phi (x_+) , x -  x_+ \rangle \geq 0, \forall x \\
-		=& \langle \nabla f(x_+) + \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  
-	\end{align}
-	This proof relies on another property called three point property 
-	\begin{align}
-		\langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  =\cB(x;y) -\cB(x;x_+) - \cB(x_+;y) 
-	\end{align}
-	which can be proved by expanding the right hand side.
-	By convexity of $f$ we also have 
-	\begin{align}
-		 f(x_+) + \langle \nabla f(x_+), x - x_+ \rangle \leq f(x) \; .
-	\end{align} 
-	Putting it all together we get
-	\begin{align}
-		0 
-		&\leq  \langle \nabla f(x_+), x - x_+ \rangle + \langle \nabla h(x_+) - \nabla h (y), x - x_+ \rangle  \\
-		&\leq f(x) - f(x_+) + \cB(x;y) -\cB(x;x_+) - \cB(x_+;y)
-	\end{align}
-	which concludes the proof.
-\end{proof}
 
 \section{Vivien's approach}
 \subsection{A big calculus in this specific setting}
