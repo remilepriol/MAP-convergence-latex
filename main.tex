@@ -995,15 +995,17 @@ This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy
 
 Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
 
+In our case, the bias variance decomposition tells us that we are interested in the covariance between primal and dual parameters, rather than the covariance of only of these -- $\Cov(\MAPt;\MAPm)$ rather that $\Var(\MAPm)$ or $\Var(\MAPt)$.
+
 \section{Posterior Expected Loss}
 
-A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is 
+A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is written as
 \begin{align}
     \pi(\natp) 
     \propto \exp(-n_0 \bregman(\natp ; \natp_0)) 
-    \propto \exp(-n_0 \logpart(\natp) + \langle n_0 \mu_0 ; \natp \rangle)
+    \propto \exp(-n_0 \logpart(\natp) + \langle n_0 \mu_0 ; \natp \rangle) \; .
 \end{align}
-so we see that $\pi$ is part of the exponential family, with sufficient statistic $(\natp, \logpart(\natp))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $\pi(\natp | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
+We see that $\pi$ is part of the exponential family, with sufficient statistic $(\natp, \logpart(\natp))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $\pi(\natp | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
 
 Given this posterior, a natural quantity to consider is the expected loss. Thus we might ask "what is the expectation of the posterior expected suboptimality?"
 \begin{align}
@@ -1016,7 +1018,8 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 	\begin{align}
 		\expect[\pi(\natp|\cD)]{\bregman(\natp ; \natp_*)} = \bregman(\hat \natp_n ; \natp_*) + \frac{2}{n} \frac{\mu_*}{\hat \mu_n} + \log\frac{n}{2} - \psi(1 + \frac{n}{2})
 	\end{align}
-	using the mean of the \href{https://en.wikipedia.org/wiki/Inverse-gamma_distribution}{inverse Gamma distribution} and the \href{https://en.wikipedia.org/wiki/Gamma_distribution#Logarithmic_expectation_and_variance}{logarithmic expectation} of a Gamma. The using results from the MLE, we get the exact formula
+	using the mean of the \href{https://en.wikipedia.org/wiki/Inverse-gamma_distribution}{inverse Gamma distribution} and the \href{https://en.wikipedia.org/wiki/Gamma_distribution#Logarithmic_expectation_and_variance}{logarithmic expectation} of a Gamma. 
+	Then using results from the MLE, we get the exact formula
 	\begin{align}
 		\expect[\cD\sim\natp_*]{\expect[\pi(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
 		= \frac{2}{n} + \frac{2}{n(n-2)} + \psi(\half[n]) - \psi(1+ \half[n])
@@ -1028,7 +1031,7 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 		\leq 
 		\inv{n} + \frac{4}{n(n-2)}
 	\end{align}
-	which is about twice the MLE bounds~\eqref{eq:MLE_rate}, exactly like as we observed for the gaussian mean.
+	which is about twice the MLE bounds~\eqref{eq:MLE_rate}, exactly as we reportred for the gaussian mean.
 \end{example}
 
 
