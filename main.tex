@@ -661,12 +661,69 @@ so we immediately get the recursion
 Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0}$.
 
 \subsection{Straightforward Analysis}
-The analysis of deterministic Bregman proximal point relies on the three points lemma (Appendix~\ref{app:3points}). First one can prove descent, then one can prove that the total path length and the sum of suboptimalities are bounded, but this does not transpose immediately to the stochastic setting. One needs an assumption on the quality of the stochastic estimates $f(. ; x)$. 
-Given the proof, the most straightforward such assumption (see paper notes) is 
+
+\paragraph{Bregman Proximal Point}
+The analysis of deterministic Bregman proximal \citep{chen1993convergence} point relies on the three points lemma (Appendix~\ref{app:3points})
 \begin{align}
-\expect{f(\natp_{n+1}) - f(\natp_{n+1} ; x_{n})} \leq \gamma_n \sigma^2
+	 \forall \natp, \lr_t f(\natp) + \cB(\natp ; \natp_t) \geq \lr_t f(\natp_{t+1}) + \cB( \natp; \natp_{t+1}) +\cB(\natp_{t+1} ; \natp_{t}) \; .
 \end{align}
-which translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in our case. This is exactly the same assumption as given by the SMD analysis. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which is an average in the primal space, and gives more weight to the first iterates. It does not immediately apply to the last iterate.
+Applying it with $\natp=\natp_t$, we prove that function values are decreasing
+\begin{align}
+	f(\natp_{t+1})  \leq f(\natp_{t})  - \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \; .
+\end{align}
+Then applying it with $\natp=\natp^*$ (assuming such a minimizer exists), we obtain a telescopic sum
+\begin{align}
+	\lr_t(f(\natp_{t+1}) - f(\natp^*)) +  \cB(\natp_{t+1} ; \natp_{t}) 
+	&\leq  \cB( \natp^*; \natp_{t})  - \cB( \natp^*; \natp_{t+1}) \\
+	\implies \sum_{t=0}^{T-1} \lr_t (f(\natp_{t+1}) - f(\natp^*)) 
+	+ \sum_{t=0}^{T-1} \cB(\natp_{t+1} ; \natp_{t}) 
+	&\leq \cB( \natp^*; \natp_{0})  - \cB( \natp^*; \natp_{T})  
+	\leq \cB( \natp^*; \natp_{0})  \; ,
+\end{align}
+which proves on the way that the total path length $ \sum_{t=0}^{t-1} \cB(\natp_{t+1} ; \natp_{t}) $ is bounded.
+Using the decreasing property of $f(\natp_t)$, we get
+\begin{align}
+	f(\natp_{T}) - f(\natp^*) \leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t} \; .
+\end{align}
+This upper bound converges to $0$ whenever the sum of step-sizes converges to $0$. 
+This rate can be arbitrarily fast because the oracle is strong. Indeed, taking an inifinite step-size solves the problem with one iteration, but the update is (theoretically) harder to solve for larger step-sizes.
+
+\paragraph{Stochastic Setting.}
+This proof does not transpose immediately to the stochastic setting.
+First off, we do not have a decreasing sequence anymore
+\begin{align}
+	f(\natp_{t+1}, X_t)  \leq f(\natp_{t}, X_t)  
+	- \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \\
+	\implies \expect{f(\natp_{t+1}, X_t)} \leq f(\natp_{t}) 
+	- \inv{\lr_t}\expect{\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}))}  \; .
+\end{align}
+Indeed the inequality bears on $\expect{f(\natp_{t+1}, X_t)}$, which features a correlation between $\natp_{t+1}$ and $X_t$, rather than $f(\natp_{t+1})$.
+Similarly, applying the three points lemma with $\natp^*$, taking the tower expectation, and telescoping the sum, we get
+\begin{align}
+	\sum_{t=0}^{t-1} \lr_t \expect{f(\natp_{t+1},X_t) - f(\natp^*)}
+	\leq \cB( \natp^*; \natp_{0})  \; .
+\end{align}
+To pursue further, we need an assumption on the quality of the stochastic estimates $f(. ; x)$. 
+The most straightforward such assumption is 
+\begin{align}
+\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t})} \leq \lr_t \sigma^2 \; ,
+\label{eq:proximal_variance}
+\end{align}
+e.g. we relate the stochastic function value on the next iterate to the function value.
+Then, using convexity of $f$, we get the rate
+\begin{align}
+	 \expect{f(\frac{\sum_{t=1}^{T} \lr_t \natp_{t+1}}{\sum_{t=1}^{T} \lr_t } )} - f(\natp^*)
+	\leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t}
+	+ \frac{\sum_{t=0}^{T-1} \lr_t^2  }{\sum_{t=0}^{T-1} \lr_t} \sigma^2 \; .
+\end{align}
+which is very analogous to standard rates for SGD.
+It does converge, whenever $\sum_{t=0}^{T-1} \lr_t$ diverges to $\infty$ much faster than $\sum_{t=0}^{T-1} \lr_t^2$.
+When $\lr_t \propto t^{-\half}$ for instance, we get a rate $O(\frac{\log(t)}{t^{\half[3]}})$.
+But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ rate.
+In addition the convergence bears on average iterates, which is far from perfect.
+
+\paragraph{Application to the MAP.}
+The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which is an average in the primal space, and gives more weight to the first iterates. It does not immediately apply to the last iterate.
 
 
 \section{Stochastic Mirror Descent (SMD)}
