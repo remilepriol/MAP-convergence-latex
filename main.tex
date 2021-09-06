@@ -1403,5 +1403,84 @@ See Figure~\ref{app:fig:bias-variance-numerical}.
 	\label{app:fig:bias-variance-numerical}
 \end{figure}
 
+\clearpage
+
+\section{Tentative with self-concordant function}
+
+We want to have a rate of convergence on
+\[
+    \mathbb{E}_{X_i} \left[ \mathcal{B}_{A^*}(\mu_*,\mu_n) \right],
+\]
+where
+\[
+    \mu_* = \mathbb{E}_{X} T(X), \quad \mu_n =  \frac{\sum_{i=1}^n T(X_i) + n_0 \mu_0}{n_0+n}.
+\]
+We first assume that $A^*$ is self-concordant.
+
+\subsection{Notations}
+\begin{itemize}
+    \item $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$
+    \item $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$
+    \item $\lambda(x) = \|(A^*)'(x)\|_x^*$ (Newton decrements)
+    \item $\omega = $
+    \item $\omega^* = -t-\ln(1-t)$
+\end{itemize}
+Note that $\omega^*$ is convex and monotonne.
+
+\begin{proposition}
+    (Conversion of norms) We have
+    \[
+        \frac{\|y-x\|_x}{1+\|y-x\|_x} \leq \|y-x\|_y \leq \frac{\|y-x\|_x}{1-\|y-x\|_x}
+    \]
+\end{proposition}
+
+
+\begin{proposition}
+    (Bounded Hessian change) We have
+    \[
+        (1-\|y-x\|_x)^2 \nabla^2 A^*(x) \leq \nabla^2 A^*(y) \leq \frac{1}{(1-\|y-x\|_x)^2} \nabla^2 A^*(x)
+    \]
+\end{proposition}
+
+
+\begin{proposition}
+    (Function bound) We have, if $\|y-x\|_x < 1$,
+    \[
+        A^*(y) \leq A^*(x) + \nabla A^*(x)(y-x) + \omega^*(\|y-x\|_x)
+    \]
+\end{proposition}
+
+The last proposition implies that, when $\|y-x\|_x < 1$,
+\[
+    \mathcal{B}_{A^*}(y,x) \leq \omega^*(\|y-x\|_x).
+\]
+Therefore,
+\[
+    \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*(\|\mu^*-\mu_n\|_{\mu_n}) .
+\]
+then, if $\|\mu^*-\mu_n\|_{\mu^*} < 1$, we have
+\[
+    \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-\|\mu^*-\mu_n\|_{\mu^*}}\right) .
+\]
+Assume $\|\mu^*-\mu_n\|_{\mu^*} < c$,
+\[
+    \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-c}\right) .
+\]
+
+\subsection{not good}
+However,
+\begin{align*}
+    \|\mu^*-\mu_n\|^2_{\mu_n} & = \left\|\frac{n+n_0-1}{n+n_0}(\mu^*-\mu_{n-1}) + \frac{1}{n+n_0}(\mu^*-T_n)\right\|^2_{\mu_n},\\
+    & = \left\|\frac{n+n_0-1}{n+n_0}(\mu^*-\mu_{n-1})\right\|_{\mu_n}^2 +  \left\|\frac{1}{n+n_0}(\mu^*-T_n)\right\|^2_{\mu_n} + \frac{2(n+n_0+1)}{(n+n_0)^2}\langle \nabla^2 [A(\mu_n)](\mu^*-\mu_{n-1}),\,(\mu^*-T_n) \rangle,\\
+\end{align*}
+and
+\begin{align*}
+    \|\mu^*-\mu_n\|_{\mu_n} & \leq  \frac{n+n_0-1}{n+n_0}\left\|\mu^*-\mu_{n-1}\right\|_{\mu_n} + \frac{1}{n+n_0}\left\|\mu^*-T_n\right\|_{\mu_n} .
+\end{align*}
+Moreover, by the bounded Hessian change,
+\[
+    \left\|\mu^*-\mu_{n-1}\right\|_{\mu_n} \leq \frac{1}{1-\left\|\mu_n-\mu_{n-1}\right\|_{\mu_{n-1}}}\left\|\mu^*-\mu_{n-1}\right\|_{\mu_{n-1}}
+\]
+    
 
 \end{document}
