@@ -597,6 +597,30 @@ We can expand  $\hat \mu_n - \mu_n$ to get another formulation of this covarianc
 \end{align}
 where we used the property that all data points play a symmetric role to remove the sum over $i$.
 
+\subsection{Triangle Scaling Exponents}
+
+\TODO{cite accelerated Bregman gradient paper} 
+defines the Triangle Scaling Exponent, to characterize an acceleration Bregman methods. The exponent $\gamma$ of a Bregman divergence $\cB$ is defined as the largest coefficient such that $
+	\forall x_0, x_1, x_2, \forall \lambda\in[0,1],$
+\begin{align}
+	\cB((1-\lambda)x_0 + \lambda x_1 ; (1-\lambda)x_0 + \lambda x_2)
+	\leq \lambda^\gamma \cB(x_1 ; x_2) \; .
+\end{align}
+Geometrically, for any triangle, it tells us a shape within which the geodesic triangle is contained (to clarify with a picture.)
+It is related to Thales triangle.
+We precisely have a Thales triangle with the dual expectation pivot, meaning we can relate the MAP variance term with the MLE expected suboptimality. Writing $\lambda = \frac{n}{n+n_0}$, we observe
+\begin{align}
+	\MAPm^\text{MAP} &= (1-\lambda)\mu_0 + \lambda \MAPm^\text{MLE} \\
+	\mu_n &= (1-\lambda)\mu_0 + \lambda \mu^*
+\end{align}
+thus
+\begin{align}
+	\expect{\bregmanconj(\mu_n; \MAPm^\text{MAP})}
+	\leq \left (\frac{n}{n+n_0} \right)^\gamma \expect{\bregmanconj(\mu^*; \MAPm^\text{MLE})} \; .
+\end{align}
+This relationship between the MAP variance and the MLE may be void, as the MLE expected loss may be infinite. But in some settings it might be helpful to characterize the MAP convergence.
+For instance, this same paper says that for a gaussian variance, $\gamma=1$. 
+
 \clearpage
 
 \section{Optimization Perspective}
@@ -627,12 +651,17 @@ We are studying two algorithms solving this problem : MLE and MAP.
 As we will see in the two upcoming sections, MAP can be seen as an application of more generic iterative algorithms with divergence $\bregman$ and initialization $\natp_0$ : 
 \begin{itemize}
 	\item Stochastic Bregman Proximal Point with learning rate $\inv{n_0+n}$,
-	\item Stochastic Mirror Sescent with learning rate  $\inv{n_0+n +1}$.
+	\item Stochastic Mirror Descent with learning rate  $\inv{n_0+n +1}$.
 \end{itemize}
 In both cases, $f(\natp)$ is convex and 1-smooth  and 1-strongly convex relative to the potential $\logpart$. Be cautious that the learning rate is decreasing.
 
 \paragraph{Goal.} We want to bound the suboptimality $f(\natp) - f^*$ as a function of the number of samples. 
 
+
+\paragraph{\TODO{Discussion with Radu}}
+PROBLEM. Even in the Euclidean setting, the decreasing step-size analysis with SGD (or SPP) gives a rate $O(1/\log(n))$, which is far from the asymptotic $O(1/n)$.
+
+If we change the step-size, for $1/\sqrt{n}$ for instance, the algorithm changes. It becomes a weighted average of the sufficient statistics. It might be helpful for online learning (changing target), but it is not relevant when the target is fixed.
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
@@ -657,6 +686,7 @@ so we immediately get the recursion
     &= \argmin_\natp - \log p(\natp | \cD_n) \\
     &= \argmin_\natp - \log p(X_n|\natp) - \log p(\natp | \cD_{n-1}) \\
     &= \argmin_\natp f(\natp; X_{n}) + (n+n_0) \bregman(\natp; \hat \natp_{n-1}^\text{MAP})  \; .
+    \label{eq:SBPP}
 \end{align} 
 Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0}$.
 
@@ -710,17 +740,16 @@ The most straightforward such assumption is
 \label{eq:proximal_variance}
 \end{align}
 e.g. we relate the stochastic function value on the next iterate to the function value.
-Then, using convexity of $f$, we get the rate
+Then, taking the iterate with the least expected loss, we get the rate
 \begin{align}
-	 \expect{f(\frac{\sum_{t=1}^{T} \lr_t \natp_{t+1}}{\sum_{t=1}^{T} \lr_t } )} - f(\natp^*)
+	 \min_{1\leq t \leq T} \expect{ f(\natp_t)} - f(\natp^*)
 	\leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t}
 	+ \frac{\sum_{t=0}^{T-1} \lr_t^2  }{\sum_{t=0}^{T-1} \lr_t} \sigma^2 \; .
 \end{align}
 which is very analogous to standard rates for SGD.
-It does converge, whenever $\sum_{t=0}^{T-1} \lr_t$ diverges to $\infty$ much faster than $\sum_{t=0}^{T-1} \lr_t^2$.
+It does converge, whenever $\sum_{t=0}^{T-1} \lr_t$ diverges to $+\infty$ much faster than $\sum_{t=0}^{T-1} \lr_t^2$.
 When $\lr_t \propto t^{-\half}$ for instance, we get a rate $O(\frac{\log(t)}{t^{\half[3]}})$.
 But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ rate.
-In addition the convergence bears on average iterates, which is far from perfect.
 
 \paragraph{Application to the MAP.}
 The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which is an average in the primal space, and gives more weight to the first iterates. It does not immediately apply to the last iterate.
@@ -728,7 +757,10 @@ The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}
 
 \section{Stochastic Mirror Descent (SMD)}
 \subsection{MAP as SMD}
-Let $f(\natp) := \expect[x]{-\log p(x|\natp)} = - \langle \mu_*, \natp\rangle + \logpart(\natp)$. In words, $f$ is linear modification of a convex function $\logpart$, which we can access only through noisy estimates of $\mu_*$. It turns out that the MAP estimate can also be seen as the iterates of stochastic mirror descent with mirror map $\logpart$. First let's recall mirror descent iteration
+In this section, we show that MAP estimate can also be seen as the iterates of stochastic mirror descent with mirror map $\logpart$.
+
+\paragraph{Mirror Descent.}
+Let us recall mirror descent iteration
 \begin{align}
 	\natp_{t+1} 
 	&:= \argmin_\natp \lr \linear_f(\natp; \natp_t) + \bregman(\natp ; \natp_t)  \\
@@ -740,7 +772,12 @@ Note that finding $\natp_*$ is done with 1 step of mirror descent. Indeed pluggi
 	&\mu_{t+1}  = \mu_t - \lr (\mu_t - \mu_*) \\
 	\implies &\mu_t  = \mu_* + (1- \lr)^t (\mu_0 - \mu_*)
 \end{align}
-which shows exponential convergence and 1-step convergence when $\lr =1$. Back to our sheep, the MAP iteration can be cast as stochastic mirror descent (SMD),  with $g_t = \nabla f(\natp_t, x_{t+1})$ a stochastic estimate  of $\nabla f(\natp_t)$
+which shows exponential convergence and 1-step convergence when $\lr =1$. 
+
+\paragraph{Stochastic Mirror Descent}
+Let $f(\natp, x) = -\log p(x|\natp)$.
+MAP iterations can be cast as stochastic mirror descent (SMD),  with $g_t = \nabla f(\natp_t, x_{t+1}) = \logpart(\natp_t) - T(x_{t+1})$ as a stochastic estimate  of $\nabla f(\natp_t)$.
+Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP} and manipulating the Bregman yields
 \begin{align}
     \hat \natp_{n+1} 
     &= \argmin_\natp 
@@ -750,38 +787,6 @@ which shows exponential convergence and 1-step convergence when $\lr =1$. Back t
     &= \argmin_\natp \linear_f(\natp;\natp_n, x_{t+1}) + (n_0 + n + 1) \bregman(\natp ; \natp_n)
 \end{align}
 where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
-
-\subsection{Relative Smoothness for Mirror Descent}
-In the classic setting, SMD is studied under strong-convexity assumption on the mirror map $\logpart$ \citep{bubeck2015convex}.
-In our setting this is not always true -- eg gaussians.
-However a recent and fast-expanding body of work is concerned with a new assumption: relative smoothness and relative strong-convexity.
-\begin{align}
-	& \text{$f$ is $L$-smooth relative to $h$} \\
-	\iff & Lh - f \ \text{convex} \\
-	\iff & f(y) \leq 	f(x) + \langle \nabla f(x) , y-x \rangle + L\cB_h(y;x), \forall x,y \\
-	\iff & \cB_f(y;x) \leq L \cB_h(y;x), \forall x,y \\
-	\iff & \nabla^2 f(x) \leq L \nabla^2 h(x),  \forall x
-\end{align} 
-where the last equivalence holds only when $f$ and $h$ are twice differentiable. In words, $f$ is upper bounded by it linear approximation plus the $h$-Bregman divergence, which can also be seen as a bound between divergences, or more locally as a bound between Hessians. Similarly, $f$ is $\mu$ strongly-convex relative to $h$ if
-\begin{align}
-	& f-\mu h \ \text{ convex} \\
-	\iff & f(x) + \langle \nabla f(x) , y-x \rangle + \mu \cB_h(y;x) \leq f(y)\forall x,y \\
-	\iff & \mu\cB_h(y;x) \leq \cB_f(y;x) \forall x,y \\
-	\iff & \mu \nabla^2 h(x) \leq \nabla^2 f(x)  \forall x \; .
-\end{align} 
-
-Another way to view this elegant generalization of smoothness and strong-convexity is as a transfer of the Loewner partial order on symmetric matrices to functions, via the Hessian. 
-As such it can be applied to many functions that were out of reach for $\ell^2$ norm, by taking the appropriate reference function.  For instance $h(x) = -\log(x)$ or $h(x) = x^4$. 
-As early as 2011, \citet{birnbaum2011distributed} showed $O(\inv{t})$ convergence rate for mirror descent under smoothness assumption relative to the mirror map. 
-More precisely, he proved that when $f$ is $L$-smooth relative to $h$, then the suboptimality of the sequence 
-\begin{align}
-	x_{t+1}  = \argmin_x \langle \nabla f(x_t), x \rangle + \cB_h(x ; x_t)
-\end{align}
-is upper bounded by the simple formula
-\begin{align}
-	\implies f(x_t) - f(x_*) \leq \frac{L \cB_h(x_* ; x_0) }{t} \; .
-\end{align}
-These notions were rediscovered and expanded by \citet{bauschke2017descent} and \citet{lu2018relatively}. If you need to read one, pick \citet{lu2018relatively} -- I found it much much easier and more enjoyable to read.  This latter paper also derived a linear convergence rate for mirror descent under relative smoothness and strong-convexity, with the relative condition number $\frac{L}{\mu}$ appearing.
 
 \subsection{Relative smoothness for SMD}
 Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
@@ -887,9 +892,6 @@ To avoid gradient variance assumption, we can take inspiration from expected smo
 The analog of gradient norm is the Bregman between iterates, similar to the Homeomorphic EM rate. 
 
 
-% todo: idee: adapter la preuve de stochastic gradient descent a stochastic mirror descent. Exploiter un parralele entre ces deux preuves pour obtenir une preuve pour stochastic mirror descent dans le cas ou f est relatively smooth w.r.t. A*. ce qu'on veut, c'est une hypothese analogue a expected smoothness (see paper of nico loizou) pour le relatively smooth.
-% SGD: General Analysis and Improved Rates gower et al -- section 2 and 3 see equation (9) in particular (expected smoothnesS)
-% Relatively-Smooth Convex Optimization by First-Order Methods, and Applications,  -- Section 3
 
 \subsection{Convergence of Mirror Descent}
 To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
@@ -935,6 +937,9 @@ Note that this equivalence holds only if sufficient statistics are within $\dom 
 \citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
 
 \citet{ostrovskii2021finite}  shows a convergence rate for the MLE (or other $M$-estimators)   when  the log-likelihood is self-concordant. This convergence rate holds only after a given number of samples have been seen. This is because they use the fact that self-concordant losses are upper bounded by a quadratic in a neighborhood of the optimum. 
+\TODO{Sanity check literature search with Bach's references.}
+
+\TODO{3 threads of literature search: optimization, statistics, learning theory. This last one is not covered yet. It is more interested in finite sample results than statistics. Contact Alexander Rakhlin}
 
 \paragraph{Bregman proximal point}
 
@@ -943,8 +948,9 @@ Note that this equivalence holds only if sufficient statistics are within $\dom 
 
 \subsection{Alternative Research Tracks}
 \begin{itemize}
-	\item Weakly supervised : missing part of $x_i$ for each $i$.
-	\item Structured prediction : graphical model on $X$ or other kind of structure.
+	\item A picture / geometric understanding of the equality between ELBO (Jensen) and relative smoothness for EM.
+	\item Bregman is about general geometry, can we bring it to the non-convex realm via local analysis ?
+	\item Can we design an algorithm with higher order Bregman divergences ? Does it mean anything ? The Bregman is a quadratic approximation of a function, yielding a geometry. Higher order does not carry such meaning. But we would like to involve some quadratic function information within mirror descent !
 \end{itemize}
 
 
@@ -1001,6 +1007,38 @@ We recover euclidean projections setting $f=0$ and $h=\|.\|^2$.
 	which concludes the proof.
 \end{proof}
 
+
+\section{Relative Smoothness for Mirror Descent}
+In the classic setting, SMD is studied under strong-convexity assumption on the mirror map $\logpart$ \citep{bubeck2015convex}.
+In our setting this is not always true -- eg gaussians.
+However a recent and fast-expanding body of work is concerned with a new assumption: relative smoothness and relative strong-convexity.
+\begin{align}
+	& \text{$f$ is $L$-smooth relative to $h$} \\
+	\iff & Lh - f \ \text{convex} \\
+	\iff & f(y) \leq 	f(x) + \langle \nabla f(x) , y-x \rangle + L\cB_h(y;x), \forall x,y \\
+	\iff & \cB_f(y;x) \leq L \cB_h(y;x), \forall x,y \\
+	\iff & \nabla^2 f(x) \leq L \nabla^2 h(x),  \forall x
+\end{align} 
+where the last equivalence holds only when $f$ and $h$ are twice differentiable. In words, $f$ is upper bounded by it linear approximation plus the $h$-Bregman divergence, which can also be seen as a bound between divergences, or more locally as a bound between Hessians. Similarly, $f$ is $\mu$ strongly-convex relative to $h$ if
+\begin{align}
+	& f-\mu h \ \text{ convex} \\
+	\iff & f(x) + \langle \nabla f(x) , y-x \rangle + \mu \cB_h(y;x) \leq f(y)\forall x,y \\
+	\iff & \mu\cB_h(y;x) \leq \cB_f(y;x) \forall x,y \\
+	\iff & \mu \nabla^2 h(x) \leq \nabla^2 f(x)  \forall x \; .
+\end{align} 
+
+Another way to view this elegant generalization of smoothness and strong-convexity is as a transfer of the Loewner partial order on symmetric matrices to functions, via the Hessian. 
+As such it can be applied to many functions that were out of reach for $\ell^2$ norm, by taking the appropriate reference function.  For instance $h(x) = -\log(x)$ or $h(x) = x^4$. 
+As early as 2011, \citet{birnbaum2011distributed} showed $O(\inv{t})$ convergence rate for mirror descent under smoothness assumption relative to the mirror map. 
+More precisely, he proved that when $f$ is $L$-smooth relative to $h$, then the suboptimality of the sequence 
+\begin{align}
+	x_{t+1}  = \argmin_x \langle \nabla f(x_t), x \rangle + \cB_h(x ; x_t)
+\end{align}
+is upper bounded by the simple formula
+\begin{align}
+	\implies f(x_t) - f(x_*) \leq \frac{L \cB_h(x_* ; x_0) }{t} \; .
+\end{align}
+These notions were rediscovered and expanded by \citet{bauschke2017descent} and \citet{lu2018relatively}. If you need to read one, pick \citet{lu2018relatively} -- I found it much much easier and more enjoyable to read.  This latter paper also derived a linear convergence rate for mirror descent under relative smoothness and strong-convexity, with the relative condition number $\frac{L}{\mu}$ appearing.
 
 \section{Cramer-Rao Lower Bound}
 In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
