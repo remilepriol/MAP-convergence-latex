@@ -693,7 +693,7 @@ Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Poi
 \subsection{Straightforward Analysis}
 
 \paragraph{Bregman Proximal Point}
-The analysis of deterministic Bregman proximal \citep{chen1993convergence} point relies on the three points lemma (Appendix~\ref{app:3points})
+This algorithm was first published in \citet{eckstein1993nonlinear} with an asymptotic convergence property. \citet{chen1993convergence} then provided a finite sample convergence rate for deterministic Bregman proximal point. Their analysis relies on the three points lemma (Appendix~\ref{app:3points})
 \begin{align}
 	 \forall \natp, \lr_t f(\natp) + \cB(\natp ; \natp_t) \geq \lr_t f(\natp_{t+1}) + \cB( \natp; \natp_{t+1}) +\cB(\natp_{t+1} ; \natp_{t}) \; .
 \end{align}
@@ -719,7 +719,8 @@ This upper bound converges to $0$ whenever the sum of step-sizes converges to $0
 This rate can be arbitrarily fast because the oracle is strong. Indeed, taking an inifinite step-size solves the problem with one iteration, but the update is (theoretically) harder to solve for larger step-sizes.
 
 \paragraph{Stochastic Setting.}
-This proof does not transpose immediately to the stochastic setting.
+While \citet{eckstein1998approximate} shows some asymptotic convergence of the Bregman proximal point algorithm when each iteration is only solved approximately, we are not aware of published analysis when iterations are stochastic.
+The deterministic proof does not transpose immediately to the stochastic setting.
 First off, we do not have a decreasing sequence anymore
 \begin{align}
 	f(\natp_{t+1}, X_t)  \leq f(\natp_{t}, X_t)  
@@ -973,6 +974,13 @@ In the realm of self-concordance, \citet{ostrovskii2021finite}  shows a finite s
 
 \section{Three points lemma}
 \label{app:3points}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics{figs/3pointslemma}
+	\caption{Illustration of the other three points lemma -- eg the identity between Bregmans -- reproduced from \citet{eckstein1998approximate}.}
+	\label{fig:3pointslemma}
+\end{figure}
 
 The typical descent lemma of updates involving minimization of a Bregman divergence is called the three point lemma. 
 It corresponds to first order optimality conditions of the update.
