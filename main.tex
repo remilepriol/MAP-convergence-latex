@@ -348,12 +348,12 @@ To start, let us recall that the MAP of $\cN(0,\mu_*)$ is $\hat \mu_n = \frac{n_
 Its expectation is simply $\mu_n= \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$.
 We now present a lemma on its expected inverse.
 \begin{lemma}[Expected MAP Natural Parameter]
-	For any $n\geq 2$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
+	Let's define $a=n_0 \frac {\mu_0 }{ \mu^* }$. For any $n\geq 2$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
 	\begin{align}
-		\frac{\mu^*}{\mu_n}
+		\frac{\mu^*}{\mu_n} = \frac{n_0+n}{a+n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\natp^*}} 
-		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n+n_0}} \; .
+		\leq \frac{n_0+n}{a+n-2} \; .
 	\label{eq:theta_expectation_bound}
 	\end{align}
 \end{lemma}
@@ -361,13 +361,13 @@ Note that the lower bound is a simple consequence of the convexity of the invers
 Using this lemma, along with the log upper bound on the logarithm~\eqref{eq:log_bound}, we get a convergence rate for the MAP. 
 \begin{example}
 \begin{theorem}[MAP Bound]
- Introducing $a=n_0 \frac {\mu_0 }{ \mu^* }$, the expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is
+ Defining $a=n_0 \frac {\mu_0 }{ \mu^* }$, the expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is
  \begin{equation}
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
 	\leq \begin{cases}
 		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
 		\bregmanconj( \mu_*; \mu_0) + \inv{a} \ \text{if}\ n=1,\\
-		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \ \text{if}\  n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
+		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{\frac{a+n-2}{n_0}(1 + \frac{n}{n_0} )} \ \text{if}\  n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
 	\end{cases}
 	\label{eq:MAP_rate}
 \end{equation}
@@ -748,7 +748,7 @@ Then, taking the iterate with the least expected loss, we get the rate
 \end{align}
 which is very analogous to standard rates for SGD.
 It does converge, whenever $\sum_{t=0}^{T-1} \lr_t$ diverges to $+\infty$ much faster than $\sum_{t=0}^{T-1} \lr_t^2$.
-When $\lr_t \propto t^{-\half}$ for instance, we get a rate $O(\frac{\log(t)}{t^{\half[3]}})$.
+When $\lr_t \propto t^{-\half}$ for instance, we get a rate $O(\frac{\log(t)}{\sqrt{t}})$.
 But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ rate.
 
 \paragraph{Application to the MAP.}
@@ -777,9 +777,9 @@ which shows exponential convergence and 1-step convergence when $\lr =1$.
 \paragraph{Stochastic Mirror Descent}
 Let $f(\natp, x) = -\log p(x|\natp)$.
 MAP iterations can be cast as stochastic mirror descent (SMD),  with $g_t = \nabla f(\natp_t, x_{t+1}) = \logpart(\natp_t) - T(x_{t+1})$ as a stochastic estimate  of $\nabla f(\natp_t)$.
-Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP} and manipulating the Bregman yields
+Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP}, we write $\MAPt$ for the n-th MAP iterate, and do some Bregman manipulations
 \begin{align}
-    \hat \natp_{n+1} 
+    \hat \natp_{n+1}
     &= \argmin_\natp 
     - \langle T(x_{t+1}), \natp \rangle  + \logpart(\natp) + (n_0 + n) \bregman(\natp ; \natp_n) \\
     %&(n_0+n)\left(\logpart(\natp) - \logpart(\natp_n) - \langle \nabla \logpart(\natp_n)  , \natp - \natp_n \rangle \right)  \\
@@ -924,6 +924,11 @@ A multidimensional function $f: \real^n \rightarrow \real$ is SC if it's restric
 Negative logarithm $-\log(x)$ and entropy $x\log(x)$ are both self-concordant function. This is good news for us since log-partition function may include SC logarithmic barriers.
 In particular, gaussians have a logarithmic term. They also have an inverse term which is not self-concordant, but which is generalized self-concordant.
 
+\paragraph{Questions.}
+Is there already an SC analysis of proximal point methods. (that’s not affine invariant)?
+If the log-partition is SC, then what does it mean for its gradient, the mapping from natural to mean parameters ? 
+
+
 \section{Related Work}
 Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
 \citet[Chapter 3]{wainwright2008graphical} give a great overview of exponential families and their dual structure. 
@@ -936,8 +941,12 @@ Note that this equivalence holds only if sufficient statistics are within $\dom 
 
 \citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
 
-\citet{ostrovskii2021finite}  shows a convergence rate for the MLE (or other $M$-estimators)   when  the log-likelihood is self-concordant. This convergence rate holds only after a given number of samples have been seen. This is because they use the fact that self-concordant losses are upper bounded by a quadratic in a neighborhood of the optimum. 
-\TODO{Sanity check literature search with Bach's references.}
+
+\citet{bubeck2015entropic} shows that the entropy of an exponential family defined on a compact support $\cX$ is a self-concordant barrier on this compact set. They extend the definition of self-concordance to $\nu$-self-concordance, stating that the gradient should be bounded by the square root of the hessian along any direction. In 1 dimension, their result also means that the log-partition is self-concordant as well. In general, does this mean that the log-partition is self-concordant  (e.g. is there a link between the dual function on a line and the line of the primal , probably not)?
+
+
+In the realm of self-concordance, \citet{ostrovskii2021finite}  shows a finite sample convergence rate for the MLE (or other $M$-estimators)   when  the log-likelihood is self-concordant. This convergence rate holds only after a given number of samples have been seen, and they give an innteresting formula for this number. To get this results, they use the fact that self-concordant losses are upper bounded by a quadratic in a neighborhood of the optimum. 
+
 
 \TODO{3 threads of literature search: optimization, statistics, learning theory. This last one is not covered yet. It is more interested in finite sample results than statistics. Contact Alexander Rakhlin}
 
