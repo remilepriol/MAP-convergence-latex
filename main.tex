@@ -599,7 +599,7 @@ where we used the property that all data points play a symmetric role to remove 
 
 \subsection{Triangle Scaling Exponents}
 
-\TODO{cite accelerated Bregman gradient paper} 
+\citet{hanzely2021accelerated} 
 defines the Triangle Scaling Exponent, to characterize an acceleration Bregman methods. The exponent $\gamma$ of a Bregman divergence $\cB$ is defined as the largest coefficient such that $
 	\forall x_0, x_1, x_2, \forall \lambda\in[0,1],$
 \begin{align}
@@ -619,7 +619,7 @@ thus
 	\leq \left (\frac{n}{n+n_0} \right)^\gamma \expect{\bregmanconj(\mu^*; \MAPm^\text{MLE})} \; .
 \end{align}
 This relationship between the MAP variance and the MLE may be void, as the MLE expected loss may be infinite. But in some settings it might be helpful to characterize the MAP convergence.
-For instance, this same paper says that for a gaussian variance, $\gamma=1$. 
+For instance, this same paper says that for a gaussian variance, $\gamma=1$. Then they proceed to define an intrinsic scaling exponent, with a local scaling factor. This intrinsic exponent is always 2 for Bregman divergences induced by a convex and $\cC^2$ function. They use this fact to derive an accelerated algorithm.
 
 \clearpage
 
@@ -789,20 +789,23 @@ Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP}, we 
 \end{align}
 where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
 
-\subsection{Relative smoothness for SMD}
-Now our setting is Stochastic Mirror Descent (SMD), meaning at each step we observe a random unbiased estimate gradient. This setting was studied by \citet{hanzely2018fastest}, who proved in the smooth strongly-convex case with tail averaging :  with constant step-size, linear convergence down to a variance ball, and with step-size $\gamma_t = n_0 + t$ a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 
-This is very interesting to us.
+Stochastic Mirror Descent (SMD) was studied under relative smoothness assumptions in 2 papers : \citet{hanzely2018fastest} and \citet{dragomir2021fast}.
+
+\subsection{Work by Hanzely}
+
+\citet{hanzely2018fastest} got convergence rates in the smooth strongly-convex case with tail averaging. With constant step-size, they proved linear convergence down to a variance ball. With step-size $\gamma_t = n_0 + t$, they proved a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 Let us have a look at their variance assumption \citep[Assumption 5.1]{hanzely2018fastest}.
 Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the descent direction $\natp_{t+1} - \natp_t = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t ) - \natp_t $ that should hold for all time steps  
 \begin{align}
-	&\Cov(- g_t,\natp_{t+1} - \natp_t | X_{1 \dots t}) \leq \lr_t \sigma^2 \\
+	\lr_t \sigma^2 \geq 
+	&\Cov(- g_t,\natp_{t+1} - \natp_t | X_{1 \dots t})  \label{eq:hanzely_hypothesis} \\
 	&= \expect{\langle - g_t, \natp_{t+1} \rangle}  - \langle \E[-g_t], \E[\natp_{t+1}] \rangle   \\
-	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}
+	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}\\
+	 &= \expect[X_t]{\bregman(\natp_{t+1} ; \bar \natp_{t+1} ) + \bregman(\bar \natp_{t+1} ; \natp_{t+1} ) }
 \end{align}
-where $\gamma_t$ is the step-size and expectations are conditional on the past. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
+where $\gamma_t$ is the step-size, expectations are conditional on the past, and $\bar \natp_{t+1}$ is the theoretical output of a deterministic Bregman gradient step. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
 
-\subsection{Transferring SMD's covariance assumption to MAP estimates}
 In our setting, 
 \begin{align}
 	\nabla f(\natp_t) - g_t =  T(X_{t+1})	- \E[T(X)]
@@ -827,10 +830,23 @@ Unfortunately this bound is not trivially satisfied, even for simple exponential
 The covariance  \eqref{eq:hypvariance} we want to bound is equal to
 \begin{align}
 	\half \expect{\frac{\sigma_*^2 - X^2 }{ X^2 \lr + (1-\lr) \sigma_0^2 }}
-	\approx \lr (1-\lr)^{-2} \left (\frac{\sigma_*}{\sigma_0} \right)^4
 \end{align}
-using a first order approximation of the inverse, eg a first order approximation of $\nabla \conj$ that holds when $\lr X^2 \ll (1-\lr) \sigma_0^2$. This does not hold for $\sigma_0\ll 1$, which is precisely when the covariance  explodes, as illustrated in Figure \TODO{}. This is a problem, because we need this bound to hold  for all values of $\sigma_0$ in the support of $X^2$, meaning on the whole $[0,+\infty[$, which is impossible because $1/X^2$ diverges, so we need to process this integral differently.   
+When $\sigma_0 \rightarrow 0$, as might happen, this value explodes.
 \end{example}
+
+\subsection{Work by the French Musketeers}
+
+\citet{dragomir2021fast} use a quite different assumption, bearing on a Bregman measure of the stochastic gradients norm at the optimum
+\begin{align}
+	2 \lr^2 \sigma^2
+	\geq \expect[X]{\bregmanconj(\mu_t - 2 \lr_t \nabla f(\natp^*, X) ; \mu_t ) } \; .
+	\label{eq:dragomir_hypothesis}
+\end{align}
+When $\logpart$ is strongly convex, this hypothesis is akin to bounding the variance of the gradient at the optimum, whereas \eqref{eq:hanzely_hypothesis} is akin to bounding gradient variance everywhere. This comparison makes this assumption more interesting, as it might apply to unbounded strongly convex function, like modern analysis of SGD. 
+
+However it does use a metric which depends on the trajectory $\mu_t$. It is the flaw of both these variance assumptions \eqref{eq:hanzely_hypothesis} and \eqref{eq:dragomir_hypothesis}, as well the proximal point variance assumption \eqref{eq:proximal_variance}, that they depend on the stochastic trajectory. Indeed this trajectory has a non-zero probability of being arbitrarily close from the border of the domain, where $\bregman$ may get extremely ill-conditioned. 
+
+\subsection{Transferring SMD's covariance assumption to MAP estimates}
 
 \paragraph{MLE Analysis.}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, we get
