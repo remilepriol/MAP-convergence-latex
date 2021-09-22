@@ -348,35 +348,43 @@ To start, let us recall that the MAP of $\cN(0,\mu_*)$ is $\hat \mu_n = \frac{n_
 Its expectation is simply $\mu_n= \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$.
 We now present a lemma on its expected inverse.
 \begin{lemma}[Expected MAP Natural Parameter]
-	Let's define $a=n_0 \frac {\mu_0 }{ \mu^* }$. For any $n\geq 2$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
-	\begin{align}
-		\frac{\mu^*}{\mu_n} = \frac{n_0+n}{a+n}
+	Let's define $a=n_0 \frac {\mu_0 }{ \mu^* }$. For any $n\geq 1$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
+	\begin{equation}
+		\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\natp^*}} 
-		\leq \frac{n_0+n}{a+n-2} \; .
-	\label{eq:theta_expectation_bound}
-	\end{align}
+		\leq \frac{n_0 +n}{a+ (n-2)_+}
+		\label{eq:theta_expectation_bound}
+	\end{equation}
+	where $(x)_+ = \max(0,x)$.
 \end{lemma}
 Note that the lower bound is a simple consequence of the convexity of the inverse function. 
 Using this lemma, along with the log upper bound on the logarithm~\eqref{eq:log_bound}, we get a convergence rate for the MAP. 
 \begin{example}
 \begin{theorem}[MAP Bound]
- Defining $a=n_0 \frac {\mu_0 }{ \mu^* }$, the expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is
+ Let us  define
+ \begin{align}
+	b = \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; .
+ \end{align}
+The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is
  \begin{equation}
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
 	\leq \begin{cases}
-		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
-		\bregmanconj( \mu_*; \mu_0) + \inv{a} \ \text{if}\ n=1,\\
-		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{\frac{a+n-2}{n_0}(1 + \frac{n}{n_0} )} \ \text{if}\  n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
+		\inv{2(n_0+1)}  +  b\ \text{if}\ n=1,\\
+		\frac{1}{n_0 \frac{\mu_0}{\mu^*} +n-2} + b \ \text{if}\ n\geq 2
 	\end{cases}
 	\label{eq:MAP_rate}
 \end{equation}
 \end{theorem}
 \end{example}
+This inequality highlights a clear variance-bias decomposition.
+In particular, there is no bias term when $\frac{\mu_0}{\mu^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\mu_0 = 2 \mu^*$.
+Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
+
 Using the same bound on the log~\eqref{eq:log_bound}, we  get a loose bound on the MLE, which is useful for comparison purposes.
 We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_rate}.
 \begin{example}
-\begin{corollary}[MLE Loose Bound]
+\begin{corollary}[MLE Loose Bound] When $n\geq 2$, the MLE expected loss is upper bounded as
 \begin{equation}
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE}) }
 	\leq \inv{n-2} \; .
@@ -399,6 +407,11 @@ We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_ra
 	It makes me feel very interested in convergence rates of MAP in the overparametrized regime $n<\dim(T(X))$.
 	}
 \end{figure}
+
+
+\TODO{Tonight ! add equations for the full gaussian. I can dig them ou of my previous notebook.}
+
+\TODO{add equations for other families, eg gaussian with mean and variance, or gamma or Dirichlet, or Categorical..}
 
 \section{Euclidean Behaviour}
 Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mean parameter space. 
@@ -527,6 +540,7 @@ As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman 
 	\expect{\bregman(\MAPt; \natp^*)} 
 	&= \bias{\bregman(\E[\MAPt]; \natp^*)}
 	+ \variance{\expect{\bregman(\MAPt; \E[\MAPt])}}  \; .
+	\label{eq:primal_pivot}
 \end{align}
 
 \paragraph{Illustrations.}
@@ -558,6 +572,7 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 \subsection{About Variance and Covariance}
 
 \begin{lemma}
+\label{lem:covariance}
 Taking  $\MAPt$ and $\MAPm$ as the primal and dual parameters of the MAP estimate, and $\tilde \mu_n$ the primal expectation and $\mu_n$ the dual expectation, the following identities hold
 	\begin{align}
 	\Cov(\hat \natp_n ; \MAPm )  
@@ -592,8 +607,9 @@ We can expand  $\hat \mu_n - \mu_n$ to get another formulation of this covarianc
 \begin{align}
 	\expect{\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle}
 	&= \expect{\langle \hat \natp_n ; \frac{\sum_i T(X_i) - \mu^*}{n+n_0} \rangle}  \\
-	& = \frac{n}{n+n_0} \expect{\langle \hat \natp_n ; T(X_0) - \mu^*\rangle}
-	= \frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X_0) ) 
+	& = \frac{n}{n+n_0} \expect{\langle \hat \natp_n ; T(X_0) - \mu^*\rangle} \\
+	&= \frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X_0) ) 
+	\label{eq:covariance_expansion}
 \end{align}
 where we used the property that all data points play a symmetric role to remove the sum over $i$.
 
@@ -768,7 +784,8 @@ Let us recall mirror descent iteration
 	& = \nabla \conj (\nabla \logpart(\natp_t) - \lr \nabla f(\natp_t))
 \end{align}
 where $\linear_f(\natp; \natp_t) = f(\natp_t) + \langle \nabla f(\natp_t), \natp - \natp_t \rangle$ is the linear approximation of $f$ in $\natp_t$ evaluated at $\natp$. Solving this problem require solving problems of the form $\argmin_\natp - \langle c, \natp \rangle + \logpart(\natp)$, eg computing the convex conjugate of $\logpart$. 
-Note that finding $\natp_*$ is done with 1 step of mirror descent. Indeed plugging in definitions of $f$ and $\mu$ yields
+Note that finding $\natp_*$ is done with 1 step of mirror descent with step-size 1.
+Indeed plugging in definitions of $f$ and $\mu$, and assuming constant step-size $\lr$ yields
 \begin{align}
 	&\mu_{t+1}  = \mu_t - \lr (\mu_t - \mu_*) \\
 	\implies &\mu_t  = \mu_* + (1- \lr)^t (\mu_0 - \mu_*)
@@ -790,33 +807,37 @@ Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP}, we 
 where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
 
 
-Stochastic Mirror Descent (SMD) was studied under relative smoothness assumptions in 2 papers : \citet{hanzely2018fastest} and \citet{dragomir2021fast}.
+We know of 2 papers that study Stochastic Mirror Descent (SMD) under relative smoothness assumptions -- \citet{hanzely2018fastest} and \citet{dragomir2021fast}. We are now going to review these works.
 
 \subsection{Work by Hanzely}
 
+\paragraph{General Approach.} 
 \citet{hanzely2018fastest} got convergence rates in the smooth strongly-convex case with tail averaging. With constant step-size, they proved linear convergence down to a variance ball. With step-size $\gamma_t = n_0 + t$, they proved a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 Let us have a look at their variance assumption \citep[Assumption 5.1]{hanzely2018fastest}.
-Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the descent direction $\natp_{t+1} - \natp_t = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t ) - \natp_t $ that should hold for all time steps  
+Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the next iterate $\natp_{t+1} = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t )$ that should hold for all time steps  
 \begin{align}
 	\lr_t \sigma^2 \geq 
-	&\Cov(- g_t,\natp_{t+1} - \natp_t | X_{1 \dots t})  \label{eq:hanzely_hypothesis} \\
-	&= \expect{\langle - g_t, \natp_{t+1} \rangle}  - \langle \E[-g_t], \E[\natp_{t+1}] \rangle   \\
-	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}\\
-	 &= \expect[X_t]{\bregman(\natp_{t+1} ; \bar \natp_{t+1} ) + \bregman(\bar \natp_{t+1} ; \natp_{t+1} ) }
+	&\Cov(- g_t,\natp_{t+1} | X_{1 \dots t})  \label{eq:hanzely_hypothesis} \\
+	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}
 \end{align}
-where $\gamma_t$ is the step-size, expectations are conditional on the past, and $\bar \natp_{t+1}$ is the theoretical output of a deterministic Bregman gradient step. Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
+where $\gamma_t$ is the step-size, and expectations are conditional on all of the past. 
+Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
+If we introduce $\bar \natp_{t+1}=\nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t  \nabla f(\natp_t) )$ the theoretical output of a deterministic Bregman gradient step, then following Lemma~\ref{lem:covariance} we can rewrite this covariance as the expectation of symmetrized Bregman between stochastic and deterministic iterates $\expect[X_t]{\bregman(\natp_{t+1} ; \bar \natp_{t+1} ) + \bregman(\bar \natp_{t+1} ; \natp_{t+1} ) }$.
+This view is useful to understand that we are measuring the variance of each iteration, which is necessarily positive.
 
+\paragraph{MAP Special Case.}
 In our setting, 
 \begin{align}
 	\nabla f(\natp_t) - g_t =  T(X_{t+1})	- \E[T(X)]
 \end{align}
-so that $\sigma$ is really a bound on the covariance of the sufficient statistics with another variable
+so that $\sigma$ is really a bound on the covariance of the sufficient statistics $T(X_{t+1})$ with the next iterate $\natp_{t+1}$, which itself depends on $T(X_{t+1})$ via a coefficient $\lr_t$ and a non-linearity $\nabla\conj$.
 \begin{align}
-	&\Cov( T(X_{t+1}), \natp_{t+1}| X_{1\dots t})
-	\leq \lr_t\sigma^2 \\
+	&\Cov( T(X_{t+1}), \natp_{t+1} | X_{1\dots t})
+	\leq \lr_t\sigma^2 
+	\label{eq:covariance_assumption} \\
 	=& \Cov(T(X_{t+1}), \nabla\conj \left(\lr_t T(X_{t+1}) + (1-\lr_t ) \mu_t \right) | X_{1\dots t}) \;.
 \end{align}
-In other words, we need for all $\lr\in(0,\inv{n})$, and a certain subset of $\mu$,
+In other words, we need for all $\lr_t \in [0; \lr_0]$, and the subset of $\mu$ that can be reached by on the trajectory $\mu_t$,
 \begin{align}
 \label{eq:hypvariance}
 	\boxed{
@@ -826,29 +847,18 @@ In other words, we need for all $\lr\in(0,\inv{n})$, and a certain subset of $\m
 \end{align}
 
 \begin{example}
-Unfortunately this bound is not trivially satisfied, even for simple exponential family members, such as centered gaussians $\cN(0,\sigma^2)$, when we are aiming to estimate the variance.
-The covariance  \eqref{eq:hypvariance} we want to bound is equal to
+Unfortunately this bound is not trivially satisfied, even for simple exponential family members.
+For instance, centered gaussians variance estimation $\cN(0,\mu^*)$ does not verify \eqref{eq:hypvariance}.
+Indeed the covariance  \eqref{eq:hypvariance} we want to bound is equal to
 \begin{align}
-	\half \expect{\frac{\sigma_*^2 - X^2 }{ X^2 \lr + (1-\lr) \sigma_0^2 }}
+	\half \expect[X\sim \cN(0,\mu^*)]{\frac{\mu*^2 - X^2 }{ X^2 \lr + (1-\lr) \mu^2 }}
+	= \inv{\lr} (1+a) \expect[X \sim \cN(0,1)]{\inv{a + X^2}} - \inv{\lr} 
 \end{align}
+where $a = \frac{1-\lr}{\lr} \frac{\mu}{\mu^*}$
 When $\sigma_0 \rightarrow 0$, as might happen, this value explodes.
 \end{example}
 
-\subsection{Work by the French Musketeers}
-
-\citet{dragomir2021fast} use a quite different assumption, bearing on a Bregman measure of the stochastic gradients norm at the optimum
-\begin{align}
-	2 \lr^2 \sigma^2
-	\geq \expect[X]{\bregmanconj(\mu_t - 2 \lr_t \nabla f(\natp^*, X) ; \mu_t ) } \; .
-	\label{eq:dragomir_hypothesis}
-\end{align}
-When $\logpart$ is strongly convex, this hypothesis is akin to bounding the variance of the gradient at the optimum, whereas \eqref{eq:hanzely_hypothesis} is akin to bounding gradient variance everywhere. This comparison makes this assumption more interesting, as it might apply to unbounded strongly convex function, like modern analysis of SGD. 
-
-However it does use a metric which depends on the trajectory $\mu_t$. It is the flaw of both these variance assumptions \eqref{eq:hanzely_hypothesis} and \eqref{eq:dragomir_hypothesis}, as well the proximal point variance assumption \eqref{eq:proximal_variance}, that they depend on the stochastic trajectory. Indeed this trajectory has a non-zero probability of being arbitrarily close from the border of the domain, where $\bregman$ may get extremely ill-conditioned. 
-
-\subsection{Transferring SMD's covariance assumption to MAP estimates}
-
-\paragraph{MLE Analysis.}
+\paragraph{Straightforward analysis}
 When we plug this bound into the expected suboptimality formula~\eqref{eq:bregmanMLE} with the maximum likelihood estimate $\hat \mu =  \inv{n}\sum_i T(X_i)$, we get
 \begin{multline}
 	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ;\hat \mu) }
@@ -862,33 +872,27 @@ In words, this variance assumption on $T(X)$ and $\conj$ immediately gives us a 
 
 This is too simple to be true, as shown on our trailing example.
 In particular we show that it cannot hold for all possible values of $\mu$ within the double expectation in~\eqref{eq:MLE_bound}.
-The mean parameter $\mu$ take values arbitrarily close from $0$, which makes the covariance explode.
-\RLP{should we get a functional bound $\sigma^2(\mu)$ instead ? or split between $\mu$ smaller or larger than $\varepsilon$.}
+The mean parameter $\mu$ takes values arbitrarily close from $0$, which makes the covariance explode.
 
-\paragraph{MAP Analysis.}
-We can also apply this result to the MAP estimate $\hat \mu = \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n}$ but I did not manage to reach a satisfying conclusion about the bias. 
-Note $\tilde \mu = \E[\hat \mu] = \frac{n_0 \mu_0 + n \mu_*}{n_0+n}$ and $\gamma_0= \frac{n_0}{n_0+n}$ and the step-size $\gamma = \inv{n_0 + n}$ .
+\paragraph{Bias-Variance Perspective.}
+As shown in equation~\eqref{eq:covariance_expansion}, covariance~\eqref{eq:covariance_assumption} is an upper bound on the variance term in either the primal \eqref{eq:primal_pivot} or dual \eqref{eq:bias-mixed-variance} expectation pivot decompositions
 \begin{align}
-	\expect[X_{1\dots n}]{\bregmanconj ( \mu_* ;\hat \mu) } 
-	&\leq \conj(\mu_*) - \conj(\tilde \mu) + \gamma_0 \langle \mu_0 - \mu_* ; \E[\hat \natp] \rangle + (1 - \gamma_0) \gamma \sigma^2  \\
-	& = \bregmanconj (\mu_* ; \tilde \mu) - \langle \tilde \mu - \mu_* ;    \tilde \natp - \E[\hat \natp] \rangle + \frac{n}{(n_0+n)^2}\sigma^2
+	\Cov(\MAPm, \MAPt)  = \frac{n}{n+n_0} \expect[X_{1:n-1}]{\underbrace{\Cov(\MAPt ; T(X_{n}) | X_{1:n-1} )}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance}}}
+	\leq  \frac{n \sigma^2}{(n+n_0)^2}
 \end{align}
-so we recover the $O(n^{-1})$ for the variance and we are still looking for $O(n^{-2})$ rate for the bias. The Bregman term in the bias should be in this spirit, given a quadratic approximation
+so we recover a $O(n^{-1})$ upper bound on the variance term and we are still looking for the $O(n^{-2})$ rate for the bias term. It is simpler to consider the primal pivot, but still hard to say anything about $\bregmanconj(\mu^* ; \tilde \mu_n) = \bregman(\E[\MAPt]; \natp^*)$ without further assumptions.
+
+\subsection{Work by the French Musketeers}
+
+\citet{dragomir2021fast} use a quite different assumption, bearing on a Bregman measure of the stochastic gradients norm at the optimum
 \begin{align}
-	 \bregmanconj (\mu_* ; \tilde \mu)  
-	 = \bregmanconj (\mu_* ; \mu_* + \gamma_0 (\mu_0 - \mu_*) ) \approx \half \gamma_0^2 \norm{\mu_0 - \mu_*}^2_{\mSigma_*^{-1}}
+	2 \lr^2 \sigma^2
+	\geq \expect[X]{\bregmanconj(\mu_t - 2 \lr_t \nabla f(\natp^*, X) ; \mu_t ) } \; .
+	\label{eq:dragomir_hypothesis}
 \end{align}
-where $\mSigma_* = \Cov_{\mu_*}(T(X))$. 
-The order of terms $\bregmanconj (\mu_* ; \tilde \mu)  \neq \bregmanconj (\tilde \mu ; \mu_* ) $ only affects third order terms.
-That's for the bregman, but the scalar product is harder to bound. Hopefully it could be positive. If not we know that $\tilde \mu - \mu_* = \frac{n_0}{n_0+n} (\mu_0 - \mu_*) = O(n^{-1})$ , and we can hope that the same holds for $\tilde \natp - \E[\hat \natp] = \nabla \conj(\E[\hat \mu]) - \E[\nabla\conj (\hat \mu)]$, which kinda measures the non-linearity, or the curvature of $\conj$. Using a simple cauchy-schwartz, and the hessian of the conjugate, we might be able to get something.
+When $\logpart$ is strongly convex, this hypothesis is akin to bounding the variance of the gradient at the optimum, whereas \eqref{eq:hanzely_hypothesis} is akin to bounding gradient variance everywhere. This comparison makes this assumption more interesting, as it might apply to unbounded strongly convex function, like modern analysis of SGD. 
 
-
-\paragraph{Relative Continuity}
-\citet{lu2019relative} define relative continuity to tackle non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and $\ell^2$ distance. Although this hypothesis is far from intuitive, it does yield convergence rates very similar to typical SGD analysis. In this work we are first concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters.
-
-\paragraph{Bound on the trajectory.}
-Bound \eqref{eq:hypvariance} might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}?
-No we cannot because $\mu$ takes every possible values as a random variable within the expectation.
+However it does use a metric which depends on the trajectory $\mu_t$. It is the flaw of both these variance assumptions \eqref{eq:hanzely_hypothesis} and \eqref{eq:dragomir_hypothesis}, as well the proximal point variance assumption \eqref{eq:proximal_variance}, that they depend on the stochastic trajectory. Indeed this trajectory has a non-zero probability of being arbitrarily close from the border of the domain, where $\bregman$ may get extremely ill-conditioned. 
 
 
 \subsection{Work by Loizou}
@@ -903,6 +907,11 @@ for which a sufficient condition is
 which holds in a lot of settings but not all. For instance, a gaussian $\cN(\mu,\sigma^2)$ can overfit on a single data point and give it infinite density -- eg converge to a Dirac. However we can overcome this issue by grouping data points : a gaussian can not overfit on two points. Aggregating points is simple : average sufficient statistics, exactly like in MLE or MAP $T'(X_1,X_2) = \frac{T(X_1) + T(X_2)}{2}$. 
 So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$. What kind of results can it give us my dear Nicolas Loizou ? ;)
 
+
+\subsection{Discussion}
+
+\paragraph{Bound on the trajectory.}
+Bound \eqref{eq:hypvariance} might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}? In the case of the Gaussian variance, we cannot because $\mu$ takes every possible values as a random variable within the expectation.
 
 \section{Expected Relative Smoothness}
 To avoid gradient variance assumption, we can take inspiration from expected smoothness, which is a consequence of convexity and smoothness, and which yields a general analysis of SGD. Can we get something similar with relativity and SMD? 
@@ -954,7 +963,9 @@ Exponential families are a mainstream tool in machine learning. They are used  t
 Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors yet critical as it does not hold for multivariate normals with unknown covariance. 
 \citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
 
-\citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of relative smoothness \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
+\citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of \textit{relative smoothness} \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
+
+Relative smoothness gave rise to sibling hypothesis, such as \textit{relative continuity} \citep{lu2019relative},  which was used to characterize non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and the $\ell^2$ distance. Although this hypothesis is far from intuitive, \citet{lu2019relative} obtained convergence rates for mirror descent that are very similar to typical SGD analysis. In this work we are concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters. Consequently, we do not further investigate relative continuity.
 
 \citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
 
@@ -987,6 +998,42 @@ In the realm of self-concordance, \citet{ostrovskii2021finite}  shows a finite s
 
 \newpage
 \appendix
+
+\section{Other Exponential Families}
+\label{app:expfamily}
+
+\subsection{Full Gaussian $\cN(m, \sigma^2)$}
+Take the sufficient statistic $T(X) = (X, X^2)$. Then the mean parameter is $\mu = \E[T(X)] = ( m , m^2 + \sigma^2) = (\mu_1, \mu_2) $.
+The log-density is written
+\begin{align}
+	\log p(X) 
+	&= -\frac{(X-m)^2}{2 \sigma^2} - \half \log \sigma^2 + \cst \\
+	&=  \frac{m}{\sigma^2} X -\inv{2 \sigma^2} X^2 - \frac{m^2}{2 \sigma^2} - \half \log \sigma^2 \\
+	&=  \natp_1 X + \natp_2 X^2  - \logpart(\natp) \; .
+\end{align}
+From this formula, we can identify the duality map
+\begin{align}
+	\natp_1 &= \frac{m}{\sigma^2} = \frac{\mu_1}{\mu_2 - \mu_1^2} \\
+	\natp_2 &= -\inv{2 \sigma^2} =  \frac{ - 1}{2(\mu_2 - \mu_1^2)}  < 0
+\end{align}
+and we can also explicit the log-partition as a function of the natural parameters
+\begin{align}
+	\logpart(m, \sigma) &= \frac{m^2}{2 \sigma^2} + \half \log \sigma^2 \\
+	\logpart(\natp) &= \frac{\natp_1^2}{-4\natp_2} - \half \log(-\natp_2) \; .
+\end{align}
+We can perform a sanity check by deriving $\logpart$ and verifying that its gradient gives $\mu(\natp)$
+\begin{align}
+	\mu_1 &= \frac{\natp_1}{-2\natp_2}  \\
+	\mu_2 & = \left( \frac{\natp_1}{-2\natp_2} \right)^2 + \inv{-2 \natp_2} \; .
+\end{align}
+Now let us discover the entropy
+\begin{align}
+	\conj (\mu) &= \mu_1 \natp_1 + \mu_2 \natp_2  - \logpart(\natp(\mu)) \\
+	& = \frac{\mu_1^2}{\mu_2 - \mu_1^2}  - \frac{\mu_2}{2(\mu_2 - \mu_1^2)} - \frac{\mu_1^2}{2(\mu_2 - \mu_1^2)}  - \half \log(\mu_2 - \mu_1^2) \\
+	&= \half \frac{\mu_1^2 - \mu_2}{\mu_2 - \mu_1^2} - \half \log(\mu_2 - \mu_1^2) \\
+	& = - \half \log(\mu_2 - \mu_1^2) + \cst \; .
+\end{align}
+In this case, the Bregman divergences induced by the log-partition or the entropy are ugly, so we will not focus on them.
 
 \section{Three points lemma}
 \label{app:3points}
@@ -1198,17 +1245,29 @@ If we apply \eqref{eq:log_bound} to the MLE, we get the upper bound
 which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This highlights the factor $2$ difference between the log-bound and an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
 
 \subsection{Proof of Expected MAP Natural Parameter}
+Let us introduce a variable characterizing the importance of the prior
+\begin{important}
+	\begin{align}
+			a=n_0 \frac{\mu_0}{\mu^*} \; .
+	\end{align}
+\end{important}
 \begin{lemma}[Expected MAP natural parameter]
 	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
-	\begin{align}
+\begin{equation}
 		\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\natp^*}} 
-		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n+n_0}} \; .
-	\end{align}
+		\leq \begin{cases}
+		\frac{n_0 +n}{a+n-2} \text{ when } n\geq 2,\\
+		\frac{n_0 +1}{a} \text{ when } n=1.
+		\end{cases}
+		\label{eq:lemma_natp_bound}
+	\end{equation}
 \end{lemma}
 
 \begin{proof}
+	The lower bound can be readily obtained with the Jensen inequality applied on the convex function $x\mapsto\inv{x}$ for $x>0$.
+	The upper bound requires much more work.
 	To start, let us plug in the definition of $\MAPm$
 	\begin{align}
 		\expect{\frac{\mu^*}{\MAPm}} 
@@ -1217,12 +1276,7 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This 
 		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
 		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
 	\end{align}
-	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and 
-\begin{important}
-	\begin{align}
-			a=n_0 \frac{\mu_0}{\mu^*} \; .
-	\end{align}
-\end{important}
+	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and $a=n_0 \frac{\mu_0}{\mu^*}$.
 	We reformulate this expectation with the trick
 	\begin{align}
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
@@ -1256,13 +1310,13 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This 
 	\end{align}
 	Now our goal is to bound this function with simpler functions.
 	Fortunately, mathematicians have been working on these integrals for decades.
-	When $n=2$, eg $k=1$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8\#E1}{verifies the bound}
+	When $n=2$, eg $k=1$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8.E1}{verifies the bound}
 	\begin{align}
 		\half \log(1 + \frac{2}{x}) 
 		\leq e^x E_1(x) 
 		\leq \log(1+\inv{x}) \leq \inv{x} \; .
 	\end{align}
-	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19\#E21}{the general bound}
+	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound}
 	\begin{align}
 		\inv{x+k}
 		\leq e^x E_k(x) 
@@ -1281,24 +1335,38 @@ which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This 
 		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n + n_0}}  
 	\end{align}
 	where we used $\frac{a + n}{n +n_0} = \frac{\mu_n}{\mu^*}$.
-\end{proof}
-
-We are left with a special case when  $n=1$, eg $k=\half$. Then the integral can be written with the complementary error function, or \href{https://dlmf.nist.gov/7.8#E1}{Mill's ratio} $M(x) = e^{x^2} \int_x^\infty e^{-t^2} dt$. Indeed, taking $t= x \sqrt{u}$
+	
+We are left with a special case when  $n=1$, eg $k=\half$. 
+Then we can use the trivial bound 
 \begin{align}
-	\int_x^\infty e^{-t^2} dt = x \int_1^\infty \frac{e^{-x^2 u}}{\sqrt{u}} du = x E_{\half}(x^2) \\
-	\implies M(x) = x e^{x^2} E_{\half}(x^2)
+	\expect{\inv{a + X^2}} < \inv{a}
+	\label{eq:trivial_bound}
+\end{align}
+which is what we are using in the lemma,
+or we can get a stronger result with further derivations.
+The integral can be written with \href{https://dlmf.nist.gov/7.8.E1}{Mill's ratio} $M(x) = e^{x^2} \int_x^\infty e^{-t^2} dt$, by doing the change of variable $t= x \sqrt{u}$, $dt=\frac{x}{2} \frac{du}{\sqrt{u}}$ 
+\begin{align}
+	& \int_x^\infty e^{-t^2} dt 
+	= \frac{x}{2} \int_1^\infty \frac{e^{-x^2 u}}{\sqrt{u}} du 
+	= \frac{x}{2} E_{\half}(x^2) \\
+	\implies & M(x) = \frac{x}{2} e^{x^2} E_{\half}(x^2) \\
+	\implies & e^{y} E_{\half}(y) = 2 \frac{M(\sqrt{y})}{\sqrt{y} }
 \end{align}
 so that 
 \begin{align}
-		\half e^{\half[a]} E_{\half[1]}(\half[a]) 
-		= \half \sqrt{\frac{2}{a}} M(\sqrt{\half[a]})
-		= \inv{a} \sqrt{\half[a]} M(\sqrt{\half[a]}) \; .
+		\expect{\inv{a + X^2}} 
+		= \half e^{\half[a]} E_{\half[1]}(\half[a]) 
+		= \sqrt{\frac{2}{a}} M(\sqrt{\half[a]})
+		= \frac{2}{a} \sqrt{\half[a]} M(\sqrt{\half[a]}) \; .
 \end{align}
-and \href{https://dlmf.nist.gov/7.8#E5}{we known that} $x M(x) < \half$ so we get 
+Then using \href{https://dlmf.nist.gov/7.8.E8}{another bound from the DLMF}, we get that 
 \begin{align}
-	\expect{\inv{a + X^2}} < \inv{2 a}
+	\inv{a+1}
+	\leq \expect{\inv{a + X^2}} 
+	< \inv{a}\left( 1 - \inv{a+3} \right) \; .
 \end{align}
-FUCK That's  trivial as  it's true for 1/a.
+\end{proof}
+
 
 \subsection{Proof of MAP Bound}
 \begin{theorem}[MAP Upper Bound]
@@ -1307,29 +1375,60 @@ FUCK That's  trivial as  it's true for 1/a.
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
 	\leq \begin{cases}
 		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
-		\bregmanconj( \mu_*; \mu_0) +\inv{a} \ \text{if}\ n=1,\\
-		\frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} if n\geq 2 \ \text{and}\ a=n_0 \frac{\mu_0}{\mu^*} >0
+		\inv{2(n_0+1)}  + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 \frac{\mu_0}{\mu^*}(1 + \inv{n_0} )} \ \text{if}\ n=1,\\
+		\frac{1}{n_0 \frac{\mu_0}{\mu^*} +n-2} + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \ \text{if}\ n\geq 2
 	\end{cases}
 \end{equation}
-\end{theorem}
-
-$\frac{1+n_0}{4} e^{\half[a]} \sqrt{\frac{2 \pi}{a}} \mathrm{erfc}(\sqrt{\half[a]})  - \half  + \frac{a - n_0}{2(1+n_0)} $
+\end{theorem} 
 
 \begin{proof}
-		Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ so we focus on the simple log-bound given by \eqref{eq:log_bound}. We get
+When $n=0$, the inequality is an equality. 
+Wen $n>0$, Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ so we focus on the simple log-bound given by \eqref{eq:log_bound},
 \begin{align}
 	2\expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \expect{\frac{\mu^*}{\MAPm}}  + \expect{\frac{\MAPm}{\mu^*}} - 1 \\
-	&\leq \frac{\mu^*}{\mu_n - \frac{2 \mu^*}{n + n_0}}   + \frac{\mu_n}{\mu^*} - 1 \\
-	&= \frac{n_0 + n}{a +n - 2} + \frac{a+n}{n_0 + n} - 2 \\
-	&= \frac{n_0 - a + 2}{a +n - 2} + \frac{a - n_0}{n_0 + n} \\
-	&= \frac{2}{a+n-2} + \frac{(n_0 - a)^2}{(a+n-2)(n_0 + n)} \\
-	\implies \expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a)^2}{2(a+n-2)(n_0 + n)} \\
-	&\leq \frac{1}{a+n-2} + \frac{\half(1 - \frac{\mu_0}{\mu^*})^2}{(\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} 
+	&\leq \expect{\frac{\mu^*}{\MAPm}} -1  + \expect{\frac{\MAPm}{\mu^*}} - 1 \; .
+\end{align}
+We readily get 
+\begin{align}
+	 \expect{\frac{\MAPm}{\mu^*}} - 1 = \frac{a+n}{n_0+n} - 1 = \frac{a - n_0}{n_0+n}
 \end{align}
 where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
-This inequality highlights a clear variance-bias decomposition, to compare with the MLE. Unfortunately it is not tight asymptotically as the inequality \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$. by~\eqref{eq:log_bound}.
+There remains the more problematic term with the expectation of the inverse mean parameter.
+Fortunately, we derived the bound \eqref{eq:lemma_natp_bound} for this purpose.
+
+\textbf{When $n\geq 2$}, we get 
+\begin{align}
+	\expect{\frac{\mu^*}{\MAPm}} - 1 
+	\leq \frac{n_0 + n}{a +n - 2} -1
+	= \frac{n_0 - a + 2}{a +n - 2}
+	 = \frac{2}{a +n - 2} + \frac{n_0 - a}{a +n - 2}
+\end{align}
+so putting it all together we get 
+\begin{align}
+	\expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
+	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \frac{n_0 - a + 2}{(a+n-2)(n_0+n)} \\
+	&= \frac{1}{a+n-2} + \frac{(n_0 - a)^2 + 2(n_0-a) \pm 1}{2(a+n-2)(n_0+n)} \\
+	&= \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2 - 1}{2(a+n-2)(n_0+n)} \\
+	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2}{2(a+n-2)(n_0 + n)} \\
+	&= \frac{1}{a+n-2} + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \; .
+\end{align}
+
+\textbf{When $n=1$} the bound~\eqref{eq:lemma_natp_bound}  on the expected natural parameter gives
+\begin{align}
+	\expect{\frac{\mu^*}{\MAPm}} - 1 
+	\leq \frac{n_0 + 1}{a} -1
+	= \frac{n_0 +1 - a}{a}
+\end{align}
+so putting it all together we get
+\begin{align}
+	2\expect{\bregmanconj(\mu^*; \hat \mu_1)} 
+	&\leq \frac{a - n_0 \pm 1}{n_0 + 1}  + \frac{n_0 - a + 1}{a} \\
+	& = \inv{n_0+1}  + ( a - n_0 - 1)(\inv{n_0+1} - \inv{a}) \\
+	& = \inv{n_0+1}  + \frac{(n_0 + 1 -a)^2}{a(n_0+1)}\\
+	&= \inv{n_0+1}  + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 \frac{\mu_0}{\mu^*}(1 + \inv{n_0} )} 
+\end{align}
+so we do recover the same bias variance structure as when $n\geq2$.
 \end{proof}
 
 \section{More on the Bias-Variance Decomposition}
