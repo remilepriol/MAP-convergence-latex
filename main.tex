@@ -674,10 +674,33 @@ In both cases, $f(\natp)$ is convex and 1-smooth  and 1-strongly convex relative
 \paragraph{Goal.} We want to bound the suboptimality $f(\natp) - f^*$ as a function of the number of samples. 
 
 
-\paragraph{\TODO{Discussion with Radu}}
-PROBLEM. Even in the Euclidean setting, the decreasing step-size analysis with SGD (or SPP) gives a rate $O(1/\log(n))$, which is far from the asymptotic $O(1/n)$.
+\subsection{Other Idea}
+There are two main bottlenecks when casting MAP as an iterative algorithm. 
+\begin{enumerate}
+	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
+	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
+\end{enumerate}
+Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem.Their descent lemma looks like
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
+\end{align}
+where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\natp^t$ and $\natp^*$ ; and $\lr_t \leq \inv{2L}$.
+On the other hand, the problem of most Bregman analysis is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t \sigma^2 \; .
+\end{align}
+The problem is that this exponent $2$ is crucial to get fast convergence with a $O(\inv{t})$ step-size. Otherwise the variance is too large and we need to decrease the step-size more slowly to reach the optimum quickly.
+Now our question is what happens if we get something in-between ? e.g.
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^\alpha \sigma^2 \; .
+\end{align}
+where $1<\alpha<2$ is some exponent characterizing the geometry of the problem.
+Inspired by \citet{gower2019sgd} we set
+\begin{align}
+	\lr_t := \inv{m} \left ( 1 - \left (\frac{k}{k+1} \right)^\alpha \right ) \; .
+\end{align}
 
-If we change the step-size, for $1/\sqrt{n}$ for instance, the algorithm changes. It becomes a weighted average of the sufficient statistics. It might be helpful for online learning (changing target), but it is not relevant when the target is fixed.
+
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
@@ -765,8 +788,8 @@ Then, taking the iterate with the least expected loss, we get the rate
 \end{align}
 which is very analogous to standard rates for SGD.
 It does converge, whenever $\sum_{t=0}^{T-1} \lr_t$ diverges to $+\infty$ much faster than $\sum_{t=0}^{T-1} \lr_t^2$.
-When $\lr_t \propto t^{-\half}$ for instance, we get a rate $O(\frac{\log(t)}{\sqrt{t}})$.
 But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ rate.
+With the sums  $\sum \lr_t$ and $\sum \lr_t^2$, we would need a $O(\inv{\sqrt{t}})$ step-size to ensure a $O(\inv{\sqrt{t}})$ convergence rate, but then the iterate becomes a weighted average of the sufficient statistics, giving more weight to the end of the tail. This may be suited for online learning, but not for our stationary setting.
 
 \paragraph{Application to the MAP.}
 The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which is an average in the primal space, and gives more weight to the first iterates. It does not immediately apply to the last iterate.
@@ -895,6 +918,8 @@ When $\logpart$ is strongly convex, this hypothesis is akin to bounding the vari
 However it does use a metric which depends on the trajectory $\mu_t$. It is the flaw of both these variance assumptions \eqref{eq:hanzely_hypothesis} and \eqref{eq:dragomir_hypothesis}, as well the proximal point variance assumption \eqref{eq:proximal_variance}, that they depend on the stochastic trajectory. Indeed this trajectory has a non-zero probability of being arbitrarily close from the border of the domain, where $\bregman$ may get extremely ill-conditioned. 
 
 
+Their work can be seen as a Bregman generalization of \citet{gower2019sgd}.
+
 \subsection{Work by Loizou}
 An assumption pointed out by Nicolas Loizou is 
 \begin{align}
@@ -912,32 +937,6 @@ So in general we may say that this hypothesis holds, at the expense of dividing 
 
 \paragraph{Bound on the trajectory.}
 Bound \eqref{eq:hypvariance} might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}? In the case of the Gaussian variance, we cannot because $\mu$ takes every possible values as a random variable within the expectation.
-
-\section{Optimization Ideas}
-
-
-\section{Self-Concordance}
-
-A big problem is that $\conj$ is seldom Lipschitz or smooth. For instance the log-partition function of a multivariate normal is 
-\begin{align}
-    \logpart(\eta, \Lambda) = \half \eta^\top \Lambda^{-1} \eta - \log\det(\Lambda)
-\end{align}
-which is defined on $\eta \in \real^d$ and $\Lambda\in \real^{d\times d}$ symmetric positive definite. 
-It is not strongly convex, so $\conj$ is not smooth.
-
-Another hypothesis that may be more suitable is self-concordance. $f: \real \rightarrow \real$ is SC if 
-\begin{align}
-    \abs{f'''(x)} \leq 2 f''(x)^{\frac{3}{2}} \; .
-\end{align}
-The exponent $\frac{3}{2}$ is motivated by dimensional analysis and the factor $2$ appears to simplify downstream calculus.
-A multidimensional function $f: \real^n \rightarrow \real$ is SC if it's restriction to any line is SC.
-Negative logarithm $-\log(x)$ and entropy $x\log(x)$ are both self-concordant function. This is good news for us since log-partition function may include SC logarithmic barriers.
-In particular, gaussians have a logarithmic term. They also have an inverse term which is not self-concordant, but which is generalized self-concordant.
-
-\paragraph{Questions.}
-Is there already an SC analysis of proximal point methods. (that’s not affine invariant)?
-If the log-partition is SC, then what does it mean for its gradient, the mapping from natural to mean parameters ? 
-
 
 \section{Related Work}
 Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
@@ -1618,7 +1617,23 @@ See Figure~\ref{app:fig:bias-variance-numerical}.
 
 \clearpage
 
-\section{Tentative with self-concordant function}
+\section{Self-Concordance}
+An hypothesis that may be more suitable than smoothness of Lipschitzness is self-concordance. $f: \real \rightarrow \real$ is self-concordant (SC) if 
+\begin{align}
+    \abs{f'''(x)} \leq 2 f''(x)^{\frac{3}{2}} \; .
+\end{align}
+The exponent $\frac{3}{2}$ is motivated by dimensional analysis and the factor $2$ appears to simplify downstream calculus.
+A multidimensional function $f: \real^n \rightarrow \real$ is SC if it's restriction to any line is SC.
+Most importantly, the negative logarithm $-\log(x)$ and its matrix generalization $-\log \det(\mX)$ (to verify) are self-concordant functions.
+This is great, but it is missing all the other barrier objectives $x^{-\alpha}, \alpha>0$. 
+For instance, gaussians have a logarithmic term, but hey also have an inverse term which is not self-concordant.
+These other barriers can fit in the framework of  generalized self-concordance \citep{dvurechensky2020selfconcordant} , but the calculus quickly gets very complex, as this generalized self-concordance is not as clean as the standard self-concordance.
+
+\paragraph{Questions.}
+Is there already an SC analysis of proximal point methods. (that’s not affine invariant)?
+If the log-partition is SC, then what does it mean for its gradient, the mapping from natural to mean parameters ? 
+
+\subsection{Damien's Trials}
 
 We want to have a rate of convergence on
 \[
@@ -1630,7 +1645,7 @@ where
 \]
 We first assume that $A^*$ is self-concordant.
 
-\subsection{Notations}
+\paragraph{Notations}
 \begin{itemize}
     \item $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$
     \item $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$
@@ -1680,7 +1695,7 @@ Assume $\|\mu^*-\mu_n\|_{\mu^*} < c$,
     \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-c}\right) .
 \]
 
-\subsection{not good}
+\paragraph{Discarded}
 However,
 \begin{align*}
     \|\mu^*-\mu_n\|^2_{\mu_n} & = \left\|\frac{n+n_0-1}{n+n_0}(\mu^*-\mu_{n-1}) + \frac{1}{n+n_0}(\mu^*-T_n)\right\|^2_{\mu_n},\\
