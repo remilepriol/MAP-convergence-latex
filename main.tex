@@ -913,24 +913,8 @@ So in general we may say that this hypothesis holds, at the expense of dividing 
 \paragraph{Bound on the trajectory.}
 Bound \eqref{eq:hypvariance} might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}? In the case of the Gaussian variance, we cannot because $\mu$ takes every possible values as a random variable within the expectation.
 
-\section{Expected Relative Smoothness}
-To avoid gradient variance assumption, we can take inspiration from expected smoothness, which is a consequence of convexity and smoothness, and which yields a general analysis of SGD. Can we get something similar with relativity and SMD? 
-The analog of gradient norm is the Bregman between iterates, similar to the Homeomorphic EM rate. 
+\section{Optimization Ideas}
 
-
-
-\subsection{Convergence of Mirror Descent}
-To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
-\begin{align}
-	f(\natp^{t+1}) 
-	&\leq \ell_f(\natp^{t+1}, \natp^{t})  + L \bregman(\natp^{t+1}; \natp^{t})
-	& \text{(Relative $L$-smoothness)} \\
-	& \leq \ell_f(\natp^{*}, \natp^{t})  + L \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
-	& \text{(3 Points Lemma w. $x=\natp^*$)} \\
-	& \leq f(\natp^*) + (L - m) \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
-	& \text{(Relative $m$-strong convexity)}
-\end{align}
-Applying the 3 points lemma with \TODO{f}
 
 \section{Self-Concordance}
 
@@ -1002,8 +986,8 @@ In the realm of self-concordance, \citet{ostrovskii2021finite}  shows a finite s
 \section{Other Exponential Families}
 \label{app:expfamily}
 
-\subsection{Full Gaussian $\cN(m, \sigma^2)$}
-Take the sufficient statistic $T(X) = (X, X^2)$. Then the mean parameter is $\mu = \E[T(X)] = ( m , m^2 + \sigma^2) = (\mu_1, \mu_2) $.
+\subsection{Full Gaussian}
+To model $\cN(m,\sigma^2)$, we take the sufficient statistic $T(X) = (X, X^2)$. Then the mean parameter is $\mu = \E[T(X)] = ( m , m^2 + \sigma^2) = (\mu_1, \mu_2) $.
 The log-density is written
 \begin{align}
 	\log p(X) 
@@ -1031,7 +1015,7 @@ Now let us discover the entropy
 	\conj (\mu) &= \mu_1 \natp_1 + \mu_2 \natp_2  - \logpart(\natp(\mu)) \\
 	& = \frac{\mu_1^2}{\mu_2 - \mu_1^2}  - \frac{\mu_2}{2(\mu_2 - \mu_1^2)} - \frac{\mu_1^2}{2(\mu_2 - \mu_1^2)}  - \half \log(\mu_2 - \mu_1^2) \\
 	&= \half \frac{\mu_1^2 - \mu_2}{\mu_2 - \mu_1^2} - \half \log(\mu_2 - \mu_1^2) \\
-	& = - \half \log(\mu_2 - \mu_1^2) + \cst \; .
+	& = - \half \log (\mu_2 - \mu_1^2) + \cst \; .
 \end{align}
 In this case, the Bregman divergences induced by the log-partition or the entropy are ugly, so we will not focus on them.
 
@@ -1119,6 +1103,65 @@ is upper bounded by the simple formula
 	\implies f(x_t) - f(x_*) \leq \frac{L \cB_h(x_* ; x_0) }{t} \; .
 \end{align}
 These notions were rediscovered and expanded by \citet{bauschke2017descent} and \citet{lu2018relatively}. If you need to read one, pick \citet{lu2018relatively} -- I found it much much easier and more enjoyable to read.  This latter paper also derived a linear convergence rate for mirror descent under relative smoothness and strong-convexity, with the relative condition number $\frac{L}{\mu}$ appearing.
+
+
+\subsection{Convergence of Mirror Descent}
+\paragraph{Descent Lemma.}
+To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
+\begin{align}
+	f(\natp^{t+1}) 
+	&\leq \ell_f(\natp^{t+1}, \natp^{t})  + L \bregman(\natp^{t+1}; \natp^{t})
+	& \text{(Relative $L$-smoothness)} \\
+	& \leq \ell_f(\natp^{*}, \natp^{t})  + L \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
+	& \text{(3 Points Lemma w. $x=\natp^*$)} \\
+	& \leq f(\natp^*) + (L - m) \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
+	& \text{(Relative $m$-strong convexity)}
+\end{align}
+
+\paragraph{Monotonicity.}
+Applying the 3 points lemma with $x=\natp_t$, 
+\begin{align}
+	f(\natp^{t+1}) \leq  f(\natp^t) -L (\bregman(\natp^{t}, \natp^{t+1}) + \bregman(\natp^{t+1} , \natp^{t} ))
+\end{align}
+shows the function value is monotonically decreasing, and we the gap at each step is greater than the symmetrized bregman between iterates. 
+
+\paragraph{No Strong-Convexity.}
+The simpler case is when $m=0$, then we get a telescopic sum
+\begin{align}
+	\sum_{t=0}^{T-1} (f(\natp^{t+1}) - f(\natp^*)) 
+	&\leq L \sum_t \bregman(\natp^{*}; \natp^{t}) - \bregman(\natp^{*}); \natp^{t+1}) \\
+	&= L \bregman(\natp^{*}; \natp^{0}) - L\bregman(\natp^{*}); \natp^{T})\\
+	&\leq L \bregman(\natp^{*}; \natp^{0}) \; ,
+\end{align}
+from which we can conclude thanks to the monotonicity of $f(\natp^t)$
+\begin{align}
+	f(\natp^{T}) - f(\natp^*)
+	\leq  \frac{L}{T} \bregman(\natp^{*}; \natp^{0}) \; ,
+\end{align}
+
+\paragraph{Strong Convexity.} 
+When $m>0$, we need to do some cooking with a coefficient $\frac{L-m}{L}$ to create the telescopic sum
+\begin{align}
+	\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\natp^{t+1}) - f(\natp^*)) 
+	&\leq \sum_{t=0}^{T-1} \frac{( L-m)^{T-t}}{L^{T-t -1}} \bregman(\natp^{*}; \natp^{t}) 
+	- \frac{( L-m)^{T-t-1}}{L^{T-t-2}} \bregman(\natp^{*}); \natp^{t+1}) \\
+	&= \frac{( L-m)^{T}}{L^{T-1}}  \bregman(\natp^{*}; \natp^{0}) 
+	- L \bregman(\natp^{*}); \natp^{T}) \\
+	&\leq L \left( \frac{L-m}{L} \right)^T \bregman(\natp^{*}; \natp^{0}) \; .
+\end{align}
+Then using the monotonicity of $f(\natp^t)$, we end up with the geometric sum of $\frac{L-m}{L} < 1$
+\begin{align}
+		\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\natp^{t+1}) - f(\natp^*)) 
+		&\geq (f(\natp^{T}) - f(\natp^*)) \sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} \\
+		&\geq (f(\natp^{T}) - f(\natp^*)) \inv{1 - \frac{L-m}{L}} \\
+		&= (f(\natp^{T}) - f(\natp^*)) \frac{L}{m} \; .
+\end{align}
+Finally we end up with the final iterate linear convergence rate
+\begin{align}
+	f(\natp^{T}) - f(\natp^*)
+	\leq m  \left( 1 - \frac{m}{L} \right)^T \bregman(\natp^{*}; \natp^{0}) 
+\end{align}
+featuring $\frac{L}{m} $ the relative condition number.
 
 \section{Cramer-Rao Lower Bound}
 In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
