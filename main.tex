@@ -680,7 +680,7 @@ There are two main bottlenecks when casting MAP as an iterative algorithm.
 	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
 	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
 \end{enumerate}
-Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem.Their descent lemma looks like
+Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
 \begin{align}
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
 \end{align}
@@ -697,10 +697,31 @@ Now our question is what happens if we get something in-between ? e.g.
 where $1<\alpha<2$ is some exponent characterizing the geometry of the problem.
 Inspired by \citet{gower2019sgd} we set
 \begin{align}
-	\lr_t := \inv{m} \left ( 1 - \left (\frac{k}{k+1} \right)^\alpha \right ) \; .
+	\lr_t := \inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \; .
 \end{align}
+Asymptotically, we are in the desired category
+\begin{align}
+	\lr_t := \inv{m} \left ( 1 - \left (1 - \frac{1}{t+1} \right)^\alpha \right ) 
+	\approx \inv{m} \left ( 1 - \left (1 - \frac{\alpha}{t+1} \right) \right ) 
+	\approx \frac{\alpha}{m t} \in O(\inv{t} \; .
+\end{align}
+When does it start to $\lr_t \leq \inv{2L}$ ?
+\begin{align}
+	\lr_t \leq \inv{2L}
+	&\iff 1 - \left (\frac{t}{t+1} \right)^\alpha \leq \inv{2K} \\
+	&\iff \left (1 - \inv{2K}  \right)^{\inv{\alpha}} \leq \frac{t}{t+1}\\
+	&\iff \frac{t+1}{t} \leq \left (1 - \inv{2K}  \right)^{-\inv{\alpha}}
+\end{align}
+and we know by convexity of $(1+x)^\beta$ that $	\left (1 - \inv{2K}  \right)^{-\inv{\alpha}} \geq 1 + \inv{2\alpha K}$.
+This is giving us a sufficient condition on $t$ :
+\begin{align}
+	\frac{t+1}{t}  \leq 1 + \inv{2\alpha K} 
+	&\iff t ( 1 - 1 -  \inv{2\alpha K}) + 1 \leq 0 \\
+	&\iff t \geq 2\alpha K \; .
+\end{align}
+Thus when $t < t_0 = \ceil{2\alpha K}$, we set $\lr_t = \inv{2L}$.
 
-
+\TODO{Questions for later : finish typing the proof of convergence. Then think about how this exponent could appear?}
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
