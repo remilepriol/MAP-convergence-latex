@@ -680,12 +680,12 @@ There are two main bottlenecks when casting MAP as an iterative algorithm.
 	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
 	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
 \end{enumerate}
-Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
+Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} or \citet{dragomir2021fast} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
 \begin{align}
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
 \end{align}
 where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\natp^t$ and $\natp^*$ ; and $\lr_t \leq \inv{2L}$.
-On the other hand, the problem of most Bregman analysis is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
+On the other hand, the problem of most Bregman analysis \citep{hanzely2018fastest,dorazio2021stochastic} is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
 \begin{align}
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t \sigma^2 \; .
 \end{align}
@@ -875,14 +875,13 @@ from which we see that monotonicity is guaranteed if
 This is quite annoying, as our variance assumption requires $\sigma^2$ to be large, and this inequality requires $	\sigma^2 $ to be small -- the step we take should be greater than the variance.
 
 \paragraph{Descent Lemma and Telescopic Sum.}
-Similarly, applying the three points lemma with $\natp^*$, and taking te expectation with respect to $X_{t+1}$ yields
+Similarly, applying the three points lemma with $\natp^*$ yields
 \begin{align}
-	\lr_t(\E[f(\natp_{t+1},X_{t+1})] - f(\natp^*)) +  \E[\cB(\natp_{t+1} ; \natp_{t})] 
-	&\leq  \cB( \natp^*; \natp_{t})  - \E[\cB( \natp^*; \natp_{t+1})] \; .
+	\lr_t(f(\natp_{t+1},X_{t+1}) - f(\natp^*)) +  \cB(\natp_{t+1} ; \natp_{t})
+	&\leq  \cB( \natp^*; \natp_{t})  - \cB( \natp^*; \natp_{t+1}) \; .
 \end{align}
-
-
-taking the tower expectation, and telescoping the sum, we get
+Ignoring the distance between iterates $\cB(\natp_{t+1} ; \natp_{t})
+$, taking the tower expectation, and telescoping the sum, we get
 \begin{align}
 	\sum_{t=0}^{t-1} \lr_t \expect{f(\natp_{t+1},X_{t+1}) - f(\natp^*)}
 	\leq \cB( \natp^*; \natp_{0})  \; .
@@ -899,7 +898,7 @@ But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ 
 With the sums  $\sum \lr_t$ and $\sum \lr_t^2$, we would need a $O(\inv{\sqrt{t}})$ step-size to ensure a $O(\inv{\sqrt{t}})$ convergence rate, but then the iterate becomes a weighted average of the sufficient statistics, giving more weight to the end of the tail. This may be suited for online learning, but not for our stationary setting.
 
 \paragraph{Application to the MAP.}
-The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}. However even with this assumption, the convergence rate applies to the iterate $\sum_t \lr_t \natp_{t+1} / \sum_t \lr_t$, which is an average in the primal space, and gives more weight to the first iterates. It does not immediately apply to the last iterate.
+The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}.
 
 
 \section{Stochastic Mirror Descent (SMD)}
@@ -1037,8 +1036,8 @@ for which a sufficient condition is
 \forall X, \min_\natp f(\natp ; X) >	 - \infty \iff \max_\natp p(X|\natp) < \infty
 \end{align}
 which holds in a lot of settings but not all. For instance, a gaussian $\cN(\mu,\sigma^2)$ can overfit on a single data point and give it infinite density -- eg converge to a Dirac. However we can overcome this issue by grouping data points : a gaussian can not overfit on two points. Aggregating points is simple : average sufficient statistics, exactly like in MLE or MAP $T'(X_1,X_2) = \frac{T(X_1) + T(X_2)}{2}$. 
-So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$. What kind of results can it give us my dear Nicolas Loizou ? ;)
-
+So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$.
+As mentioned earlier, though, this assumption does not convert to a $O(t^{-1})$ rate when the step-size is itself $O(t^{-1})$.
 
 \subsection{Discussion}
 
