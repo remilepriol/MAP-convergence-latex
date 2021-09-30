@@ -408,10 +408,7 @@ We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_ra
 	}
 \end{figure}
 
-
-\TODO{Tonight ! add equations for the full gaussian. I can dig them ou of my previous notebook.}
-
-\TODO{add equations for other families, eg gaussian with mean and variance, or gamma or Dirichlet, or Categorical..}
+\TODO{add equations for other families, eg gamma or Dirichlet, or Categorical..}
 
 \section{Euclidean Behaviour}
 Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mean parameter space. 
@@ -672,93 +669,6 @@ As we will see in the two upcoming sections, MAP can be seen as an application o
 In both cases, $f(\natp)$ is convex and 1-smooth  and 1-strongly convex relative to the potential $\logpart$. Be cautious that the learning rate is decreasing.
 
 \paragraph{Goal.} We want to bound the suboptimality $f(\natp) - f^*$ as a function of the number of samples. 
-
-
-\subsection{Other Idea}
-There are two main bottlenecks when casting MAP as an iterative algorithm. 
-\begin{enumerate}
-	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
-	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
-\end{enumerate}
-Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} or \citet{dragomir2021fast} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
-\begin{align}
-	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
-\end{align}
-where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\natp^t$ and $\natp^*$ ; and $\lr_t \leq \inv{2L}$.
-On the other hand, the problem of most Bregman analysis \citep{hanzely2018fastest,dorazio2021stochastic} is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
-\begin{align}
-	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t \sigma^2 \; .
-\end{align}
-The problem is that this exponent $2$ is crucial to get fast convergence with a $O(\inv{t})$ step-size. Otherwise the variance is too large and we need to decrease the step-size more slowly to reach the optimum quickly.
-Now our question is what happens if we get something in-between ? e.g.
-\begin{align}
-	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^\alpha \sigma^2 \; .
-\end{align}
-where $1<\alpha<2$ is some exponent characterizing the geometry of the problem.
-
-\paragraph{Step-size.}
-Inspired by \citet{gower2019sgd} we set
-\begin{align}
-	\lr_t := \inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \; .
-\end{align}
-The function $x\mapsto (1+x)^\beta$ is convex, meaning that 
-\begin{align}
-	\left (\frac{t}{t+1} \right)^\alpha 
-	= \left (1 - \frac{1}{t+1} \right)^\alpha 
-	\gtrsim 1 - \frac{\alpha}{t+1}
-\end{align}
-where the $\gtrsim$ symbol stands for greater or equal $\geq$ and asymptotically equivalent $\sim$.
-Back to the step-size, we get
-\begin{align}
-	\lr_t \lesssim \frac{\alpha}{m(t+1)} \; .
-	\label{eq:lr_asymptote}
-\end{align} 
-From this we draw two conclusions.
-First the step-size is in the right asymptotic category $\lr_t \in \Theta(t^{-1})$.
-Second, we have a sufficient condition for the step-size to be small enough $\lr_t \leq \inv{2L}$ and the descent lemma to apply
-\begin{align}
-	\lr_t \leq \inv{2L}
-	\impliedby \frac{\alpha}{m(t+1)}  \leq \inv{2L} 
-	\iff \frac{2 \alpha L}{m} \leq t +1
-	\impliedby t \geq t_0 := \ceil{2\alpha K} -1
-\end{align}
-where $K= L/m$ is the condition number of the problem.
-Consequently, when $t < t_0 :== \ceil{2\alpha K}$, we set $\lr_t = \inv{2L}$.
-Let us correct our definition to account for this revision
-\begin{equation}
-	\lr_t := \begin{cases}
-		\inv{2L} \ \text{ if } \ t< t_0 = \ceil{2\alpha K} -1, \\
-		\inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \ \text{otherwise.}
-	\end{cases}
-\end{equation}
-
-\paragraph{Telescopic Sum.}
-For $t \geq t_0$, the step-size definition means that the decreasing factor of the descent lemma is
-\begin{align}
-	1- \lr_t m = \left(\frac{t}{t+1} \right)^\alpha  \; .
-\end{align}
-Multiplying both sides of the descent lemma with $(t+1)^\alpha$ gives
-\begin{align}
-	(t+1)^\alpha B_{t+1} 
-	\leq t^\alpha B_t + ((t+1)\lr_t)^\alpha \sigma^2 \; .
-\end{align}
-Thanks to~\eqref{eq:lr_asymptote}, we know that $(t+1)\lr_t \leq \frac{\alpha}{m}$, thus the second term or the upper bound is upper bounded as
-\begin{align}
-	((t+1)\lr_t)^\alpha \sigma^2  
-	\leq \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \; .
-\end{align}
-By recursion (or telescopic summing), we get
-\begin{align}
-	t^\alpha B_t \leq t_0^\alpha B_{t_0} 
-	+ (t - t_0) \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2  \; .
-\end{align}
-It is possible to get the constant step-size rate for this $B_{t_0}$, but for now, we already see that
-\begin{align}
-	B_t \leq \left(\frac{t_0}{t} \right)^\alpha B_{t_0} 
-	+ \frac{t - t_0}{t^\alpha} \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \in \Theta(t^{1-\alpha}) 
-\end{align}
-where $-1 <1-\alpha < 0$ and this slowly decreasing factor is coming from the variance term.
-
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
@@ -1039,10 +949,92 @@ which holds in a lot of settings but not all. For instance, a gaussian $\cN(\mu,
 So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$.
 As mentioned earlier, though, this assumption does not convert to a $O(t^{-1})$ rate when the step-size is itself $O(t^{-1})$.
 
-\subsection{Discussion}
+\section{Discussion and other idea}
+There are two main bottlenecks when casting MAP as an iterative algorithm. 
+\begin{enumerate}
+	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
+	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
+\end{enumerate}
+Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} or \citet{dragomir2021fast} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
+\end{align}
+where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\natp^t$ and $\natp^*$ ; and $\lr_t \leq \inv{2L}$.
+On the other hand, the problem of most Bregman analysis \citep{hanzely2018fastest,dorazio2021stochastic} is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t \sigma^2 \; .
+\end{align}
+The problem is that this exponent $2$ is crucial to get fast convergence with a $O(\inv{t})$ step-size. Otherwise the variance is too large and we need to decrease the step-size more slowly to reach the optimum quickly.
+Now our question is what happens if we get something in-between ? e.g.
+\begin{align}
+	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^\alpha \sigma^2 \; .
+\end{align}
+where $1<\alpha<2$ is some exponent characterizing the geometry of the problem.
 
-\paragraph{Bound on the trajectory.}
-Bound \eqref{eq:hypvariance} might not hold in general, but it can along the trajectory. Can we prove it using an inductive method such as \citet[Appendix A]{lacoste2012simpler}? In the case of the Gaussian variance, we cannot because $\mu$ takes every possible values as a random variable within the expectation.
+\paragraph{Step-size.}
+Inspired by \citet{gower2019sgd} we set
+\begin{align}
+	\lr_t := \inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \; .
+\end{align}
+The function $x\mapsto (1+x)^\beta$ is convex, meaning that 
+\begin{align}
+	\left (\frac{t}{t+1} \right)^\alpha 
+	= \left (1 - \frac{1}{t+1} \right)^\alpha 
+	\gtrsim 1 - \frac{\alpha}{t+1}
+\end{align}
+where the $\gtrsim$ symbol stands for greater or equal $\geq$ and asymptotically equivalent $\sim$.
+Back to the step-size, we get
+\begin{align}
+	\lr_t \lesssim \frac{\alpha}{m(t+1)} \; .
+	\label{eq:lr_asymptote}
+\end{align} 
+From this we draw two conclusions.
+First the step-size is in the right asymptotic category $\lr_t \in \Theta(t^{-1})$.
+Second, we have a sufficient condition for the step-size to be small enough $\lr_t \leq \inv{2L}$ and the descent lemma to apply
+\begin{align}
+	\lr_t \leq \inv{2L}
+	\impliedby \frac{\alpha}{m(t+1)}  \leq \inv{2L} 
+	\iff \frac{2 \alpha L}{m} \leq t +1
+	\impliedby t \geq t_0 := \ceil{2\alpha K} -1
+\end{align}
+where $K= L/m$ is the condition number of the problem.
+Consequently, when $t < t_0 :== \ceil{2\alpha K}$, we set $\lr_t = \inv{2L}$.
+Let us correct our definition to account for this revision
+\begin{equation}
+	\lr_t := \begin{cases}
+		\inv{2L} \ \text{ if } \ t< t_0 = \ceil{2\alpha K} -1, \\
+		\inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \ \text{otherwise.}
+	\end{cases}
+\end{equation}
+
+\paragraph{Telescopic Sum.}
+For $t \geq t_0$, the step-size definition means that the decreasing factor of the descent lemma is
+\begin{align}
+	1- \lr_t m = \left(\frac{t}{t+1} \right)^\alpha  \; .
+\end{align}
+Multiplying both sides of the descent lemma with $(t+1)^\alpha$ gives
+\begin{align}
+	(t+1)^\alpha B_{t+1} 
+	\leq t^\alpha B_t + ((t+1)\lr_t)^\alpha \sigma^2 \; .
+\end{align}
+Thanks to~\eqref{eq:lr_asymptote}, we know that $(t+1)\lr_t \leq \frac{\alpha}{m}$, thus the second term or the upper bound is upper bounded as
+\begin{align}
+	((t+1)\lr_t)^\alpha \sigma^2  
+	\leq \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \; .
+\end{align}
+By recursion (or telescopic summing), we get
+\begin{align}
+	t^\alpha B_t \leq t_0^\alpha B_{t_0} 
+	+ (t - t_0) \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2  \; .
+\end{align}
+It is possible to get the constant step-size rate for this $B_{t_0}$, but for now, we already see that
+\begin{align}
+	B_t \leq \left(\frac{t_0}{t} \right)^\alpha B_{t_0} 
+	+ \frac{t - t_0}{t^\alpha} \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \in \Theta(t^{1-\alpha}) 
+\end{align}
+where $-1 <1-\alpha < 0$ and this slowly decreasing factor is coming from the variance term.
+
+
 
 \section{Related Work}
 Exponential families are a mainstream tool in machine learning. They are used  to generalize linear regression \citep{mccullagh1989generalized}, PCA \citep{collins2001generalization} or k-means \citep{banerjee2005clustering} to diverse data types and distributions.
