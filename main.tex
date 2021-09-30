@@ -785,20 +785,35 @@ so we immediately get the recursion
     &= \argmin_\natp f(\natp; X_{n}) + (n+n_0) \bregman(\natp; \hat \natp_{n-1}^\text{MAP})  \; .
     \label{eq:SBPP}
 \end{align} 
-Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0}$.
+Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0}$. As a reminder this algorithm is defined with the update
+\begin{align}
+	 \hat \natp_n
+    &= \argmin_\natp \lr_n f(\natp; X_{n}) + \bregman(\natp; \hat \natp_{n-1}) \\
+    \iff \nabla \logpart(\natp_{n-1}) &= \nabla\logpart(\natp_n) + \lr_t \nabla f(\natp_n ; X_t) \; .
+\end{align}
+In words, if it converges to $\natp^*$, it can be seen as a backward mirror ascent starting from $\natp^*$.
 
 \subsection{Straightforward Analysis}
 
-\paragraph{Bregman Proximal Point}
-This algorithm was first published in \citet{eckstein1993nonlinear} with an asymptotic convergence property. \citet{chen1993convergence} then provided a finite sample convergence rate for deterministic Bregman proximal point. Their analysis relies on the three points lemma (Appendix~\ref{app:3points})
+\subsubsection{Deterministic Bregman Proximal Point}
+Deterministic Bregman proximal point. was first published in \citet{eckstein1993nonlinear} with an asymptotic convergence property, soon completed by a finite sample convergence rate in \citet{chen1993convergence}. 
+This convergence rate relies on the three points lemma (Appendix~\ref{app:3points})
 \begin{align}
 	 \forall \natp, \lr_t f(\natp) + \cB(\natp ; \natp_t) \geq \lr_t f(\natp_{t+1}) + \cB( \natp; \natp_{t+1}) +\cB(\natp_{t+1} ; \natp_{t}) \; .
 \end{align}
+
+\paragraph{Monotonicity of Function Values.}
 Applying it with $\natp=\natp_t$, we prove that function values are decreasing
 \begin{align}
-	f(\natp_{t+1})  \leq f(\natp_{t})  - \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \; .
+	f(\natp_{t+1})  \leq f(\natp_{t})  - \inv{\lr_t} \underbrace{\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) }_{=: \cS(\natp_{t} ; \natp_{t+1})}
 \end{align}
-Then applying it with $\natp=\natp^*$ (assuming such a minimizer exists), we obtain a telescopic sum
+where we introduced $\cS$ the symmetrized Bregman divergence
+\begin{align}
+	\cS(x; y) = \cB(x ; y) + \cB(y ; x) = \langle\nabla A(x) - \nabla A(y) ; x-y \rangle \; .
+\end{align}
+
+\paragraph{Descent Lemma and Telescopic Sum.}
+Applying the three point lemma with $\natp=\natp^*$ (assuming such a minimizer exists), we obtain a telescopic sum
 \begin{align}
 	\lr_t(f(\natp_{t+1}) - f(\natp^*)) +  \cB(\natp_{t+1} ; \natp_{t}) 
 	&\leq  \cB( \natp^*; \natp_{t})  - \cB( \natp^*; \natp_{t+1}) \\
@@ -808,36 +823,70 @@ Then applying it with $\natp=\natp^*$ (assuming such a minimizer exists), we obt
 	\leq \cB( \natp^*; \natp_{0})  \; ,
 \end{align}
 which proves on the way that the total path length $ \sum_{t=0}^{t-1} \cB(\natp_{t+1} ; \natp_{t}) $ is bounded.
-Using the decreasing property of $f(\natp_t)$, we get
+Using the monotonicity of $f(\natp_t)$, we get
 \begin{align}
 	f(\natp_{T}) - f(\natp^*) \leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t} \; .
 \end{align}
 This upper bound converges to $0$ whenever the sum of step-sizes converges to $0$. 
 This rate can be arbitrarily fast because the oracle is strong. Indeed, taking an inifinite step-size solves the problem with one iteration, but the update is (theoretically) harder to solve for larger step-sizes.
 
-\paragraph{Stochastic Setting.}
+\subsubsection{Stochastic Bregman Proximal Point.}
 While \citet{eckstein1998approximate} shows some asymptotic convergence of the Bregman proximal point algorithm when each iteration is only solved approximately, we are not aware of published analysis when iterations are stochastic.
+
+\paragraph{Variance Assumption.}
 The deterministic proof does not transpose immediately to the stochastic setting.
-First off, we do not have a decreasing sequence anymore
+We need an assumption on the quality of the stochastic estimates $f(. ; x)$. 
+As we will see soon, the most straightforward such assumption is 
 \begin{align}
-	f(\natp_{t+1}, X_t)  \leq f(\natp_{t}, X_t)  
-	- \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \\
-	\implies \expect{f(\natp_{t+1}, X_t)} \leq f(\natp_{t}) 
-	- \inv{\lr_t}\expect{\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}))}  \; .
-\end{align}
-Indeed the inequality bears on $\expect{f(\natp_{t+1}, X_t)}$, which features a correlation between $\natp_{t+1}$ and $X_t$, rather than $f(\natp_{t+1})$.
-Similarly, applying the three points lemma with $\natp^*$, taking the tower expectation, and telescoping the sum, we get
-\begin{align}
-	\sum_{t=0}^{t-1} \lr_t \expect{f(\natp_{t+1},X_t) - f(\natp^*)}
-	\leq \cB( \natp^*; \natp_{0})  \; .
-\end{align}
-To pursue further, we need an assumption on the quality of the stochastic estimates $f(. ; x)$. 
-The most straightforward such assumption is 
-\begin{align}
-\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t})} \leq \lr_t \sigma^2 \; ,
+\boxed{\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t+1})} \leq \lr_t \sigma^2 \; , }
 \label{eq:proximal_variance}
 \end{align}
 e.g. we relate the stochastic function value on the next iterate to the function value.
+Asymptotically, this assumption is equivalent to the one of~\citet{hanzely2018fastest}. 
+To see this, linearize $f(\natp_{t+1})$ and $f(\natp_{t+1} ; X_{t+1}) $ in $\natp_t$
+\begin{align}
+	\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t+1})} 
+	&\approx \expect{f(\natp_{t}) - f(\natp_{t} ; X_{t+1})} + \expect{\langle \nabla f(\natp_t) - \nabla f(\natp_t ; X_{t+1}) ; \natp_{t+1} - \natp_t \rangle } \\
+	&= 0 + \expect{\langle \nabla f(\natp_t) - \nabla f(\natp_t ; X_{t+1}) ; \natp_{t+1} \rangle } \\
+	& = \Cov(- \nabla f(\natp_t ; X_{t+1})  ; \natp_{t+1} ) \; .
+\end{align} 
+
+\paragraph{Monotonicity of Expected Function Values.}
+Applying the tree point lemma with $\natp=\natp_t$ gives
+\begin{align}
+	f(\natp_{t+1}, X_{t+1})  
+	&\leq f(\natp_{t}, X_{t+1})  - \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \\
+	&= f(\natp_{t}, X_{t+1})  - \inv{\lr_t} \cS(\natp_{t+1} ; \natp_{t}) \\
+	\implies \expect{f(\natp_{t+1}, X_{t+1})} 
+	&\leq f(\natp_{t}) - \inv{\lr_t}\expect{\cS(\natp_{t+1} ; \natp_{t})}  \; .
+	\label{eq:SPP_monotone}
+\end{align}
+This inequality bears on $\expect{f(\natp_{t+1}, X_{t+1})}$, which features a correlation between $\natp_{t+1}$ and $X_{t+1}$, and is different from $f(\natp_{t+1})$.
+Combining~\eqref{eq:SPP_monotone} with the variance assumption gives
+\begin{align}
+	\expect{f(\natp_{t+1})} 
+	&\leq \expect{f(\natp_{t+1} ; X_{t+1})}  + \lr_t \sigma^2 \\
+	&\leq f(\natp_t) +  \lr_t \sigma^2 - \inv{\lr_t}\expect{\cS(\natp_{t+1} ; \natp_{t})}
+\end{align}
+from which we see that monotonicity is guaranteed if
+\begin{align}
+	\sigma^2 \leq \inv{\lr_t^2}\expect{\cS(\natp_{t+1} ; \natp_{t})} \; .
+\end{align}
+This is quite annoying, as our variance assumption requires $\sigma^2$ to be large, and this inequality requires $	\sigma^2 $ to be small -- the step we take should be greater than the variance.
+
+\paragraph{Descent Lemma and Telescopic Sum.}
+Similarly, applying the three points lemma with $\natp^*$, and taking te expectation with respect to $X_{t+1}$ yields
+\begin{align}
+	\lr_t(\E[f(\natp_{t+1},X_{t+1})] - f(\natp^*)) +  \E[\cB(\natp_{t+1} ; \natp_{t})] 
+	&\leq  \cB( \natp^*; \natp_{t})  - \E[\cB( \natp^*; \natp_{t+1})] \; .
+\end{align}
+
+
+taking the tower expectation, and telescoping the sum, we get
+\begin{align}
+	\sum_{t=0}^{t-1} \lr_t \expect{f(\natp_{t+1},X_{t+1}) - f(\natp^*)}
+	\leq \cB( \natp^*; \natp_{0})  \; .
+\end{align}
 Then, taking the iterate with the least expected loss, we get the rate
 \begin{align}
 	 \min_{1\leq t \leq T} \expect{ f(\natp_t)} - f(\natp^*)
