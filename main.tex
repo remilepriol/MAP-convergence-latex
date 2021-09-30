@@ -695,33 +695,70 @@ Now our question is what happens if we get something in-between ? e.g.
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^\alpha \sigma^2 \; .
 \end{align}
 where $1<\alpha<2$ is some exponent characterizing the geometry of the problem.
+
+\paragraph{Step-size.}
 Inspired by \citet{gower2019sgd} we set
 \begin{align}
 	\lr_t := \inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \; .
 \end{align}
-Asymptotically, we are in the desired category
+The function $x\mapsto (1+x)^\beta$ is convex, meaning that 
 \begin{align}
-	\lr_t := \inv{m} \left ( 1 - \left (1 - \frac{1}{t+1} \right)^\alpha \right ) 
-	\approx \inv{m} \left ( 1 - \left (1 - \frac{\alpha}{t+1} \right) \right ) 
-	\approx \frac{\alpha}{m t} \in O(\inv{t} \; .
+	\left (\frac{t}{t+1} \right)^\alpha 
+	= \left (1 - \frac{1}{t+1} \right)^\alpha 
+	\gtrsim 1 - \frac{\alpha}{t+1}
 \end{align}
-When does it start to $\lr_t \leq \inv{2L}$ ?
+where the $\gtrsim$ symbol stands for greater or equal $\geq$ and asymptotically equivalent $\sim$.
+Back to the step-size, we get
+\begin{align}
+	\lr_t \lesssim \frac{\alpha}{m(t+1)} \; .
+	\label{eq:lr_asymptote}
+\end{align} 
+From this we draw two conclusions.
+First the step-size is in the right asymptotic category $\lr_t \in \Theta(t^{-1})$.
+Second, we have a sufficient condition for the step-size to be small enough $\lr_t \leq \inv{2L}$ and the descent lemma to apply
 \begin{align}
 	\lr_t \leq \inv{2L}
-	&\iff 1 - \left (\frac{t}{t+1} \right)^\alpha \leq \inv{2K} \\
-	&\iff \left (1 - \inv{2K}  \right)^{\inv{\alpha}} \leq \frac{t}{t+1}\\
-	&\iff \frac{t+1}{t} \leq \left (1 - \inv{2K}  \right)^{-\inv{\alpha}}
+	\impliedby \frac{\alpha}{m(t+1)}  \leq \inv{2L} 
+	\iff \frac{2 \alpha L}{m} \leq t +1
+	\impliedby t \geq t_0 := \ceil{2\alpha K} -1
 \end{align}
-and we know by convexity of $(1+x)^\beta$ that $	\left (1 - \inv{2K}  \right)^{-\inv{\alpha}} \geq 1 + \inv{2\alpha K}$.
-This is giving us a sufficient condition on $t$ :
-\begin{align}
-	\frac{t+1}{t}  \leq 1 + \inv{2\alpha K} 
-	&\iff t ( 1 - 1 -  \inv{2\alpha K}) + 1 \leq 0 \\
-	&\iff t \geq 2\alpha K \; .
-\end{align}
-Thus when $t < t_0 = \ceil{2\alpha K}$, we set $\lr_t = \inv{2L}$.
+where $K= L/m$ is the condition number of the problem.
+Consequently, when $t < t_0 :== \ceil{2\alpha K}$, we set $\lr_t = \inv{2L}$.
+Let us correct our definition to account for this revision
+\begin{equation}
+	\lr_t := \begin{cases}
+		\inv{2L} \ \text{ if } \ t< t_0 = \ceil{2\alpha K} -1, \\
+		\inv{m} \left ( 1 - \left (\frac{t}{t+1} \right)^\alpha \right ) \ \text{otherwise.}
+	\end{cases}
+\end{equation}
 
-\TODO{Questions for later : finish typing the proof of convergence. Then think about how this exponent could appear?}
+\paragraph{Telescopic Sum.}
+For $t \geq t_0$, the step-size definition means that the decreasing factor of the descent lemma is
+\begin{align}
+	1- \lr_t m = \left(\frac{t}{t+1} \right)^\alpha  \; .
+\end{align}
+Multiplying both sides of the descent lemma with $(t+1)^\alpha$ gives
+\begin{align}
+	(t+1)^\alpha B_{t+1} 
+	\leq t^\alpha B_t + ((t+1)\lr_t)^\alpha \sigma^2 \; .
+\end{align}
+Thanks to~\eqref{eq:lr_asymptote}, we know that $(t+1)\lr_t \leq \frac{\alpha}{m}$, thus the second term or the upper bound is upper bounded as
+\begin{align}
+	((t+1)\lr_t)^\alpha \sigma^2  
+	\leq \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \; .
+\end{align}
+By recursion (or telescopic summing), we get
+\begin{align}
+	t^\alpha B_t \leq t_0^\alpha B_{t_0} 
+	+ (t - t_0) \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2  \; .
+\end{align}
+It is possible to get the constant step-size rate for this $B_{t_0}$, but for now, we already see that
+\begin{align}
+	B_t \leq \left(\frac{t_0}{t} \right)^\alpha B_{t_0} 
+	+ \frac{t - t_0}{t^\alpha} \left(\frac{\alpha}{m} \right)^\alpha  \sigma^2 \in \Theta(t^{1-\alpha}) 
+\end{align}
+where $-1 <1-\alpha < 0$ and this slowly decreasing factor is coming from the variance term.
+
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
