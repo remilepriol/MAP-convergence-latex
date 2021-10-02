@@ -43,6 +43,7 @@
 
 
 \newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
+\newcommand{\fdk}[1]{\textcolor{Periwinkle}{fdk:#1}}
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
 % my packages
@@ -59,6 +60,7 @@
 \newcommand{\decrement}{D}
 \newcommand{\linear}{\ell} % linearization of a function
 \newcommand{\lr}{\gamma} % learning rate, or step-size
+\newcommand{\lin}[1]{\left\langle#1\right\rangle}
 
 \newcommand{\MAPm}{\hat \mu_n}
 \newcommand{\MAPt}{\hat \natp_n}
@@ -118,6 +120,25 @@ Open questions
 \end{itemize}
 
 \section{Introduction and Background}
+
+
+\fdk{Consider the optimization of 
+\begin{equation}
+	f(\theta) = \expect[x \sim p(x)]{\frac{1}{2}\norm{\theta}^2 - \lin{x, \theta}},
+\end{equation}
+given samples from $x$. We know how to do that one, 
+and the worst-case scenario happens when $p(x)$ is a Gaussian.
+Now how about the slightly more general case where
+\begin{equation}
+	f(\theta) = \expect[x \sim p(x)]{A(\theta) - \lin{x, \theta}}
+\end{equation}
+and we have full knowledge of $A$, a strictly convex twice differentiable function. 
+How hard can that be?
+Turns out, if $p$ is the maximum entropy distribution with 
+$\expect[x \sim p(x)]{x} = \mu$, 
+then it's a bit hard.}
+
+
 \RLP{Goal = disseminate related work to make it look nice.}
 Exponential Families are an elegant and lean way to model a wide variety of data : binary, categorical, natural numbers, positive float, long or short tailed... 
 They are literally the linear model of probabilities.
@@ -290,5 +311,65 @@ as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bo
 
 \bibliographystyle{apalike}
 \bibliography{../references.bib}
+
+
+
+
+\clearpage
+\section{Stuff to cite and why }
+
+
+\begin{itemize}
+	\item Stochastic and online mirror descent: 
+	We obviously have rates in this setting, but they all assume 
+	that the reference function is strongly-convex relative to a norm. 
+	\citep[e.g.][Thm 4.2]{bubeck2015convex}
+	\item What is mirror descent called in the literature?
+		\begin{itemize}
+			\item Mirror Descent \citep{nemirovski1983problem,beck2003mirror} 
+			\item NoLips \citep{bauschke2017descent}
+		\end{itemize}
+	\item Interest in mirror descent boosted by the relatively smooth view 
+	of \citet{bauschke2017descent,lu2018relatively}	
+	\item 
+	The oroblems on how to deal with Bregman divergences abound in optimization, 
+	beyond stochasticity. 
+	For example, we haven't yet figured out the analog of Nesterov-type acceleration 
+	on relatively smooth and strongly convex problems, 
+	to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
+	or just from $1/T$ to $1/T^2$ 
+	in the (non-strongly) convex case.
+	\citet{dragomir2021optimal} show that naïve application of Bregman updates can not achieve acceleration.
+	The tools developped to make progress on one problem might help make progress on the other. 
+	\item 
+	Stochastic mirror descent in the relatively smooth setting;
+	\citet{hanzely2018fastest},
+	\citet{dragomir2021fast}
+	and the zoo of assumptions
+	\item Something about the statistical asymptotic behavior for the MLE? 
+	\begin{equation}
+		D_A(\theta_*, \theta_n) \approx \frac{1}{2}\norm{\theta_n - \theta_*}_{\nabla^2 A(\theta_*)}^2 
+		\approx \frac{1}{n}?
+	\end{equation}
+	\item Something about how the Bregman divergence is often not considered in the statistics lit 
+	because it can be infinite and is non-symmetric and not nice to work with, 
+	and so folks focus on $\expect{\norm{\theta_n - \theta_*}^2}$ even if it's somewhat meaningless 
+	in the non-asymptotic regime, 
+	and the best non-asymptotic results 
+	still rely on Taylor expansions after $n > $ something big?
+	\item Something about how we don't even know how to deal with decreasing step-sizes 
+	of the order of $1/t$ 
+	\item 
+	Should cite Bach's line of work on SGD, averaging schemes and self-concordant functions 
+	that obtain the $1/t$ rate in the smooth, convex setting instead of $1/\sqrt{t}$, 
+	which is the ``expected'' rate for that setting, 
+	and how this approach above is a generalization beyond the Euclidean noise model 
+
+
+\end{itemize}
+
+
+
+
 
 \end{document}
