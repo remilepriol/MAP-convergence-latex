@@ -232,44 +232,48 @@ For a full review of exponential families and their duality, see \citet[Chapter 
 	\label{fig:duality}
 \end{figure}
 
-\paragraph{Conjugate Prior}
-One conjugate prior for $p(X|\natp)$ is
-\begin{align}
-    p(\natp) &\propto \exp( - n_0 \bregman(\natp ; \natp_0) )
-\end{align}
-where $n_0$ and $\natp_0$ are (hyper)parameters of the prior, and $\bregman(\natp ; \natp_0)$ is the Bregman divergence induced by $\logpart$ between $\natp$ and $\natp_0$
+\paragraph{Bregman Divergences}
+A very useful object to keep in mind is the Bregman divergence induced by $\logpart$ between two parameters $\natp$ and $\natp_0$
 \begin{align}
     \bregman (\natp ; \natp_0)
     & = \logpart(\natp) - \logpart(\natp_0) 
     - \langle \nabla \logpart(\natp_0)  , \natp - \natp_0 \rangle
 \end{align}
 with $\nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\natp_0$. 
-Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\natp_0$.
-We can re-write this prior as 
+It is a non-symmetric measure of distance between parameters.
+It is equal to the divergence of its convex conjugate with switched arguments
 \begin{align}
-    p(\natp) \propto 
-    \exp( -n_0 \logpart (\natp) 
-    + \langle n_0 \mu_0, \natp \rangle ) \; ,
+	\bregman (\natp ; \natp_0)
+    = \bregmanconj ( \meanp_0 ; \meanp) \; .
 \end{align}
-which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
-The posterior given $\cD=(X_1,\dots, X_n)$ is then part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
 
-\paragraph{Maximum A Posteriori (MAP).}
+\paragraph{Conjugate Prior}
+One conjugate prior \citep{agarwal2010geometric} for $p(X|\natp)$ is
+\begin{align}
+    p(\natp) &\propto \exp( - n_0 \bregman(\natp ; \natp_0) )
+\end{align}
+where $n_0$ and $\natp_0$ are (hyper)parameters of the prior, and $\bregman(\natp ; \natp_0)$ is introduced above.
+Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\natp_0$.
 The negative log-likelihood of the prior is
 \begin{align*}
     -\log p(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
 \end{align*}
-Thus the joint log-likelihood of $\cD =(X_1,\dots,X_n,\natp)$ is
+which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
+Then the joint log-likelihood of $\cD =(X_1,\dots,X_n,\natp)$ is
 \begin{multline}
     -\log p(\cD|\natp)p(\natp) 
     = (n_0+n) \logpart (\natp) \\
-    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(X_i) \right) + \cst \; .
+    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(X_i) \right) + \cst
+    \label{eq:joint_likelihood}
 \end{multline}
-Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
+meaning the posterior given $\cD=(X_1,\dots, X_n)$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
+
+\paragraph{Maximum A Posteriori (MAP).}
+Minimizing~\eqref{eq:joint_likelihood} over $\natp$ yields the MAP estimate
 \begin{align}
     \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0)
 \end{align}
-such that the MAP is
+verifying the first oder optimality conditions \RLP{$\natp$ unconstrained, living in an open set with barriers}
 \begin{align}
     \nabla \logpart(\hat \natp_\text{MAP}) = \hat \meanp_\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
@@ -278,6 +282,7 @@ When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Max
 \begin{align}
 	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T(X_i)}{n}
 \end{align}
+These rules are known as moment matching.
 The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
 
 
@@ -319,93 +324,50 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 \subsection{Gaussian Mean}
 
 \subsection{Gaussian Variance}
-The trailing example of this paper is a centered gaussian with unknown variance $\cN(0,\sigma^2)$.
-The density of a centered normal variable is
-\begin{align}
-	p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}} \; .
-\end{align}
+A core example of this paper is a centered gaussian with unknown variance $\cN(0,\sigma^2)$. 
+The density is	$p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\natp = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
-Mean and natural parameters are roughly inverse of each other
+Mean and natural parameters are roughly inverse of each other $\natp = -\inv{2 \mu}$.
+Now we can match the log-likelihood with the exponential family template to get the log-partition function, and taking the conjugate to find the entropy
 \begin{align}
-	\natp = -\inv{2 \mu}\; .
+	\logpart (\natp) &= - \half \log(-\natp)  + \half \log(\pi) \\
+	\conj(\mu) &= \half\left( -\log(\mu) + \log\frac{\pi}{2} - 1 \right) \; .
 \end{align}
-Now we can match the log-likelihood with the exponential family template to get the log-partition function.
+Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
+It means the conjugate prior is the exponential family with sufficient statistic $(\natp, \log(-\natp) )$, eg a negative Gamma distribution.
+It also means $\bregman$ and $\bregmanconj$ have the same shape
 \begin{align}
-	\log p(x) = - \frac{x^2}{2 \sigma^2} - \half \log(2 \pi \sigma^2 ) 
-	= x^2 \natp - \logpart(\natp) \\
-	\implies \logpart (\natp) = - \half \log(-\natp)  + \half \log(\pi) 
-\end{align}
-
-We can use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
-\begin{align}
-	\conj(\mu) = \half\left( -\log(\mu) + \log\frac{\pi}{2} - 1 \right) \; .
-\end{align}
-We can also take gradient and derivative of $\logpart(\natp)$ to retrieve the mean and covariance of the sufficient statistic $X^2$
-\begin{align}
-	\nabla\logpart(\natp) &= \frac{-1}{2 \natp} = \sigma^2 = \mu = \E[X^2] \\
-	\nabla^2\logpart(\natp) &= \frac{1}{2 \natp^2} = 2 \sigma^4 = 2 \mu^2 = \Var(X^2) 
-\end{align}
-which we confirm thank to wikipedia since $\E[X^4] = 3 \sigma^4$ and thus $\Var(X^2) = \E[X^4] - \E[X^2]^2 = 3 \sigma^4 - \sigma^4 = 2 \sigma^4$.
-
-
-The logpartition function is $\logpart(\natp) = -\log(-\natp) /2 + \cst$, thus the conjugate prior is the exponential family with sufficient statistic $(\natp, \log(-\natp) )$, eg a negative \href{https://en.wikipedia.org/wiki/Gamma_distribution}{Gamma distribution}.
-In particular,
-\begin{align}
-	p(\natp) 
-	&\propto 
-    \exp( -n_0 \logpart (\natp) 
-    + \langle n_0 \mu_0, \natp \rangle ) \\
-    &\propto \exp( \half[n_0] \log(-\natp) + n_0\mu_0 \natp ) \\
-	&\propto (-\natp)^{1 + \half[n_0] -1 } e^{-n_0 \mu_0 (-\natp)} / Z
-\end{align}
-from which we infer the shape parameter $\alpha=1 + \half[n_0]$ and the rate parameter $\beta = n_0 \mu_0$, eg $\natp \sim \Gamma (1+\half[n_0] , n_0 \mu_0)$. After seeing $n$ samples, the posterior is $\Gamma\left(1+\half[n_0+n] , n_0 \mu_0 + \sum_i T(X_i) \right)$.
-
-Both the entropy and the log-partition are roughly negative logarithm $z\mapsto - \log(z)$. Which yields the same shape of Bregman divergence, as visible below (all three lines are equal)
-\begin{align}
-	\KL( \sigma_*^2 ; \sigma_n^2 ) 
-	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right) \\
 	\bregmanconj( \mu_*; \mu_n) 
 	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) \\
-	\bregman( \natp_n; \natp_* ) 
+	\bregman( \natp_n; \natp_* )
 	&=  \half \left ( \frac{ \natp_n}{\natp_*} - 1 - \log  \frac{ \natp_n}{\natp_*} \right) \; .
 \end{align}
-
 In other words, this divergence measures the discrepancy between the ratio $\frac{ \natp_n}{\natp_*} =  \frac{\mu_*}{ \mu_n}  $ and $1$ via the function $\phi$
 \begin{align}
-	\phi(z) := \half (z - 1 - \log(z)) \\
-	\bregman( \natp_n; \natp_* )   = \phi(\frac{ \natp_n}{\natp_*}) =  \phi(\frac{\mu_*}{ \mu_n})
+	\phi(z) := \half (z - 1 - \log(z))
 \end{align}
-as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bound thanks to the inequality
-\begin{align}
-	1 - \inv{z} \leq \log(z) 
-	\label{eq:log_bound} 
-	\implies \phi(z) \leq \half (z + \inv{z}) - 1 = \frac{(z-1)^2}{2 z} \; .
-\end{align}
+illustrated in Figure~\ref{fig:phi}. 
+Below we report upper bounds on the expected value of this divergence for the MLE and the MAP.
 
 
 \begin{figure}[ht]
 	\centering
-	\includegraphics[width=.4\textwidth]{bregmandef.pdf}
 	\includegraphics[width=.4\textwidth]{phi.pdf}
-	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics.}
+	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics, but it admits another upper-bound (in grey).}
 	\label{fig:phi}
 \end{figure}
 
 \begin{figure}[ht]
 	\centering
-\includegraphics[width=.48\textwidth]{asymptote.pdf}
-\includegraphics[width=.48\textwidth]{fewsamples.pdf}
-	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval.  
-	\textbf{Left:} as $n$ increases, the suboptimality matches the $1/2N$ asymptote.
-	\textbf{Right:} the first few samples significantly deviate from this behavior. In fact, for $n=1$ and $n=2$, the expected value is infinite, but we have a closed form solution and a simple upper-bound for $n>2$.
+\includegraphics[width=.4\textwidth]{fewsamples.pdf}
+	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval. 
+		While the expected value is infinite for $n=1$ or $n=2$, it quickly matches the upper bound, and the $1/2n$ asymptote.
 	}
 	\label{fig:curves}
 \end{figure}
 
 
-
-
-	\begin{theorem}[MLE Tight Bound]
+\begin{theorem}[MLE Tight Bound]
 	The MLE of $\cN(0,\mu_*)$ is $\hat \mu_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
 	Its expected suboptimality is infinite when $n\leq 2$, and otherwise upper-bounded as
 	\begin{align}
@@ -416,38 +378,27 @@ as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bo
 \end{theorem}
 
 This upper bound is asymptotically tight.
-We illustrate its behavior against empirical data in Figure~\ref{fig:curves}.
- There is also a closed form for the multivariate generalization, thanks to the \href{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}{inverse Wishart distribution} and the \href{https://en.wikipedia.org/wiki/Wishart_distribution#Log-expectation}{expectation of the log-determinant of a Wishart}. The expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension. We do not perform these calculations for now as we want to focus on the simplest possible examples.
- 
-As for the MAP, we did not manage to get an asymptotically tight upper bound. Nevertheless, using inequality~\eqref{eq:log_bound}, we did get an interesting upper bound. 
-To start, let us recall that the MAP of $\cN(0,\mu_*)$ is $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i X_i^2}{n_0 + n}$.
-Its expectation is simply $\mu_n= \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$.
-We now present a lemma on its expected inverse.
-\begin{lemma}[Expected MAP Natural Parameter]
-	Let's define $a=n_0 \frac {\mu_0 }{ \mu^* }$. For any $n\geq 1$, the expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
-	\begin{equation}
-		\frac{\mu^*}{\mu_n}
-		\leq \expect{\frac{\mu^*}{\MAPm}} 
-		= \expect{\frac{\MAPt}{\natp^*}} 
-		\leq \frac{n_0 +n}{a+ (n-2)_+}
-		\label{eq:theta_expectation_bound}
-	\end{equation}
-	where $(x)_+ = \max(0,x)$.
-\end{lemma}
-Note that the lower bound is a simple consequence of the convexity of the inverse function. 
-Using this lemma, along with the log upper bound on the logarithm~\eqref{eq:log_bound}, we get a convergence rate for the MAP. 
+We illustrate its numerical behavior in Figure~\ref{fig:curves}.
+We get a similar bound for the multivariate generalization :
+the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$.
+  
+For the MAP, we get an upper bound thanks to the inequality $ - \log(z) \leq \inv{z} - 1$ which implies
+\begin{align}
+	\label{eq:log_bound} 
+	\phi(z) \leq \half (z + \inv{z}) - 1 = \frac{(z-1)^2}{2 z} \; .
+\end{align}
 
 \begin{theorem}[MAP Bound]
- Let us  define
+ For $n\in \naturalnumbers$, let us  define
  \begin{align}
-	b = \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; .
+	b_n = \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; .
  \end{align}
 The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-parameters $(n_0,\mu_0)$ is
  \begin{equation}
 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MAP})}
 	\leq \begin{cases}
-		\inv{2(n_0+1)}  +  b\ \text{if}\ n=1,\\
-		\frac{1}{n_0 \frac{\mu_0}{\mu^*} +n-2} + b \ \text{if}\ n\geq 2
+		\inv{2(n_0+1)}  +  b_1 \ \text{if}\ n=1,\\
+		\frac{1}{n_0 \frac{\mu_0}{\mu^*} +n-2} + b_n \ \text{if}\ n\geq 2
 	\end{cases}
 	\label{eq:MAP_rate}
 \end{equation}
@@ -456,35 +407,7 @@ The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-paramet
 This inequality highlights a clear variance-bias decomposition.
 In particular, there is no bias term when $\frac{\mu_0}{\mu^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\mu_0 = 2 \mu^*$.
 Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
-
-Using the same bound on the log~\eqref{eq:log_bound}, we  get a loose bound on the MLE, which is useful for comparison purposes.
-We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_rate}.
-
-\begin{corollary}[MLE Loose Bound] When $n\geq 2$, the MLE expected loss is upper bounded as
-\begin{equation}
-	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE}) }
-	\leq \inv{n-2} \; .
-	\label{eq:MLE_loose_rate}
-\end{equation}
-\end{corollary}
-
-
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=.7\textwidth]{figs/MAP_rates/MAP_rate_n0=5.pdf}
-	\caption{
-	Convergence rate of MAP~\eqref{eq:MAP_rate} 
-	\label{fig:MAP_rate} against the ratio between initialization and optimum $ \frac{\mu_0}{\mu^*}$. 
-	We also report the tight convergence rate of MLE~\eqref{eq:MLE_rate} (dash-dotted horizontal lines), and the loose upper bound~\eqref{eq:MLE_loose_rate} (horizontal lines). 
-	We report these curves for various values of $n$, and $n_0=5$. 
-	We observe that the rate of MAP is significantly better (lower) than the rate of MLE, only when we guessed $\mu_0$ right, within an order of magnitude from $\mu^*$, and for a small number of sample ($n<10$). 
-	This observation hints towards the optimality of MLE for large $n$. 
-	It makes me feel very interested in convergence rates of MAP in the overparametrized regime $n<\dim(T(X))$.
-	}
-\end{figure}
-
-
+\RLP{Add numerical experiments with upper bound for gaussian variance MAP.}
 
 \bibliographystyle{apalike}
 \bibliography{../references.bib}
