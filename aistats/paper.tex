@@ -51,6 +51,7 @@
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
+\newcommand{\cond}{\,\vert\,}
 \newcommand{\logpart}{A}
 \newcommand{\conj}{\logpart^*}
 \newcommand{\bregman}{\cB_\logpart}
@@ -100,26 +101,96 @@ we show it is an application of several optimization algorithms.
 Yet it falls out of scope for current analysis, thus highlighting areas for progress.
 \end{abstract}
 
-\section{Introduction and Background}
+\section{Motivation}
 
-\fdk{Consider the optimization of 
+We kind of know how to do optimization 
+on smooth, strongly convex functions 
+when there is some bound on the stochasticity,
+for example in the form of a bounded variance, 
+say for the problem 
 \begin{equation}
-	f(\theta) = \expect[x \sim p(x)]{\frac{1}{2}\norm{\theta}^2 - \lin{x, \theta}},
+\min_\theta f(\theta)
 \end{equation}
-given samples from $x$. We know how to do that one, 
-and the worst-case scenario happens when $p(x)$ is a Gaussian.
-Now how about the slightly more general case where
+with access to stochastic gradients 
+$g(\theta)$ such that 
 \begin{equation}
-	f(\theta) = \expect[x \sim p(x)]{A(\theta) - \lin{x, \theta}}
+	\expect{\norm{g(\theta) - \nabla f(\theta)}^2} \leq \sigma^2.
 \end{equation}
-and we have full knowledge of $A$, a strictly convex twice differentiable function. 
-How hard can that be?
-Turns out, if $p$ is the maximum entropy distribution with 
-$\expect[x \sim p(x)]{x} = \mu$, 
-then it's a bit hard.}
+The best convergence rate, of stochastic gradient methods 
+is obtained by SGD with decreasing step-sizes and averaging, 
+yields a convergence rate of $1/t$ and is asymptotically tight;
+SGD achieves this rate on the following problem, 
+\begin{equation}
+	f(\theta) = \frac{1}{2}\norm{\theta -\mu}^2, \quad
+	g(\theta) \sim \sim \cN(\theta - \mu, \sigma^2).
+\end{equation}
+This problem is estimating the mean of a Gaussian, 
+and it is not improvable by information theoretic arguments. 
 
-Call both to stats and optimization crowds by introducing the parallel quite early.
+But our understanding of stochastic optimization lacks in other domains. 
+A generalization of the above problem, 
+at the intersection of optimization and estimation, 
+is the problem of minimizing 
+\begin{equation}
+	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{A(\theta) - \lin{t(x), \theta}},
+\end{equation}
+where $A$ is a convex, Legendre function and 
+$p(x\cond\theta)$ is the exponential family distribution 
+with $A$ as its log-partition function. 
+The Gaussian example above is a special case 
+with $A(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$
+and $p(x\cond\theta) = \cN{\mu, \sigma^2}$.
 
+We obviously have algorithms for this setting, 
+as this is an maximum likelihood problem.
+Giving the (online) maximum likelihood after seeing $t$ samples
+which corresponds as online mirror descent with a decreasing step-size schedule (more on this later).
+But our convergence rates are weak.
+There are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+
+We do not have a solution. 
+The goal of this paper, and the reason it is submitted at AISTATS, 
+is to bring this issue to the attention of 
+the community working at the intersection of machine learning, optimization and statistics community,
+in the hope that we can make progress on this question;
+Can we build algorithms for stochastic estimation 
+when the objective function is not (close to) quadratic
+and the noise is not (sub-)Gaussian?
+
+We give motivating examples where solution of this problem would enable progress in other areas,
+principally motivated by stochastic optimization, 
+show the connections between the optimization and statistical estimation sides of the problem,
+and discuss where our current theory fails to fully capture the problem.
+
+We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate---this is part of the point of this paper---and that the statistical theory results for the convergence of the MLE to the solution 
+are well known. 
+Our point is more subtle, in that for the purposes of optimization, 
+to mimic the results that are known for SGD in Euclidean settings, 
+we would like a result of the form 
+\begin{equation*}
+	\text{optimality gap after $t$ steps}
+	\leq 
+	\frac{\text{``bias''}}{t^2}
+	+ \frac{\text{``variance''}}{t},
+\end{equation*}
+which is the bit that is lacking. 
+
+Then; 
+- description of the setting
+- statistical solutions (asymptotic, l1 or l2 error)
+- optimization solutions (online+bounded gradient, self-concordance, more recent relative smoothness results)
+- potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
+- conclusion?
+
+
+
+
+
+
+
+
+
+\section{Technical background}
 
 \RLP{Goal = disseminate related work to make it look nice.}
 Exponential Families are an elegant and lean way to model a wide variety of data : binary, categorical, natural numbers, positive float, long or short tailed... 
@@ -486,12 +557,13 @@ Open questions
 	\item Something about how we don't even know how to deal with decreasing step-sizes 
 	of the order of $1/t$ 
 	\item 
-	Should cite Bach's line of work on SGD, averaging schemes and self-concordant functions https://www.di.ens.fr/~fbach/bach_ejs_self_concordance.pdf
+	Should cite Bach's line of work on SGD, averaging schemes and self-concordant functions 
+	\url{https://www.di.ens.fr/~fbach/bach_ejs_self_concordance.pdf}
 	that obtain the $1/t$ rate in the smooth, convex setting instead of $1/\sqrt{t}$, 
 	which is the ``expected'' rate for that setting, 
 	and how this approach above is a generalization beyond the Euclidean noise model 
-	http://proceedings.mlr.press/v99/marteau-ferey19a/marteau-ferey19a.pdf
-	http://proceedings.mlr.press/v99/ostrovskii19a/ostrovskii19a.pdf
+	\url{http://proceedings.mlr.press/v99/marteau-ferey19a/marteau-ferey19a.pdf}
+	\url{http://proceedings.mlr.press/v99/ostrovskii19a/ostrovskii19a.pdf}
 \end{itemize}
 
 
