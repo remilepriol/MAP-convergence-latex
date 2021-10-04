@@ -12,7 +12,6 @@
 \usepackage{subcaption}
 \usepackage{hyperref}       % hyperlinks
 \usepackage[dvipsnames]{xcolor}
-\usepackage{tikz}           % define for loops
 
 \hypersetup{ % SLJ: my standard paper setup...
 	pdftitle={MAP convergence},
@@ -35,6 +34,8 @@
 \newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
+
+\usepackage{tikz}           % define for loops
 % frames with colored background
 \definecolor{light-gray}{gray}{0.85}
 \definecolor{myblue}{RGB}{199, 235, 255}
@@ -173,7 +174,6 @@ which we confirm thank to wikipedia since $\E[X^4] = 3 \sigma^4$ and thus $\Var(
 \end{example}
 
 \paragraph{Conjugate Prior}
-\TODO{Under-parametrized conjugate prior ?}
 One conjugate prior for $p(X|\natp)$ is
 \begin{align}
     p(\natp) &\propto \exp( - n_0 \bregman(\natp ; \natp_0) )
@@ -341,7 +341,7 @@ as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bo
 \end{example}
 This upper bound is asymptotically tight.
 We illustrate its behavior against empirical data in Figure~\ref{fig:curves}.
- There is also a closed form for the multivariate generalization, thanks to the \href{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}{inverse Wishart distribution} and the \href{https://en.wikipedia.org/wiki/Wishart_distribution#Log-expectation}{expectation of the log-determinant of a Wishart}. The expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension. We do not perform these calculations for now as we want to focus on the simplest possible examples.
+ There is also a closed form for the multivariate generalization, thanks to the \href{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}{inverse Wishart distribution} and the \href{https://en.wikipedia.org/wiki/Wishart_distribution#Log-expectation}{expectation of the log-determinant of a Wishart}. The expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and we report a similar upper bound in the appendix when $n>d+1$.
  
 As for the MAP, we did not manage to get an asymptotically tight upper bound. Nevertheless, using inequality~\eqref{eq:log_bound}, we did get an interesting upper bound. 
 To start, let us recall that the MAP of $\cN(0,\mu_*)$ is $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i X_i^2}{n_0 + n}$.
@@ -408,8 +408,6 @@ We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_ra
 	}
 \end{figure}
 
-\TODO{add equations for other families, eg gamma or Dirichlet, or Categorical..}
-
 \section{Euclidean Behaviour}
 Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mean parameter space. 
 \TODO{Add base measure to add here a discussion of the euclidean case -- the mean of a gaussian}
@@ -461,7 +459,7 @@ where we introduced the Mahalanobis distance induced by the matrix
 \end{align}
 To exploit this approximation, let us extend the $\ell^2$ norm results to a Mahalanobis distance induced by matrix $\mM$
 \begin{align}
-	\E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{n} \Tr(\mM \mSigma)
+	\E \half \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}_\mM^2 = \inv{2 n} \Tr(\mM \mSigma)
 \end{align}
 where $\mSigma$ is the covariance of $T(X)$. We retrieve $\nicefrac{\sigma^2}{n}$, the variance divided by the number of samples, when the metric is the identity $\mM=\mI$.  For the MLE we get
 \begin{align}
@@ -469,9 +467,9 @@ where $\mSigma$ is the covariance of $T(X)$. We retrieve $\nicefrac{\sigma^2}{n}
 \end{align}
 and for the MAP we  get 
 \begin{align}
-	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
-	&= \frac{n d}{(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
-	&= \frac{d}{n} + O\left(\frac{1 + \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
+	\E \half \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
+	&= \frac{n d}{2(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \half \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
+	&= \frac{d}{2n} + O\left(\frac{1 + \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
 \end{align}
 or 
 \begin{align}
@@ -952,8 +950,8 @@ As mentioned earlier, though, this assumption does not convert to a $O(t^{-1})$ 
 \section{Discussion and other idea}
 There are two main bottlenecks when casting MAP as an iterative algorithm. 
 \begin{enumerate}
-	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure.
-	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
+	\item The first one is the variance definition which always end up being infinite when asked to be uniform on every possible trajectories, if the log-partition  has some barrier structure. Except for \citet{dorazio2021stochastic} which holds in many cases.
+	\item The second one is the step-size scheduling. $O(\inv{t})$ is decreasing too fast for most proof techniques, except \citet{dragomir2021fast}. Even in the Euclidean setting where the variance does not matter, it results in a disappointing rate $O(\inv{\log t})$.
 \end{enumerate}
 Regarding this second point, it might be possible to do something comparable to \citet{gower2019sgd} or \citet{dragomir2021fast} who get a $O(\inv{t})$ rate with a $O(\inv{t})$ step-size. Take $m$ and $L$ as the (relative) strong-convexity and smoothness constants of the problem, along with $K=\frac{L}{m}$ the condition number.Their descent lemma looks like
 \begin{align}
@@ -1107,7 +1105,7 @@ We can perform a sanity check by deriving $\logpart$ and verifying that its grad
 	\mu_1 &= \frac{\natp_1}{-2\natp_2}  \\
 	\mu_2 & = \left( \frac{\natp_1}{-2\natp_2} \right)^2 + \inv{-2 \natp_2} \; .
 \end{align}
-Now let us discover the entropy
+Now let us recover the entropy
 \begin{align}
 	\conj (\mu) &= \mu_1 \natp_1 + \mu_2 \natp_2  - \logpart(\natp(\mu)) \\
 	& = \frac{\mu_1^2}{\mu_2 - \mu_1^2}  - \frac{\mu_2}{2(\mu_2 - \mu_1^2)} - \frac{\mu_1^2}{2(\mu_2 - \mu_1^2)}  - \half \log(\mu_2 - \mu_1^2) \\
@@ -1115,6 +1113,7 @@ Now let us discover the entropy
 	& = - \half \log (\mu_2 - \mu_1^2) + \cst \; .
 \end{align}
 In this case, the Bregman divergences induced by the log-partition or the entropy are ugly, so we will not focus on them.
+Note that this entropy is not self-concordant. Taking derivatives in the direction of $\mu_1$, and setting $\mu = (4, 16)$,  the self-concordance inequality is not verified.
 
 \section{Three points lemma}
 \label{app:3points}
@@ -1383,6 +1382,57 @@ If we apply \eqref{eq:log_bound} to the MLE, we get the upper bound
 	= \frac{1}{n-2}
 \end{align}
 which is exactly  an additive term $1/2n$ larger than \eqref{eq:MLE_rate}. This highlights the factor $2$ difference between the log-bound and an exact computation of the expectation of the log term, and a tight upper bound on the digamma function.
+
+\subsection{Multivariate MLE}
+In higher dimensions $d$
+ \begin{align}
+ 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
+ 	= \half \left ( \frac{d(d+1)}{n-d-1} + \psi_d(\half[n]) - d \log(\half[n])  \right )
+ \end{align}
+where $\psi_d(\half[n]) = \sum_{i=0}^{d-1} \psi ( \half[n - i])$ is the multivariate digamma function.
+Using the same upper bound as in the univariate case
+\begin{align}
+	\psi_d(\half[n]) - d \log(\half[n]) 
+	\leq \sum_{i=0}^{d-1} \log(1 - \frac{i}{n}) - \frac{1}{n-i} \; .
+\end{align}
+We can bound the harmonic sum with typical bounds
+\begin{align}
+	- \sum_{i=0}^{d-1} \frac{1}{n-i} 
+	&= H_{n-d} - H_n \\
+	&\leq \log(n-d) + \gamma + \inv{2(n-d) - 1} - \log(n) - \gamma - \inv{2n+1}\\
+	&= \log(1-\frac{d}{n})  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1}
+\end{align}
+which yields 
+\begin{align}
+	\psi_d(\half[n]) - d \log(\half[n]) 
+	\leq \sum_{i=0}^{\textcolor{red}{d}} \log(1 - \frac{i}{n})
+	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1}  \; .
+\end{align}
+From there we have two options. 
+Either we use a concave tangent bound on the logarithms to get
+\begin{align}
+	\sum_{i=0}^{d} \log(1 - \frac{i}{n})
+	\leq \sum_{i=0}^{d} - \frac{i}{n}
+	 = -\frac{d(d+1)}{2n}
+\end{align}
+which yields the final rate
+\begin{align}
+ 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
+ 	\leq \frac{d(d+1)}{4n} + \frac{d(d+1)^2 + \half[d+1]}{2 n (n - d -1)} \;.
+\end{align}
+Note that this rate is not tight for $d>1$, but it is tight for $d=1$, and we almost recover the previous rate.
+
+Another option, potentially tighter than the tangent bound, is to bound the sum of logarithms with an integral, using the monotonicity of the logarithm $\log(1 - \frac{i}{n}) \leq \log(1- \frac{x}{n}) , \forall x \in [i - 1, i]$
+\begin{align}
+	\sum_{i=1}^{d} \log(1 - \frac{i}{n})
+	&\leq \int_{0}^{d} \log(1- \frac{x}{n}) dx \\
+	& = n \int_{1 - \frac{d}{n}}^{1} \log(y) dy \\
+	& = n [ y (\log(y) - 1) ]_{1 - \frac{d}{n}}^{1} \\
+	& =  - n - (n -d) (\log ( 1 - \frac{d}{n}) - 1) \\
+	& = - (n -d) \log ( 1 - \frac{d}{n}) - d \; .
+\end{align}
+Unfortunately, it is hard to get a tractable and non-vacuous bound for this guy. At $n=d$ it is worth $-d$, and then it grows up to $0$. and we can bound it using some exponents of $1 - \frac{d}{n}$, but that is not really helpful to get an easy formula.
+Actually looking at \href{https://www.desmos.com/calculator/q4sqk73tld}{graphics}, the first upper bound turns out to be tighter than the second one. 
 
 \subsection{Proof of Expected MAP Natural Parameter}
 Let us introduce a variable characterizing the importance of the prior
