@@ -9,6 +9,9 @@
 %\setlength{\pdfpageheight}{11in}
 %\setlength{\pdfpagewidth}{8.5in}
 
+\let\oldsection\section
+\renewcommand{\section}[1]{\oldsection{\uppercase{#1}}}
+
 % If you use natbib package, activate the following three lines:
 \usepackage[round]{natbib}
 \renewcommand{\bibname}{References}
@@ -65,6 +68,7 @@
 
 \newcommand{\MAPm}{\hat \mu_n}
 \newcommand{\MAPt}{\hat \natp_n}
+
 
 
 \begin{document}
@@ -309,6 +313,7 @@ Our question is: how does this quantity behave when $\natp$ is the maximum-likel
 	\expect[\cD]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} 
 \end{align}
 where the outer expectation is on the dataset $\cD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
+More explicitly, can we write an upper bound that does not involve an expectation over the dataset -- e.g. where the stochasticity is removed.
 
 
 \paragraph{Remark.}
@@ -320,10 +325,66 @@ For instance, if we plug in $\conj(\mu)= -\log(\mu)$, which defines a divergence
 \paragraph{Remark 2.}
 The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
 
-\section{Examples}
-\subsection{Gaussian Mean}
+\section{Insight - Asymptote}
+As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
+We can get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    &=\half  \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
+    + O(\norm{\mu - \mu^*}^3)
+\end{align}
+where the norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian at the optimum 
+\begin{align}
+    \nabla^2\conj(\mu^*) 
+    = \nabla^2\logpart(\natp^*)^{-1} 
+    = \Cov_{\natp^*}[T(X)]^{-1}  \; .
+\end{align}
+Both the MLE and the MAP have the same asymptotic rate
+\begin{align}
+\label{eq:MAP_asymptote}
+	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
+	= \frac{d}{2n} + O(n^{- \frac{3}{2}})
+\end{align}
+as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data.
+Remark how this rate is also independent of the optimum $\meanp^*$. 
 
-\subsection{Gaussian Variance}
+\section{Example - Gaussian Mean}
+
+\paragraph{$\ell^2$-norm Analysis}
+In the Euclidean realm, the average is bounded by variance becomes a bound on the variance of the average
+\begin{align}
+	\Var T(X) = \E \norm{T(X) - \mu^*}^2 = \sigma^2 \\
+	\implies \E \norm{\mu^* -  \inv{n}  \smallsum_i T(x_i)}^2 = \frac{\sigma^2}{n} 
+\end{align}
+eg the variance of the mean is $n$ times smaller than the variance of the samples.
+Adding a reference mean $\mu_0$ to get the MAP yields
+\begin{align}
+	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2 
+	&= \frac{n}{(n+n_0)^2} \sigma^2 +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2 \\
+	&= O\left(\frac{\sigma^2}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2}{n^2} \right)
+\end{align}
+so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. Let's see if we can get similar estimates for arbitrary exponential families !
+
+
+
+\section{Insight - Euclide's World}
+As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as the mean of a gaussian.
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
+    &\leq 2L \norm{\mu^* - \mu}
+\end{align}
+so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{t}})$ convergence rate from \RLP{Gaussian rate}.
+\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
+\end{align}
+so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
+
+
+\section{Example - Gaussian Variance}
 A core example of this paper is a centered gaussian with unknown variance $\cN(0,\sigma^2)$. 
 The density is	$p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\natp = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
@@ -408,6 +469,51 @@ This inequality highlights a clear variance-bias decomposition.
 In particular, there is no bias term when $\frac{\mu_0}{\mu^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\mu_0 = 2 \mu^*$.
 Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
 \RLP{Add numerical experiments with upper bound for gaussian variance MAP.}
+
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=3.pdf}
+	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
+	\label{fig:bias-variance-numerical}
+\end{figure*}
+
+\section{Bias-Variance Decomposition}
+In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
+Let $\tilde \theta_n := \expect{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \mu_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
+As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	&= {\bregmanconj(\mu^* ; \tilde \mu_n)}
+	+ {\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
+	\label{eq:primal_pivot}
+\end{align}
+
+\paragraph{Illustrations.}
+We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
+In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \mu_n^\text{MLE},\hat \mu_n^\text{MAP},\mu_n,\tilde \mu_n, \mu^*$ and $\mu_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
+
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/biasvariance/linear_ratio=0.8_n0=10}.pdf}
+	\caption{
+	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
+	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
+	}
+	\label{fig:variance_decomposition}
+\end{figure*}
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
+	\caption{
+	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote. 
+	\textbf{Right:} bias-variance decomposition.
+	}
+	\label{fig:gaussian_decomposition}
+\end{figure*}
 
 \bibliographystyle{apalike}
 \bibliography{../references.bib}
