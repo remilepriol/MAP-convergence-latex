@@ -1,6 +1,10 @@
 # personal
 doc/
 code/
+.ipynb_checkpoints/
+.swp
+*.pdf
+
 
 # Latex IDE
 .texpadtmp/
