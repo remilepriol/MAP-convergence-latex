@@ -156,8 +156,9 @@ If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it 
 For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}.
 \begin{figure}[ht]
 	\centering
-	\includegraphics{figs/duality}
-	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$. Figure reproduced from \citet{kunstner2020homeomorphic}.}
+	\includegraphics[width= .6\textwidth]{figs/duality} \\
+	\includegraphics[width=.7\textwidth]{figs/2d/mirrormap.pdf}
+	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$.Top figure reproduced from \citet{kunstner2020homeomorphic}. Bottom figure represents $\cN(\mu, \sigma^2)$.}
 	\label{fig:duality}
 \end{figure}
 \begin{example}
@@ -520,7 +521,8 @@ Fortunately there is another decomposition revolving around the primal expectati
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=3.pdf}
-	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
+	\includegraphics[width=\textwidth]{figs/2d/gaussian_convergence.pdf}
+	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$, for 1 time step  and many repetitions with $n=3$ (top) illustrating the effect of $n_0$ with the Thales triangle. Or $50$ time-steps at once and 1 repetition (bottom), illustrating the convergence behavior.}
 	\label{fig:bias-variance-numerical}
 \end{figure}
 
