@@ -159,7 +159,7 @@ However, none of the theory we found could address for instance the case of a ga
 \end{itemize}
 
 The statistics and optimization perspective are so tightly linked in this problem, that we believe progress from one field would help the other one. 
-Progress from statistics could bring forward research in non-euclidean optimization, for instance helping in the development of accelerated methods.
+Progress from statistics could bring forward research in non-euclidean optimization, or the optimization of barrier losses, for instance helping in the development of accelerated methods.
 On the other hand, optimization can become  a more versatile and general tool for statisticians. % handwavy and shady af.
 
 
@@ -371,7 +371,9 @@ As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman 
 	\label{eq:primal_pivot}
 \end{align}
 
-Remark : In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. This is not true for the MLE. In fact for the gaussian variance MLE, the bias decreases like ${\bregmanconj(\mu^* ; \tilde \mu_n)} \leq \frac{2}{n(n-2)}$.
+Remark : In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. 
+This is not true for the MLE. In fact for the gaussian variance MLE, the bias decreases like ${\bregmanconj(\mu^* ; \tilde \mu_n)} \leq \frac{2}{n(n-2)}$.
+A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition there is not clean.
 
 \paragraph{Illustrations.}
 We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
@@ -504,7 +506,6 @@ The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-paramet
 This inequality highlights a clear variance-bias decomposition.
 In particular, there is no bias term when $\frac{\mu_0}{\mu^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\mu_0 = 2 \mu^*$.
 Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
-\RLP{Add numerical experiments with upper bound for gaussian variance MAP.}
 
 
 \begin{figure*}[t]
@@ -514,15 +515,18 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 	\label{fig:bias-variance-numerical}
 \end{figure*}
 
-\section{"Burn In" Analysis}
-Self-concordant line of work, and \citet{kakade2010learning}.
+\section{"Burn In" Statistical Analysis}
+Self-concordant line of work : 
+\citet{kakade2010learning},
+\cite{anastasiou2017bounds},
+\citet{ostrovskii2021finite}.
 
 \section{Optimization Perspective}
 In the context of optimization, why do we care? 
 
-There is a long line work trying the convergence rate of stochastic gradient descent.
-Beyond the results of RM51, 
-we now have proofs n smooth, strongly convex problems and bounded variance 
+There is a long line work bounding the convergence rate of stochastic gradient descent.
+Beyond the results of \citet{robbins1951stochastic}, 
+we now have proofs on smooth, strongly convex problems and bounded variance 
 (as well as other assumptions on the noise, reviewed later)
 a decreasing step-size and an averaging scheme gets 
 a $1/t$ convergence rate, 
@@ -542,13 +546,13 @@ For a review, see \citet{gower2019sgd}.
 However, for some problems, combining decreasing step-sizes and averaging is not necessary,
 even when the function is not strongly convex.
 This is the case for maximum likelihood estimation and matches the asymptotic rates, 
-but holds more generally, for example for linear and logistic regressions \citep{bach2013non}.
+but holds more generally, for example for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
 
 There has been recent advances in optimization that go beyond the Euclidean case, 
 to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
 neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
-\citep{bauschke2017descent,lu2018relatively},
-where instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
+\citep{birnbaum2011distributed,bauschke2017descent,lu2018relatively}.
+Instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
 we use a reference function instead \fdk{maybe add a line}
 and apply mirror descent \citep{nemirovski1983problem,beck2003mirror}
 (also called NoLips \citep{bauschke2017descent}, something else?). 
@@ -564,16 +568,13 @@ Some advances have been tried
 \begin{itemize}
 	\item The reference function is ``close to'' a norm
 	and looks like a \citet{hanzely2018fastest}
-	\item 
-	Attempt to adapt the ``bounded gradient at the minimum''
+	\item Attempt to adapt the ``bounded gradient at the minimum''
 	\citep{dragomir2021fast}
+	\item Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}.
 \end{itemize}
 
-Other to cite;
-\begin{itemize}
-	\item \citet{marteauferey2019}
-\end{itemize}
-
+Other work 
+\citet{marteauferey2019beyond}.
 
 \fdk{
 A ``simple open problem'';
@@ -583,19 +584,15 @@ that has optimality decreasing as $1/n^2$,
 to mirror the bias term of gradient descent?
 }
 
-ff
 \fdk{Application 
 The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
 For example, we haven't yet figured out the analog of Nesterov-type acceleration 
 on relatively smooth and strongly convex problems, 
 to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
 or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
-}
-
 \citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
 The tools developed to make progress on one problem might help make progress on the other. 
-
-
+}
 
 
 
@@ -612,31 +609,12 @@ The tools developed to make progress on one problem might help make progress on 
 	\begin{enumerate}
 		\item assumption in the spirit of infinite order self-concordance only at the optimum
 		\item After a burn-in phase, the loss behaves quadratically. No precise description of the burn-in length.
-		\item conclusion : it is worth writing down until the end what we are obtaining with self-concordance. \RLP{TODO}
+		\item \TODO{it is worth writing down until the end what we are obtaining with self-concordance.}
 		\item idea 1 : try to express some of their results with the mean parameter instead.
 		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization).
 	\end{enumerate}
+	\item positioning between optimization and statistics.
 \end{enumerate}
-
-
-\section{Plan}
-\begin{enumerate}
-	\item intro to exponential family, and density estimation
-	\item the thing we want to bound
-	\item Examples : gaussian mean and gaussian variance (+other examples, just mentioned)
-	\item Insight : Strongly convex case. (+ self-concordance that is not verified either)
-	\item insight : bias-variance decomposition
-	\item Optimization perspective : SBPP or SBG. But no analysis hold, revealing a flaw of all these techniques.
-	\item Discussion : we believe finding a convergence rate would bring new tools useful to deal with common objects such as barrier losses.
-\end{enumerate}
-
-Open questions
-\begin{itemize}
-	\item does a base measure change anything ?
-	\item is there multiple conjugate priors ?
-	\item misspecified case. Do we have a   formula ? Partial answer : a sufficient condition is to have $\mu^*$ be accessible to our model, even if the true distribution is not.
-\end{itemize}
-
 
 
 
