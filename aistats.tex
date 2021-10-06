@@ -1,5 +1,5 @@
 \documentclass[twoside]{article}
-\usepackage{aistats2022}
+\usepackage{aistats/aistats2022}
 % If your paper is accepted, change the options for the package
 % aistats2022 as follows:
 %\usepackage[accepted]{aistats2022}
@@ -24,7 +24,7 @@
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{microtype}      % microtypography
 \usepackage{graphicx}
-\graphicspath{{../figs/}{../}}
+\graphicspath{{figs/}}
 %\usepackage{subfigure}
 \usepackage{subcaption}
 \usepackage{hyperref}       % hyperlinks
@@ -50,7 +50,7 @@
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
 % my packages
-\usepackage{../math_commands}
+\usepackage{math_commands}
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
@@ -70,6 +70,7 @@
 \newcommand{\MAPt}{\hat \natp_n}
 
 
+\hypersetup{draft}
 
 \begin{document}
 
@@ -121,7 +122,7 @@ $g(\theta)$ such that
 	\expect{\norm{g(\theta) - \nabla f(\theta)}^2} \leq \sigma^2.
 \end{equation}
 Estimating the mean of Gaussian noise is a special case of this problem class, using 
-$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(\theta - \mu, \sigma^2)$.
+$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(- \mu, \sigma^2)$.
 SGD with a decreasing step-size coincides with the maximum likelihood estimate (MLE), 
 and attains the $1/t$ convergence rate.
 
@@ -132,35 +133,35 @@ is the problem of minimizing
 	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta_*)},
 \end{equation}
 When $p(x\cond\theta)$ is an exponential family distribution,
-$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (up to constants).
+$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference distribution).
 Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
-There are algorithms for this setting, for example the MLE;
-giving the (online) maximum likelihood after seeing $t$ samples
-corresponds to online mirror descent with decreasing step-sizes (more on this later).
-But our convergence rates are weak; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
+As we will prove, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
+Despite recent advances in this field, our convergence rates are still lacking ; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
 
-We do not have a solution. The goal of this paper, and the reason it is submitted at AISTATS, 
+We do not have a solution. The goal of this paper
 is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
 in the hope that we can make progress on this question;
 Can we build algorithms for stochastic estimation 
 when the objective function is not (close to) quadratic
 and the noise is not Gaussian?
 
-We show the connections between the optimization and statistical estimation view of the problem
-and discuss where our current theory fails to fully capture the problem.
-We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate---this is part of the point of this paper---and 
-that the statistical theory results for the convergence of the MLE to the solution are well known. 
-Our point is more subtle, in that for the purposes of optimization, to mimic the results that are known for SGD in Euclidean settings, 
-we would like a result of the form 
-\begin{equation*}
-	\text{optimality gap after $t$ steps}
-	\leq 
-	\frac{\text{``bias''}}{t^2}
-	+ \frac{\text{``variance''}}{t},
-\end{equation*}
-which is the bit that is lacking. 
+We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate for which there is a wealth of asymptotic and large sample results \citep{van2000asymptotic,ostrovskii2021finite}. %TODO complete 
+However, none of the theory we found could address for instance the case of a gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions. 
+%TODO kind of redundant "problem - question - problem" paragraphs, not disentangling stats and optim. To improve
+
+\paragraph{Contributions}
+\begin{itemize}
+	\item We provide insights on different facets of this problem : quadratic approximations ; bias variance decomposition; and a detailed analysis of the gaussian variance estimation problem.
+	\item We show the connections between the optimization and statistical estimation view of the problem and discuss where current theories fail to fully capture the problem.
+\end{itemize}
+
+The statistics and optimization perspective are so tightly linked in this problem, that we believe progress from one field would help the other one. 
+Progress from statistics could bring forward research in non-euclidean optimization, or the optimization of barrier losses, for instance helping in the development of accelerated methods.
+On the other hand, optimization can become  a more versatile and general tool for statisticians. % handwavy and shady af.
+
 
 % Then; 
 % - description of the setting
@@ -172,42 +173,47 @@ which is the bit that is lacking.
 
 \section{Technical background}
 
-\RLP{Goal = disseminate related work to make it look nice.}
-Exponential Families are an elegant and lean way to model a wide variety of data : binary, categorical, natural numbers, positive float, long or short tailed... 
-They are literally the linear model of probabilities.
-The exponential family for data $X$ with natural parameter $\natp$  is entirely specified by the support set of the data   $\cX$ and a sufficient statistic $T: \cX \rightarrow \real^d$
+Exponential Families are the linear model of probabilities.
+Their convexity along with their modeling power make them one of the most widely used statistical models. 
+Here we review some of their properties. 
+We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
+The exponential family for data $X\in \cX$ with natural (or primal) parameter $\natp$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
 \begin{equation}
 	 p(X|\natp) = \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
 \end{equation}
-where $\logpart$ is the log-partition function -- i.e. the normalization factor
+Here $\logpart$ is the log-partition function -- i.e. the normalization factor
 \begin{align}
-    \logpart(\natp) = \log \int e^{\natp^\top T(x)} dx 
+    \logpart(\natp) = \log \int e^{\natp^\top T(x)} \nu(dx) \; .
 \end{align}
-where the integral stands for a sum if $x$ has discrete support. \RLP{Use base measure instead.}
-For instance, this simple model encompasses both categorical distributions $\cX = \{1, \dots, k\}$ with $T(X)$ being the one-hot encoding, and multivariate normal distributions $\cX=\real, T(X)=(X, X^2)$. 
+When explicit, we will write the random variable $T = T(X)$ for lightness.
+This model is defined on the open convex set $\natp\in \Theta$ such that $\logpart(\natp) < \infty$. 
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}, \nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$. 
 
 \paragraph{Duality}
 The logpartition function $\logpart$ verifies the two following identities
 \begin{align}
-    \nabla\logpart(\natp) &=  \expect[p(X|\natp)]{T(X)} =: \meanp \\
-    \nabla^2 \logpart(\natp) &= \Cov_\natp[T(X)] > 0
+    \nabla\logpart(\natp) &=  \expect[p(T|\natp)]{T} =: \meanp \\
+    \nabla^2 \logpart(\natp) &= \Cov_\natp[T] \geq 0
 \end{align}
-where $\meanp$ is called the mean parameter.
-If the sufficient statistic $T$ is minimal, then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
-We will write indifferently $\mu$ or  $\natp$ depending on the context, being aware that both represent the same distribution.
-The second identity entails that $\logpart$ is strictly-convex. 
-At this point it is useful to introduce the \href{https://en.wikipedia.org/wiki/Convex_conjugate}{convex conjugate} (aka Fenchel-Legendre transform) of the logpartition function
+where $\meanp$ is called the mean (or dual) parameter.
+$\meanp$ lives in the open convex set $\cM$ within the convex hull of $T(\cX)$.
+%TODO why is it convex ? 
+%It is open because it is the reciprocal image of an open set by the continuous mirror map
+From now on, we assume that the sufficient statistic $T$ is minimal 
+-- e.g. its covariance is definite positive for all $\natp$ -- 
+then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
+We will write interchangeably $\mu$ or  $\natp$ depending on the context, being aware that both represent the same distribution.
+At this point it is useful to introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
 \begin{align}
 	\conj(\mu) = \langle \mu, \natp \rangle - \logpart(\natp) \; .
 \end{align}
 which matches the common notion of \textit{entropy} in information theory.
-If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it is a bijection, and its inverse is the gradient of its dual $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
-For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}.
+The entropy is eating mean parameters, and its gradient is mapping back to natural parameters $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics{duality}
-	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$. Figure reproduced from \citet{kunstner2020homeomorphic}.
-		\RLP{Show the true gaussian bijection instead?}
+	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\natp, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
 	}
 	\label{fig:duality}
 \end{figure}
@@ -239,49 +245,43 @@ The negative log-likelihood of the prior is
     -\log p(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
 \end{align*}
 which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
-Then the joint log-likelihood of $\cD =(X_1,\dots,X_n,\natp)$ is
+Then the joint log-likelihood of $\mD =(X_1,\dots,X_n)$ and $\natp$ is
 \begin{multline}
-    -\log p(\cD|\natp)p(\natp) 
+    -\log p(\mD|\natp)p(\natp) 
     = (n_0+n) \logpart (\natp) \\
-    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(X_i) \right) + \cst
+    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T_i \right) + \cst
     \label{eq:joint_likelihood}
 \end{multline}
-meaning the posterior given $\cD=(X_1,\dots, X_n)$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
+where $T_i=T(X_i)$.
+This means the posterior given $\mD$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T_i , -(n_0 + n))$.
 
 \paragraph{Maximum A Posteriori (MAP).}
 Minimizing~\eqref{eq:joint_likelihood} over $\natp$ yields the MAP estimate
 \begin{align}
-    \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0)
+    \hat \natp = \argmin_\natp -\log p(\mD|\natp) + n_0 \bregman(\natp ; \natp_0) \; .
 \end{align}
-verifying the first oder optimality conditions \RLP{$\natp$ unconstrained, living in an open set with barriers}
+If they can be satisfied, the MAP verifies the first oder optimality conditions
 \begin{align}
     \nabla \logpart(\hat \natp_\text{MAP}) = \hat \meanp_\text{MAP}
-    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
+    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
 \end{align}
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
 \begin{align}
-	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T(X_i)}{n}
+	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
 \end{align}
 These rules are known as moment matching.
-The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
+The MLE and MAP estimates are statistics of the dataset $\mD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
 
 
 \section{Open Problem}
 
-\fdk{
-Might want to note that a perhaps ``typical'' view of parameter estimation 
-works with norms, e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ (for some norm and some power), 
-or more generally using distances rather than divergences as they are symmetric and have nicer properties. 
-But as the MLE is the minimizer of the log-likelihood, 
-using the log-likelihood (and by extension the KL divergence) as a measure of risk is natural, if inconvenient.
-}
-
-
-For a well-specified model, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
+Let $\natp^* := \argmin \expect[X\sim\cD]{-\log p(X|\natp)}$, where $\cD$ is any distribution such that $\E[T] = \meanp^* \in \cM$.
+Then the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{multline}
-    \expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*) } \\
+    \expect[X\sim \cD]{-\log p(X|\natp) + \log p(X|\natp^*) } \\
 	= \KL( p(.|\natp^*) ; p(.|\natp)) \; .
 \end{multline}
+Note that $\cD$ does not have to be part of the exponential family.
 For the exponential family, the KL is equal to the Bregman divergence induced by the log-partition function, or alternatively by the entropy, being careful with the order of the arguments 
 \begin{align}
 \boxed{
@@ -290,14 +290,20 @@ For the exponential family, the KL is equal to the Bregman divergence induced by
     = \bregmanconj ( \meanp^* ; \meanp)
 }
 \end{align}
-Our question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities
+
+Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \TODO{cite} 
+Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \TODO{cite} 
+A contrario the KL is not smooth, and it can be infinite in misspecified settings.
+But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
+
+Our question is: how does the KL behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities
 \begin{align}
 	\label{eq:bregmanMLE}
-	\expect[\cD]{\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right )} \\
+	\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )} \\
 	\label{eq:bregmanMAP}
-	\expect[\cD]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} 
+	\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \mu_0 + \smallsum_i T_i}{n_0+n} \right )} 
 \end{align}
-where the outer expectation is on the dataset $\cD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
+where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
 More explicitly, can we write an upper bound that does not involve an expectation over the dataset -- e.g. where the stochasticity is removed.
 
 
@@ -310,41 +316,95 @@ For instance, if we plug in $\conj(\mu)= -\log(\mu)$, which defines a divergence
 \paragraph{Remark 2.}
 The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
 
-\section{Insight - Asymptote}
+\section{Insights}
+
+\subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-We can get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
+Asymptotic results typically show that natural parameters $\natp$ asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
+Here the MAP is more simply expressed with mean parameters $\meanp$.
+We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &=\half  \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
     + O(\norm{\mu - \mu^*}^3)
 \end{align}
-where the norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian at the optimum 
+where the Mahalanobis norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian of the entropy -- the inverse \textit{Fisher information matrix} -- at the optimum, 
 \begin{align}
-    \nabla^2\conj(\mu^*) 
+    \mF^*
+    :=\nabla^2\conj(\mu^*) 
     = \nabla^2\logpart(\natp^*)^{-1} 
     = \Cov_{\natp^*}[T(X)]^{-1}  \; .
 \end{align}
-Both the MLE and the MAP have the same asymptotic rate
+From there, it is possible to show an asymptotic rate for the MLE and the MAP
 \begin{align}
 \label{eq:MAP_asymptote}
-	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
-	= \frac{d}{2n} + O(n^{- \frac{3}{2}})
+	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right ) 
+	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
-as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data.
-Remark how this rate is also independent of the optimum $\meanp^*$.
-\fdk{meaning "independent ignoring constants"?}
+Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
+This asymptote is also independent of the optimum $\meanp^*$.
 
-\fdk{
-That should be well known, maybe find a reference?
-% Something about the statistical asymptotic behavior for the MLE? 
-% \begin{equation}
-% 	D_A(\theta_*, \theta_n) \approx \frac{1}{2}\norm{\theta_n - \theta_*}_{\nabla^2 A(\theta_*)}^2 
-% 	\approx \frac{1}{n}?
-% \end{equation}
-}
+\subsection{Euclide's World}
+As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
+    &\leq 2L \norm{\mu^* - \mu}
+\end{align}
+so $\bregmanconj$ is $2L$-Lipschitz.
+\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
+\end{align}
+so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
 
-\section{Example - Gaussian Mean}
+\subsection{Bias-Variance Decomposition}
+In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
+Let $\tilde \theta_n := \expect{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \mu_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
+As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	&= {\bregmanconj(\mu^* ; \tilde \mu_n)}
+	+ {\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
+	\label{eq:primal_pivot}
+\end{align}
 
+Remark : In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. 
+This is not true for the MLE. In fact for the gaussian variance MLE, the bias decreases like ${\bregmanconj(\mu^* ; \tilde \mu_n)} \leq \frac{2}{n(n-2)}$.
+A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition there is not clean.
+
+\paragraph{Illustrations.}
+We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
+In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \mu_n^\text{MLE},\hat \mu_n^\text{MAP},\mu_n,\tilde \mu_n, \mu^*$ and $\mu_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
+
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/biasvariance/new_linear_ratio=0.8_n0=10}.pdf}
+	\caption{
+	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
+	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
+	}
+	\label{fig:variance_decomposition}
+\end{figure*}
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
+	\caption{
+	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote. 
+	\textbf{Right:} bias-variance decomposition.
+	}
+	\label{fig:gaussian_decomposition}
+\end{figure*}
+
+
+\section{Examples}
+
+\subsection{Gaussian Mean}
 \paragraph{$\ell^2$-norm Analysis}
 In the Euclidean realm, the average is bounded by variance becomes a bound on the variance of the average
 \begin{align}
@@ -362,24 +422,7 @@ so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2
 
 
 
-\section{Insight - Euclide's World}
-As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as the mean of a gaussian.
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
-\begin{align}
-    \bregmanconj(\mu^* ; \mu) 
-    &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
-    &\leq 2L \norm{\mu^* - \mu}
-\end{align}
-so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{t}})$ convergence rate from \RLP{Gaussian rate}.
-\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
-\begin{align}
-    \bregmanconj(\mu^* ; \mu) 
-    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
-\end{align}
-so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
-
-
-\section{Example - Gaussian Variance}
+\subsection{Gaussian Variance}
 A core example of this paper is a centered gaussian with unknown variance $\cN(0,\sigma^2)$. 
 The density is	$p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\natp = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
@@ -463,7 +506,6 @@ The expected suboptimality of the MAP of $\cN(0,\mu^*)$ with prior hyper-paramet
 This inequality highlights a clear variance-bias decomposition.
 In particular, there is no bias term when $\frac{\mu_0}{\mu^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\mu_0 = 2 \mu^*$.
 Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
-\RLP{Add numerical experiments with upper bound for gaussian variance MAP.}
 
 
 \begin{figure*}[t]
@@ -473,61 +515,23 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 	\label{fig:bias-variance-numerical}
 \end{figure*}
 
-\section{Bias-Variance Decomposition}
-In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
-Let $\tilde \theta_n := \expect{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \mu_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
-As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
-\begin{align}
-	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
-	&= {\bregmanconj(\mu^* ; \tilde \mu_n)}
-	+ {\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
-	\label{eq:primal_pivot}
-\end{align}
+\section{"Burn In" Statistical Analysis}
+Self-concordant line of work : 
+\citet{kakade2010learning},
+\cite{anastasiou2017bounds},
+\citet{ostrovskii2021finite}.
 
-\paragraph{Illustrations.}
-We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
-In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \mu_n^\text{MLE},\hat \mu_n^\text{MAP},\mu_n,\tilde \mu_n, \mu^*$ and $\mu_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
-
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[width=\textwidth]{{figs/biasvariance/new_linear_ratio=0.8_n0=10}.pdf}
-	\caption{
-	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
-	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
-	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
-	}
-	\label{fig:variance_decomposition}
-\end{figure*}
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
-	\caption{
-	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote. 
-	\textbf{Right:} bias-variance decomposition.
-	}
-	\label{fig:gaussian_decomposition}
-\end{figure*}
-
-
-
-
-
-
-
-
-\section{Optimization related work}
+\section{Optimization Perspective}
 In the context of optimization, why do we care? 
 
-There is a long line work trying the convergence rate of stochastic gradient descent.
-Beyond the results of RM51, 
-we now have proofs n smooth, strongly convex problems and bounded variance 
+There is a long line work bounding the convergence rate of stochastic gradient descent.
+Beyond the results of \citet{robbins1951stochastic}, 
+we now have proofs on smooth, strongly convex problems and bounded variance 
 (as well as other assumptions on the noise, reviewed later)
 a decreasing step-size and an averaging scheme gets 
 a $1/t$ convergence rate, 
 which matches the asymptotic rate of unbiased estimation,
-through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler}\footnote{
+through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler} \footnote{
 Those papers assume the stochastic gradients are bounded, 
 but small modifications also work for bounded variance instead.
 }
@@ -542,13 +546,13 @@ For a review, see \citet{gower2019sgd}.
 However, for some problems, combining decreasing step-sizes and averaging is not necessary,
 even when the function is not strongly convex.
 This is the case for maximum likelihood estimation and matches the asymptotic rates, 
-but holds more generally, for example for linear and logistic regressions \citep{bach2013non}.
+but holds more generally, for example for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
 
 There has been recent advances in optimization that go beyond the Euclidean case, 
 to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
 neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
-\citep{bauschke2017descent,lu2018relatively},
-where instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
+\citep{birnbaum2011distributed,bauschke2017descent,lu2018relatively}.
+Instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
 we use a reference function instead \fdk{maybe add a line}
 and apply mirror descent \citep{nemirovski1983problem,beck2003mirror}
 (also called NoLips \citep{bauschke2017descent}, something else?). 
@@ -564,16 +568,13 @@ Some advances have been tried
 \begin{itemize}
 	\item The reference function is ``close to'' a norm
 	and looks like a \citet{hanzely2018fastest}
-	\item 
-	Attempt to adapt the ``bounded gradient at the minimum''
+	\item Attempt to adapt the ``bounded gradient at the minimum''
 	\citep{dragomir2021fast}
+	\item Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}.
 \end{itemize}
 
-Other to cite;
-\begin{itemize}
-	\item \citet{marteauferey2019}
-\end{itemize}
-
+Other work 
+\citet{marteauferey2019beyond}.
 
 \fdk{
 A ``simple open problem'';
@@ -583,64 +584,37 @@ that has optimality decreasing as $1/n^2$,
 to mirror the bias term of gradient descent?
 }
 
-
-\fdk{
-Application 
-
+\fdk{Application 
 The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
 For example, we haven't yet figured out the analog of Nesterov-type acceleration 
 on relatively smooth and strongly convex problems, 
 to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
-or just from $1/T$ to $1/T^2$ 
-in the (non-strongly) convex case.
-\citet{dragomir2021optimal} show that naïve application of Bregman updates can not achieve acceleration.
-The tools developped to make progress on one problem might help make progress on the other. 
+or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
+\citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
+The tools developed to make progress on one problem might help make progress on the other. 
 }
 
 
 
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \bibliographystyle{apalike}
-\bibliography{../references.bib}
+\bibliography{references.bib}
 
 
 
-
-\clearpage
-\section{Plan}
-
+\section{Group Meeting}
 \begin{enumerate}
-	\item intro to exponential family, and density estimation
-	\item the thing we want to bound
-	\item Examples : gaussian mean and gaussian variance (+other examples, just mentioned)
-	\item Insight : Strongly convex case. (+ self-concordance that is not verified either)
-	\item insight : bias-variance decomposition
-	\item Optimization perspective : SBPP or SBG. But no analysis hold, revealing a flaw of all these techniques.
-	\item Discussion : we believe finding a convergence rate would bring new tools useful to deal with common objects such as barrier losses.
+	\item new plots : mirror map, and gaussian trajectories
+	\item the MLE is biased according to our definition. See plots. Does this definition of bias make sense ? An unbiased estimator's primal mean would be equal to the optimum, vs the dual mean. 
+	\item \citet{kakade2010learning}
+	\begin{enumerate}
+		\item assumption in the spirit of infinite order self-concordance only at the optimum
+		\item After a burn-in phase, the loss behaves quadratically. No precise description of the burn-in length.
+		\item \TODO{it is worth writing down until the end what we are obtaining with self-concordance.}
+		\item idea 1 : try to express some of their results with the mean parameter instead.
+		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization).
+	\end{enumerate}
+	\item positioning between optimization and statistics.
 \end{enumerate}
-
-Open questions
-\begin{itemize}
-	\item does a base measure change anything ?
-	\item is there multiple conjugate priors ?
-	\item misspecified case. Do we have a   formula ?
-\end{itemize}
-
 
 
 

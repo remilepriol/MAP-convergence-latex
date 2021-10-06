@@ -566,6 +566,18 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 	\label{fig:gaussian_decomposition}
 \end{figure}
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=0}.pdf}
+	\includegraphics[width=\textwidth]{{figs/2d/gaussian_convergence_n0=0}.pdf}
+	\caption{
+	The MLE is biased in primal space.
+	}
+	\label{fig:MLE_bias}
+\end{figure}
+
+
+
 \subsection{About Variance and Covariance}
 
 \begin{lemma}
@@ -1274,7 +1286,7 @@ This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy
 
 Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
 
-In our case, the bias variance decomposition tells us that we are interested in the covariance between primal and dual parameters, rather than the covariance of only of these -- $\Cov(\MAPt;\MAPm)$ rather that $\Var(\MAPm)$ or $\Var(\MAPt)$.
+In our case, the bias variance decomposition tells us that we are interested in the covariance between primal and dual parameters, rather than any of their individual covariance -- $\Cov(\MAPt;\MAPm)$ rather that $\Var(\MAPm)$ or $\Var(\MAPt)$.
 
 \section{Posterior Expected Loss}
 
