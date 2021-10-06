@@ -520,10 +520,22 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 
 
 
+\section{Group Meeting}
+\begin{enumerate}
+	\item new plots : mirror map, and gaussian trajectories
+	\item the MLE is biased according to our definition. See plots. Does this definition of bias make sense ? An unbiased estimator's primal mean would be equal to the optimum, vs the dual mean. 
+	\item \citet{kakade2010learning}
+	\begin{enumerate}
+		\item assumption in the spirit of infinite order self-concordance only at the optimum
+		\item After a burn-in phase, the loss behaves quadratically. No precise description of the burn-in length.
+		\item conclusion : it is worth writing down until the end what we are obtaining with self-concordance. \RLP{TODO}
+		\item idea 1 : try to express some of their results with the mean parameter instead.
+		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization).
+	\end{enumerate}
+\end{enumerate}
 
-\clearpage
+
 \section{Plan}
-
 \begin{enumerate}
 	\item intro to exponential family, and density estimation
 	\item the thing we want to bound
@@ -538,7 +550,7 @@ Open questions
 \begin{itemize}
 	\item does a base measure change anything ?
 	\item is there multiple conjugate priors ?
-	\item misspecified case. Do we have a   formula ?
+	\item misspecified case. Do we have a   formula ? Partial answer : a sufficient condition is to have $\mu^*$ be accessible to our model, even if the true distribution is not.
 \end{itemize}
 
 
