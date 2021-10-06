@@ -245,20 +245,20 @@ The negative log-likelihood of the prior is
     -\log p(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
 \end{align*}
 which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
-Then the joint log-likelihood of $\cD =(X_1,\dots,X_n)$ and $\natp$ is
+Then the joint log-likelihood of $\mD =(X_1,\dots,X_n)$ and $\natp$ is
 \begin{multline}
-    -\log p(\cD|\natp)p(\natp) 
+    -\log p(\mD|\natp)p(\natp) 
     = (n_0+n) \logpart (\natp) \\
     - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T_i \right) + \cst
     \label{eq:joint_likelihood}
 \end{multline}
 where $T_i=T(X_i)$.
-This means the posterior given $\cD$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T_i , -(n_0 + n))$.
+This means the posterior given $\mD$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T_i , -(n_0 + n))$.
 
 \paragraph{Maximum A Posteriori (MAP).}
 Minimizing~\eqref{eq:joint_likelihood} over $\natp$ yields the MAP estimate
 \begin{align}
-    \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0) \; .
+    \hat \natp = \argmin_\natp -\log p(\mD|\natp) + n_0 \bregman(\natp ; \natp_0) \; .
 \end{align}
 If they can be satisfied, the MAP verifies the first oder optimality conditions
 \begin{align}
@@ -270,25 +270,18 @@ When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Max
 	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
 \end{align}
 These rules are known as moment matching.
-The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
+The MLE and MAP estimates are statistics of the dataset $\mD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
 
 
 \section{Open Problem}
 
-\fdk{
-Might want to note that a perhaps ``typical'' view of parameter estimation 
-works with norms, e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ (for some norm and some power), 
-or more generally using distances rather than divergences as they are symmetric and have nicer properties. 
-But as the MLE is the minimizer of the log-likelihood, 
-using the log-likelihood (and by extension the KL divergence) as a measure of risk is natural, if inconvenient.
-}
-
-
-For a well-specified model, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
+Let $\natp^* := \argmin \expect[X\sim\cD]{-\log p(X|\natp)}$, where $\cD$ is any distribution such that $\E[T] = \meanp^* \in \cM$.
+Then the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{multline}
-    \expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*) } \\
+    \expect[X\sim \cD]{-\log p(X|\natp) + \log p(X|\natp^*) } \\
 	= \KL( p(.|\natp^*) ; p(.|\natp)) \; .
 \end{multline}
+Note that $\cD$ does not have to be part of the exponential family.
 For the exponential family, the KL is equal to the Bregman divergence induced by the log-partition function, or alternatively by the entropy, being careful with the order of the arguments 
 \begin{align}
 \boxed{
@@ -297,14 +290,20 @@ For the exponential family, the KL is equal to the Bregman divergence induced by
     = \bregmanconj ( \meanp^* ; \meanp)
 }
 \end{align}
-Our question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities
+
+Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \TODO{cite} 
+Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \TODO{cite} 
+A contrario the KL is not smooth, and it can be infinite in misspecified settings.
+But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
+
+Our question is: how does the KL behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities
 \begin{align}
 	\label{eq:bregmanMLE}
-	\expect[\cD]{\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right )} \\
+	\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )} \\
 	\label{eq:bregmanMAP}
-	\expect[\cD]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} 
+	\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \mu_0 + \smallsum_i T_i}{n_0+n} \right )} 
 \end{align}
-where the outer expectation is on the dataset $\cD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
+where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
 More explicitly, can we write an upper bound that does not involve an expectation over the dataset -- e.g. where the stochasticity is removed.
 
 
