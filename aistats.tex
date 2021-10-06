@@ -122,7 +122,7 @@ $g(\theta)$ such that
 	\expect{\norm{g(\theta) - \nabla f(\theta)}^2} \leq \sigma^2.
 \end{equation}
 Estimating the mean of Gaussian noise is a special case of this problem class, using 
-$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(\theta - \mu, \sigma^2)$.
+$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(- \mu, \sigma^2)$.
 SGD with a decreasing step-size coincides with the maximum likelihood estimate (MLE), 
 and attains the $1/t$ convergence rate.
 
@@ -133,35 +133,35 @@ is the problem of minimizing
 	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta_*)},
 \end{equation}
 When $p(x\cond\theta)$ is an exponential family distribution,
-$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (up to constants).
+$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference distribution).
 Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
-There are algorithms for this setting, for example the MLE;
-giving the (online) maximum likelihood after seeing $t$ samples
-corresponds to online mirror descent with decreasing step-sizes (more on this later).
-But our convergence rates are weak; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
+As we will prove, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
+Despite recent advances in this field, our convergence rates are still lacking ; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
 
-We do not have a solution. The goal of this paper, and the reason it is submitted at AISTATS, 
+We do not have a solution. The goal of this paper
 is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
 in the hope that we can make progress on this question;
 Can we build algorithms for stochastic estimation 
 when the objective function is not (close to) quadratic
 and the noise is not Gaussian?
 
-We show the connections between the optimization and statistical estimation view of the problem
-and discuss where our current theory fails to fully capture the problem.
-We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate---this is part of the point of this paper---and 
-that the statistical theory results for the convergence of the MLE to the solution are well known. 
-Our point is more subtle, in that for the purposes of optimization, to mimic the results that are known for SGD in Euclidean settings, 
-we would like a result of the form 
-\begin{equation*}
-	\text{optimality gap after $t$ steps}
-	\leq 
-	\frac{\text{``bias''}}{t^2}
-	+ \frac{\text{``variance''}}{t},
-\end{equation*}
-which is the bit that is lacking. 
+We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate -- which is optimal in some Cramer-Rao sense -- and for which we have asymptotic and large sample results \TODO{cite}. 
+However, none of the theory we found could address for instance the case of a gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions. 
+%kind of redundant problem - question - problem paragraphs, not disentangling stats and optim. To improve
+
+\paragraph{Contributions}
+\begin{itemize}
+	\item We provide insights on different facets of this problem : quadratic approximations ; bias variance decomposition; and a detailed analysis of the gaussian variance estimation problem.
+	\item We show the connections between the optimization and statistical estimation view of the problem and discuss where current theories fail to fully capture the problem.
+\end{itemize}
+
+The statistics and optimization perspective are so tightly linked in this problem, that we believe progress from one field would help the other one. 
+Progress from statistics could bring forward research in non-euclidean optimization, for instance helping in the development of accelerated methods.
+On the other hand, optimization can become  a more versatile and general tool for statisticians. % handwavy and shady af.
+
 
 % Then; 
 % - description of the setting
