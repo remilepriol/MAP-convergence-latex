@@ -120,56 +120,39 @@ $g(\theta)$ such that
 \begin{equation}
 	\expect{\norm{g(\theta) - \nabla f(\theta)}^2} \leq \sigma^2.
 \end{equation}
-The best convergence rate, of stochastic gradient methods 
-is obtained by SGD with decreasing step-sizes and averaging, 
-yields a convergence rate of $1/t$ and is asymptotically tight;
-SGD achieves this rate on the following problem, 
-\begin{equation}
-	f(\theta) = \frac{1}{2}\norm{\theta -\mu}^2, \quad
-	g(\theta) \sim \sim \cN(\theta - \mu, \sigma^2).
-\end{equation}
-This problem is estimating the mean of a Gaussian, 
-and it is not improvable by information theoretic arguments. 
+Estimating the mean of Gaussian noise is a special case of this problem class, using 
+$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(\theta - \mu, \sigma^2)$.
+SGD with a decreasing step-size coincides with the maximum likelihood estimate (MLE), 
+and attains the $1/t$ convergence rate.
 
 But our understanding of stochastic optimization lacks in other domains. 
-A generalization of the above problem, 
-at the intersection of optimization and estimation, 
+A generalization of the above problem, at the intersection of optimization and statistics, 
 is the problem of minimizing 
 \begin{equation}
-	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{A(\theta) - \lin{t(x), \theta}},
+	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta_*)},
 \end{equation}
-where $A$ is a convex, Legendre function and 
-$p(x\cond\theta)$ is the exponential family distribution 
-with $A$ as its log-partition function. 
-The Gaussian example above is a special case 
-with $A(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$
-and $p(x\cond\theta) = \cN{\mu, \sigma^2}$.
+When $p(x\cond\theta)$ is an exponential family distribution,
+$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (up to constants).
+Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
+The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
-We obviously have algorithms for this setting, 
-as this is an maximum likelihood problem.
-Giving the (online) maximum likelihood after seeing $t$ samples
-which corresponds as online mirror descent with a decreasing step-size schedule (more on this later).
-But our convergence rates are weak.
-There are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+There are algorithms for this setting, for example the MLE;
+giving the (online) maximum likelihood after seeing $t$ samples
+corresponds to online mirror descent with decreasing step-sizes (more on this later).
+But our convergence rates are weak; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
 
-We do not have a solution. 
-The goal of this paper, and the reason it is submitted at AISTATS, 
-is to bring this issue to the attention of 
-the community working at the intersection of machine learning, optimization and statistics community,
+We do not have a solution. The goal of this paper, and the reason it is submitted at AISTATS, 
+is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
 in the hope that we can make progress on this question;
 Can we build algorithms for stochastic estimation 
 when the objective function is not (close to) quadratic
-and the noise is not (sub-)Gaussian?
+and the noise is not Gaussian?
 
-We give motivating examples where solution of this problem would enable progress in other areas,
-principally motivated by stochastic optimization, 
-show the connections between the optimization and statistical estimation sides of the problem,
+We show the connections between the optimization and statistical estimation view of the problem
 and discuss where our current theory fails to fully capture the problem.
-
-We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate---this is part of the point of this paper---and that the statistical theory results for the convergence of the MLE to the solution 
-are well known. 
-Our point is more subtle, in that for the purposes of optimization, 
-to mimic the results that are known for SGD in Euclidean settings, 
+We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate---this is part of the point of this paper---and 
+that the statistical theory results for the convergence of the MLE to the solution are well known. 
+Our point is more subtle, in that for the purposes of optimization, to mimic the results that are known for SGD in Euclidean settings, 
 we would like a result of the form 
 \begin{equation*}
 	\text{optimality gap after $t$ steps}
