@@ -162,19 +162,12 @@ we would like a result of the form
 \end{equation*}
 which is the bit that is lacking. 
 
-Then; 
-- description of the setting
-- statistical solutions (asymptotic, l1 or l2 error)
-- optimization solutions (online+bounded gradient, self-concordance, more recent relative smoothness results)
-- potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
-- conclusion?
-
-
-
-
-
-
-
+% Then; 
+% - description of the setting
+% - statistical solutions (asymptotic, l1 or l2 error)
+% - optimization solutions (online+bounded gradient, self-concordance, more recent relative smoothness results)
+% - potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
+% - conclusion?
 
 
 \section{Technical background}
@@ -275,6 +268,15 @@ The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random da
 
 \section{Open Problem}
 
+\fdk{
+Might want to note that a perhaps ``typical'' view of parameter estimation 
+works with norms, e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ (for some norm and some power), 
+or more generally using distances rather than divergences as they are symmetric and have nicer properties. 
+But as the MLE is the minimizer of the log-likelihood, 
+using the log-likelihood (and by extension the KL divergence) as a measure of risk is natural, if inconvenient.
+}
+
+
 For a well-specified model, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{multline}
     \expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*) } \\
@@ -329,7 +331,17 @@ Both the MLE and the MAP have the same asymptotic rate
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}})
 \end{align}
 as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data.
-Remark how this rate is also independent of the optimum $\meanp^*$. 
+Remark how this rate is also independent of the optimum $\meanp^*$.
+\fdk{meaning "independent ignoring constants"?}
+
+\fdk{
+That should be well known, maybe find a reference?
+% Something about the statistical asymptotic behavior for the MLE? 
+% \begin{equation}
+% 	D_A(\theta_*, \theta_n) \approx \frac{1}{2}\norm{\theta_n - \theta_*}_{\nabla^2 A(\theta_*)}^2 
+% 	\approx \frac{1}{n}?
+% \end{equation}
+}
 
 \section{Example - Gaussian Mean}
 
@@ -498,6 +510,111 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 	\label{fig:gaussian_decomposition}
 \end{figure*}
 
+
+
+
+
+
+
+
+\section{Optimization related work}
+In the context of optimization, why do we care? 
+
+There is a long line work trying the convergence rate of stochastic gradient descent.
+Beyond the results of RM51, 
+we now have proofs n smooth, strongly convex problems and bounded variance 
+(as well as other assumptions on the noise, reviewed later)
+a decreasing step-size and an averaging scheme gets 
+a $1/t$ convergence rate, 
+which matches the asymptotic rate of unbiased estimation,
+through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler}\footnote{
+Those papers assume the stochastic gradients are bounded, 
+but small modifications also work for bounded variance instead.
+}
+
+We do have extensions to other notions of bounded variance, 
+for example assuming that the stochastic gradients are gradients of a perturbed smooth function $f_i$ 
+and that the minimum of $f$ and the minima of the $f_i$ 
+are bounded, $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$,
+or that the gradient noise is bounded only at the minimum. 
+For a review, see \citet{gower2019sgd}.
+
+However, for some problems, combining decreasing step-sizes and averaging is not necessary,
+even when the function is not strongly convex.
+This is the case for maximum likelihood estimation and matches the asymptotic rates, 
+but holds more generally, for example for linear and logistic regressions \citep{bach2013non}.
+
+There has been recent advances in optimization that go beyond the Euclidean case, 
+to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
+neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
+\citep{bauschke2017descent,lu2018relatively},
+where instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
+we use a reference function instead \fdk{maybe add a line}
+and apply mirror descent \citep{nemirovski1983problem,beck2003mirror}
+(also called NoLips \citep{bauschke2017descent}, something else?). 
+
+We have convergence results for the 
+application of stochastic mirror descent, 
+but they typically rely on assumptions that are too strong. 
+\begin{itemize}
+	\item The reference function is strongly convex [typical setup in online learning]
+	\item The variance is uniformly bounded
+\end{itemize}
+Some advances have been tried
+\begin{itemize}
+	\item The reference function is ``close to'' a norm
+	and looks like a \citet{hanzely2018fastest}
+	\item 
+	Attempt to adapt the ``bounded gradient at the minimum''
+	\citep{dragomir2021fast}
+\end{itemize}
+
+Other to cite;
+\begin{itemize}
+	\item \citet{marteauferey2019}
+\end{itemize}
+
+
+\fdk{
+A ``simple open problem'';
+assume we have a deterministic problem, so that we know where the minimum is. 
+Can we figure out a (deterministic) path from $\theta_0$ to $\theta_*$ 
+that has optimality decreasing as $1/n^2$, 
+to mirror the bias term of gradient descent?
+}
+
+
+\fdk{
+Application 
+
+The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
+For example, we haven't yet figured out the analog of Nesterov-type acceleration 
+on relatively smooth and strongly convex problems, 
+to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
+or just from $1/T$ to $1/T^2$ 
+in the (non-strongly) convex case.
+\citet{dragomir2021optimal} show that naïve application of Bregman updates can not achieve acceleration.
+The tools developped to make progress on one problem might help make progress on the other. 
+}
+
+
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \bibliographystyle{apalike}
 \bibliography{../references.bib}
 
@@ -523,61 +640,6 @@ Open questions
 	\item is there multiple conjugate priors ?
 	\item misspecified case. Do we have a   formula ?
 \end{itemize}
-
-
-\section{Stuff to cite and why }
-
-
-\begin{itemize}
-	\item Stochastic and online mirror descent: 
-	We obviously have rates in this setting, but they all assume 
-	that the reference function is strongly-convex relative to a norm. 
-	\citep[e.g.][Thm 4.2]{bubeck2015convex}
-	\item What is mirror descent called in the literature?
-		\begin{itemize}
-			\item Mirror Descent \citep{nemirovski1983problem,beck2003mirror} 
-			\item NoLips \citep{bauschke2017descent}
-		\end{itemize}
-	\item Interest in mirror descent boosted by the relatively smooth view 
-	of \citet{bauschke2017descent,lu2018relatively}	
-	\item 
-	The oroblems on how to deal with Bregman divergences abound in optimization, 
-	beyond stochasticity. 
-	For example, we haven't yet figured out the analog of Nesterov-type acceleration 
-	on relatively smooth and strongly convex problems, 
-	to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
-	or just from $1/T$ to $1/T^2$ 
-	in the (non-strongly) convex case.
-	\citet{dragomir2021optimal} show that naïve application of Bregman updates can not achieve acceleration.
-	The tools developped to make progress on one problem might help make progress on the other. 
-	\item 
-	Stochastic mirror descent in the relatively smooth setting;
-	\citet{hanzely2018fastest},
-	\citet{dragomir2021fast}
-	and the zoo of assumptions
-	\item Something about the statistical asymptotic behavior for the MLE? 
-	\begin{equation}
-		D_A(\theta_*, \theta_n) \approx \frac{1}{2}\norm{\theta_n - \theta_*}_{\nabla^2 A(\theta_*)}^2 
-		\approx \frac{1}{n}?
-	\end{equation}
-	\item Something about how the Bregman divergence is often not considered in the statistics lit 
-	because it can be infinite and is non-symmetric and not nice to work with, 
-	and so folks focus on $\expect{\norm{\theta_n - \theta_*}^2}$ even if it's somewhat meaningless 
-	in the non-asymptotic regime, 
-	and the best non-asymptotic results 
-	still rely on Taylor expansions after $n > $ something big?
-	\item Something about how we don't even know how to deal with decreasing step-sizes 
-	of the order of $1/t$ 
-	\item 
-	Should cite Bach's line of work on SGD, averaging schemes and self-concordant functions 
-	\url{https://www.di.ens.fr/~fbach/bach_ejs_self_concordance.pdf}
-	that obtain the $1/t$ rate in the smooth, convex setting instead of $1/\sqrt{t}$, 
-	which is the ``expected'' rate for that setting, 
-	and how this approach above is a generalization beyond the Euclidean noise model 
-	\url{http://proceedings.mlr.press/v99/marteau-ferey19a/marteau-ferey19a.pdf}
-	\url{http://proceedings.mlr.press/v99/ostrovskii19a/ostrovskii19a.pdf}
-\end{itemize}
-
 
 
 
