@@ -311,41 +311,93 @@ For instance, if we plug in $\conj(\mu)= -\log(\mu)$, which defines a divergence
 \paragraph{Remark 2.}
 The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
 
-\section{Insight - Asymptote}
+\section{Insights}
+
+\subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-We can get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
+Asymptotic results typically show that natural parameters $\natp$ asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
+Here the MAP is more simply expressed with mean parameters $\meanp$.
+We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &=\half  \norm{\mu^* - \mu}^2_{\nabla^2\conj(\mu^*)}
     + O(\norm{\mu - \mu^*}^3)
 \end{align}
-where the norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian at the optimum 
+where the Mahalanobis norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian of the entropy -- the inverse \textit{Fisher information matrix} -- at the optimum, 
 \begin{align}
-    \nabla^2\conj(\mu^*) 
+    \mF^*
+    :=\nabla^2\conj(\mu^*) 
     = \nabla^2\logpart(\natp^*)^{-1} 
     = \Cov_{\natp^*}[T(X)]^{-1}  \; .
 \end{align}
-Both the MLE and the MAP have the same asymptotic rate
+From there, it is possible to show an asymptotic rate for the MLE and the MAP
 \begin{align}
 \label{eq:MAP_asymptote}
-	\E \bregmanconj \left (\E [T(X)] ;  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} \right ) 
-	= \frac{d}{2n} + O(n^{- \frac{3}{2}})
+	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right ) 
+	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
-as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data.
-Remark how this rate is also independent of the optimum $\meanp^*$.
-\fdk{meaning "independent ignoring constants"?}
+Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
+This asymptote is also independent of the optimum $\meanp^*$.
 
-\fdk{
-That should be well known, maybe find a reference?
-% Something about the statistical asymptotic behavior for the MLE? 
-% \begin{equation}
-% 	D_A(\theta_*, \theta_n) \approx \frac{1}{2}\norm{\theta_n - \theta_*}_{\nabla^2 A(\theta_*)}^2 
-% 	\approx \frac{1}{n}?
-% \end{equation}
-}
+\subsection{Euclide's World}
+As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as the mean of a gaussian.
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
+    &\leq 2L \norm{\mu^* - \mu}
+\end{align}
+so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{t}})$ convergence rate from \RLP{Gaussian rate}.
+\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
+\begin{align}
+    \bregmanconj(\mu^* ; \mu) 
+    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
+\end{align}
+so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
 
-\section{Example - Gaussian Mean}
+\subsection{Bias-Variance Decomposition}
+In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
+Let $\tilde \theta_n := \expect{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \mu_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
+As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
+\begin{align}
+	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
+	&= {\bregmanconj(\mu^* ; \tilde \mu_n)}
+	+ {\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
+	\label{eq:primal_pivot}
+\end{align}
 
+Remark : In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. This is not true for the MLE. In fact for the gaussian variance MLE, the bias decreases like ${\bregmanconj(\mu^* ; \tilde \mu_n)} \leq \frac{2}{n(n-2)}$.
+
+\paragraph{Illustrations.}
+We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
+In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \mu_n^\text{MLE},\hat \mu_n^\text{MAP},\mu_n,\tilde \mu_n, \mu^*$ and $\mu_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
+
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/biasvariance/new_linear_ratio=0.8_n0=10}.pdf}
+	\caption{
+	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
+	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
+	}
+	\label{fig:variance_decomposition}
+\end{figure*}
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
+	\caption{
+	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote. 
+	\textbf{Right:} bias-variance decomposition.
+	}
+	\label{fig:gaussian_decomposition}
+\end{figure*}
+
+
+\section{Examples}
+
+\subsection{Gaussian Mean}
 \paragraph{$\ell^2$-norm Analysis}
 In the Euclidean realm, the average is bounded by variance becomes a bound on the variance of the average
 \begin{align}
@@ -363,24 +415,7 @@ so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2
 
 
 
-\section{Insight - Euclide's World}
-As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as the mean of a gaussian.
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
-\begin{align}
-    \bregmanconj(\mu^* ; \mu) 
-    &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
-    &\leq 2L \norm{\mu^* - \mu}
-\end{align}
-so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{t}})$ convergence rate from \RLP{Gaussian rate}.
-\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
-\begin{align}
-    \bregmanconj(\mu^* ; \mu) 
-    \leq \frac{L}{2} \norm{\mu^* - \mu}^2
-\end{align}
-so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
-
-
-\section{Example - Gaussian Variance}
+\subsection{Gaussian Variance}
 A core example of this paper is a centered gaussian with unknown variance $\cN(0,\sigma^2)$. 
 The density is	$p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\natp = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
@@ -474,46 +509,10 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 	\label{fig:bias-variance-numerical}
 \end{figure*}
 
-\section{Bias-Variance Decomposition}
-In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
-Let $\tilde \theta_n := \expect{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \mu_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
-As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
-\begin{align}
-	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
-	&= {\bregmanconj(\mu^* ; \tilde \mu_n)}
-	+ {\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}}
-	\label{eq:primal_pivot}
-\end{align}
+\section{"Burn In" Analysis}
+Self-concordant line of work, and \citet{kakade2010learning}.
 
-\paragraph{Illustrations.}
-We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
-In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \mu_n^\text{MLE},\hat \mu_n^\text{MAP},\mu_n,\tilde \mu_n, \mu^*$ and $\mu_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
-
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[width=\textwidth]{{figs/biasvariance/new_linear_ratio=0.8_n0=10}.pdf}
-	\caption{
-	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound. 
-	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
-	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
-	}
-	\label{fig:variance_decomposition}
-\end{figure*}
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
-	\caption{
-	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote. 
-	\textbf{Right:} bias-variance decomposition.
-	}
-	\label{fig:gaussian_decomposition}
-\end{figure*}
-
-
-
-\section{Optimization related work}
+\section{Optimization Perspective}
 In the context of optimization, why do we care? 
 
 There is a long line work trying the convergence rate of stochastic gradient descent.
