@@ -1,5 +1,5 @@
 \documentclass[twoside]{article}
-\usepackage{aistats2022}
+\usepackage{aistats/aistats2022}
 % If your paper is accepted, change the options for the package
 % aistats2022 as follows:
 %\usepackage[accepted]{aistats2022}
@@ -24,7 +24,7 @@
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{microtype}      % microtypography
 \usepackage{graphicx}
-\graphicspath{{../figs/}{../}}
+\graphicspath{{figs/}}
 %\usepackage{subfigure}
 \usepackage{subcaption}
 \usepackage{hyperref}       % hyperlinks
@@ -50,7 +50,7 @@
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
 
 % my packages
-\usepackage{../math_commands}
+\usepackage{math_commands}
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
@@ -70,6 +70,7 @@
 \newcommand{\MAPt}{\hat \natp_n}
 
 
+\hypersetup{draft}
 
 \begin{document}
 
@@ -512,11 +513,6 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 
 
 
-
-
-
-
-
 \section{Optimization related work}
 In the context of optimization, why do we care? 
 
@@ -527,7 +523,7 @@ we now have proofs n smooth, strongly convex problems and bounded variance
 a decreasing step-size and an averaging scheme gets 
 a $1/t$ convergence rate, 
 which matches the asymptotic rate of unbiased estimation,
-through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler}\footnote{
+through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler} \footnote{
 Those papers assume the stochastic gradients are bounded, 
 but small modifications also work for bounded variance instead.
 }
@@ -583,40 +579,24 @@ that has optimality decreasing as $1/n^2$,
 to mirror the bias term of gradient descent?
 }
 
-
-\fdk{
-Application 
-
+ff
+\fdk{Application 
 The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
 For example, we haven't yet figured out the analog of Nesterov-type acceleration 
 on relatively smooth and strongly convex problems, 
 to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
-or just from $1/T$ to $1/T^2$ 
-in the (non-strongly) convex case.
-\citet{dragomir2021optimal} show that naïve application of Bregman updates can not achieve acceleration.
-The tools developped to make progress on one problem might help make progress on the other. 
+or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
 }
 
-
-
-	
-	
-
-
-
-
-
-
-
-
-
+\citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
+The tools developed to make progress on one problem might help make progress on the other. 
 
 
 
 
 
 \bibliographystyle{apalike}
-\bibliography{../references.bib}
+\bibliography{references.bib}
 
 
 
