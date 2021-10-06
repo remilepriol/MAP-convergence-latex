@@ -148,9 +148,9 @@ Can we build algorithms for stochastic estimation
 when the objective function is not (close to) quadratic
 and the noise is not Gaussian?
 
-We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate -- which is optimal in some Cramer-Rao sense -- and for which we have asymptotic and large sample results \TODO{cite}. 
+We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate for which there is a wealth of asymptotic and large sample results \citep{van2000asymptotic,ostrovskii2021finite}. %TODO complete 
 However, none of the theory we found could address for instance the case of a gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions. 
-%kind of redundant problem - question - problem paragraphs, not disentangling stats and optim. To improve
+%TODO kind of redundant "problem - question - problem" paragraphs, not disentangling stats and optim. To improve
 
 \paragraph{Contributions}
 \begin{itemize}
@@ -173,42 +173,47 @@ On the other hand, optimization can become  a more versatile and general tool fo
 
 \section{Technical background}
 
-\RLP{Goal = disseminate related work to make it look nice.}
-Exponential Families are an elegant and lean way to model a wide variety of data : binary, categorical, natural numbers, positive float, long or short tailed... 
-They are literally the linear model of probabilities.
-The exponential family for data $X$ with natural parameter $\natp$  is entirely specified by the support set of the data   $\cX$ and a sufficient statistic $T: \cX \rightarrow \real^d$
+Exponential Families are the linear model of probabilities.
+Their convexity along with their modeling power make them one of the most widely used statistical models. 
+Here we review some of their properties. 
+We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
+The exponential family for data $X\in \cX$ with natural (or primal) parameter $\natp$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
 \begin{equation}
 	 p(X|\natp) = \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
 \end{equation}
-where $\logpart$ is the log-partition function -- i.e. the normalization factor
+Here $\logpart$ is the log-partition function -- i.e. the normalization factor
 \begin{align}
-    \logpart(\natp) = \log \int e^{\natp^\top T(x)} dx 
+    \logpart(\natp) = \log \int e^{\natp^\top T(x)} \nu(dx) \; .
 \end{align}
-where the integral stands for a sum if $x$ has discrete support. \RLP{Use base measure instead.}
-For instance, this simple model encompasses both categorical distributions $\cX = \{1, \dots, k\}$ with $T(X)$ being the one-hot encoding, and multivariate normal distributions $\cX=\real, T(X)=(X, X^2)$. 
+When explicit, we will write the random variable $T = T(X)$ for lightness.
+This model is defined on the open convex set $\natp\in \Theta$ such that $\logpart(\natp) < \infty$. 
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}, \nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$. 
 
 \paragraph{Duality}
 The logpartition function $\logpart$ verifies the two following identities
 \begin{align}
-    \nabla\logpart(\natp) &=  \expect[p(X|\natp)]{T(X)} =: \meanp \\
-    \nabla^2 \logpart(\natp) &= \Cov_\natp[T(X)] > 0
+    \nabla\logpart(\natp) &=  \expect[p(T|\natp)]{T} =: \meanp \\
+    \nabla^2 \logpart(\natp) &= \Cov_\natp[T] \geq 0
 \end{align}
-where $\meanp$ is called the mean parameter.
-If the sufficient statistic $T$ is minimal, then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
-We will write indifferently $\mu$ or  $\natp$ depending on the context, being aware that both represent the same distribution.
-The second identity entails that $\logpart$ is strictly-convex. 
-At this point it is useful to introduce the \href{https://en.wikipedia.org/wiki/Convex_conjugate}{convex conjugate} (aka Fenchel-Legendre transform) of the logpartition function
+where $\meanp$ is called the mean (or dual) parameter.
+$\meanp$ lives in the open convex set $\cM$ within the convex hull of $T(\cX)$.
+%TODO why is it convex ? 
+%It is open because it is the reciprocal image of an open set by the continuous mirror map
+From now on, we assume that the sufficient statistic $T$ is minimal 
+-- e.g. its covariance is definite positive for all $\natp$ -- 
+then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
+We will write interchangeably $\mu$ or  $\natp$ depending on the context, being aware that both represent the same distribution.
+At this point it is useful to introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
 \begin{align}
 	\conj(\mu) = \langle \mu, \natp \rangle - \logpart(\natp) \; .
 \end{align}
 which matches the common notion of \textit{entropy} in information theory.
-If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it is a bijection, and its inverse is the gradient of its dual $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
-For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}.
+The entropy is eating mean parameters, and its gradient is mapping back to natural parameters $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics{duality}
-	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$. Figure reproduced from \citet{kunstner2020homeomorphic}.
-		\RLP{Show the true gaussian bijection instead?}
+	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\natp, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
 	}
 	\label{fig:duality}
 \end{figure}
@@ -240,28 +245,29 @@ The negative log-likelihood of the prior is
     -\log p(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
 \end{align*}
 which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
-Then the joint log-likelihood of $\cD =(X_1,\dots,X_n,\natp)$ is
+Then the joint log-likelihood of $\cD =(X_1,\dots,X_n)$ and $\natp$ is
 \begin{multline}
     -\log p(\cD|\natp)p(\natp) 
     = (n_0+n) \logpart (\natp) \\
-    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(X_i) \right) + \cst
+    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T_i \right) + \cst
     \label{eq:joint_likelihood}
 \end{multline}
-meaning the posterior given $\cD=(X_1,\dots, X_n)$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
+where $T_i=T(X_i)$.
+This means the posterior given $\cD$ is part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T_i , -(n_0 + n))$.
 
 \paragraph{Maximum A Posteriori (MAP).}
 Minimizing~\eqref{eq:joint_likelihood} over $\natp$ yields the MAP estimate
 \begin{align}
-    \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0)
+    \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0) \; .
 \end{align}
-verifying the first oder optimality conditions \RLP{$\natp$ unconstrained, living in an open set with barriers}
+If they can be satisfied, the MAP verifies the first oder optimality conditions
 \begin{align}
     \nabla \logpart(\hat \natp_\text{MAP}) = \hat \meanp_\text{MAP}
-    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
+    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
 \end{align}
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
 \begin{align}
-	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T(X_i)}{n}
+	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
 \end{align}
 These rules are known as moment matching.
 The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
@@ -340,14 +346,14 @@ Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 
 This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Euclide's World}
-As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as the mean of a gaussian.
+As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
     &\leq 2L \norm{\mu^* - \mu}
 \end{align}
-so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{t}})$ convergence rate from \RLP{Gaussian rate}.
+so $\bregmanconj$ is $2L$-Lipschitz.
 \paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
