@@ -90,7 +90,7 @@
 
 \twocolumn[
 
-\aistatstitle{Looking for Convergence Rates\\ for the MAP of the Exponential Family}
+\aistatstitle{Convergence Rates for the MAP of an Exponential Family, and Stochastic Mirror Descent -- an Open Problem}
 
 
 \aistatsauthor{R\'emi Le Priol \And Frederik Kunstner \And  Damien Scieur \And Simon Lacoste-Julien }
@@ -99,12 +99,16 @@
 ]
 
 \begin{abstract}
-We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for the exponential family. 
-Surprisingly, we found no solution to this problem in the literature -- e.g. after seeing 5 samples, we do not know how many bits away (in expectation) our model is from the true distribution.
-After displaying some properties and special cases of this problem, 
-we show it is an application of several optimization algorithms.
-Yet it falls out of scope for current analysis, thus highlighting areas for progress.
+We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family. 
+Surprisingly, we found no general solution to this problem in the literature. 
+In particular, current theories do not hold for a gaussian, or in the very interesting few samples regime.
+After exhibiting various facets of the problem, we show the MAP can be interpreted as the result of Stochastic Mirror Descent (SMD), yet it falls out of scope for modern analysis.
+We believe solving this very fundamental problem may bring progress both to the statistics and optimization communities.
 \end{abstract}
+
+%In particular, no rates hold in the few samples regime  -- e.g. after seeing 5 samples from a gaussian, we do not know how many bits away from the true distribution we should expect our model to be.
+%No rates hold either when the loss is ill-behaved : infinite domain, not smooth, not self-concordant
+
 
 \section{Motivation}
 
@@ -346,7 +350,7 @@ This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Euclide's World}
 As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$, which kinda adresses \citet{bubeck2015entropic}), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
@@ -613,7 +617,7 @@ The tools developed to make progress on one problem might help make progress on 
 		\item idea 1 : try to express some of their results with the mean parameter instead.
 		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization).
 	\end{enumerate}
-	\item positioning between optimization and statistics.
+	\item positioning between optimization and statistics. Start with stat. Convince the reader that this is an essential problem, with asymptotic rate. but finite is elusive. Inspired by recent work (lepriol , bach2013) we want to use optimization to give a rate, we try. but we reveal a hole in current analysis.  Finite rate would allow to see the importance of the prior, and also help us understand behavior for small numbers. 
 \end{enumerate}
 
 
