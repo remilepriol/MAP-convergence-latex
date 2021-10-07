@@ -90,7 +90,7 @@
 
 \twocolumn[
 
-\aistatstitle{Looking for Convergence Rates\\ for the MAP of the Exponential Family}
+\aistatstitle{Convergence Rates for the MAP of an Exponential Family, and Stochastic Mirror Descent -- an Open Problem}
 
 
 \aistatsauthor{R\'emi Le Priol \And Frederik Kunstner \And  Damien Scieur \And Simon Lacoste-Julien }
@@ -99,12 +99,16 @@
 ]
 
 \begin{abstract}
-We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for the exponential family. 
-Surprisingly, we found no solution to this problem in the literature -- e.g. after seeing 5 samples, we do not know how many bits away (in expectation) our model is from the true distribution.
-After displaying some properties and special cases of this problem, 
-we show it is an application of several optimization algorithms.
-Yet it falls out of scope for current analysis, thus highlighting areas for progress.
+We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family. 
+Surprisingly, we found no general solution to this problem in the literature. 
+In particular, current theories do not hold for a gaussian, or in the very interesting few samples regime.
+After exhibiting various facets of the problem, we show the MAP can be interpreted as the result of Stochastic Mirror Descent (SMD), yet it falls out of scope for modern analysis.
+We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
+
+%In particular, no rates hold in the few samples regime  -- e.g. after seeing 5 samples from a gaussian, we do not know how many bits away from the true distribution we should expect our model to be.
+%No rates hold either when the loss is ill-behaved : infinite domain, not smooth, not self-concordant
+
 
 \section{Motivation}
 
@@ -173,21 +177,24 @@ On the other hand, optimization can become  a more versatile and general tool fo
 
 \section{Technical background}
 
-Exponential Families are the linear model of probabilities.
-Their convexity along with their modeling power make them one of the most widely used statistical models. 
+Exponential Families are to statistics what linear models are to regression.
+Many classical model are exponential families, and their convexity and modeling flexibility make them one of the most widely used statistical models. 
 Here we review some of their properties. 
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
 The exponential family for data $X\in \cX$ with natural (or primal) parameter $\natp$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
 \begin{equation}
 	 p(X|\natp) = \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
 \end{equation}
-Here $\logpart$ is the log-partition function -- i.e. the normalization factor
+Here $\logpart$ is the log-partition function -- i.e. the normalization term
 \begin{align}
     \logpart(\natp) = \log \int e^{\natp^\top T(x)} \nu(dx) \; .
 \end{align}
 When explicit, we will write the random variable $T = T(X)$ for lightness.
-This model is defined on the open convex set $\natp\in \Theta$ such that $\logpart(\natp) < \infty$. 
+For convenience, we focus on steep exponential families with $\logpart$ a convex function of Legendre type.
+In particular, the set $\natp \in \Theta$ such that $\logpart(\natp) < \infty$ is open and convex.
 This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}, \nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$. 
+
+% TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
 \paragraph{Duality}
 The logpartition function $\logpart$ verifies the two following identities
@@ -196,12 +203,10 @@ The logpartition function $\logpart$ verifies the two following identities
     \nabla^2 \logpart(\natp) &= \Cov_\natp[T] \geq 0
 \end{align}
 where $\meanp$ is called the mean (or dual) parameter.
-$\meanp$ lives in the open convex set $\cM$ within the convex hull of $T(\cX)$.
-%TODO why is it convex ? 
-%It is open because it is the reciprocal image of an open set by the continuous mirror map
 From now on, we assume that the sufficient statistic $T$ is minimal 
 -- e.g. its covariance is definite positive for all $\natp$ -- 
 then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
+$\meanp$ lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
 We will write interchangeably $\mu$ or  $\natp$ depending on the context, being aware that both represent the same distribution.
 At this point it is useful to introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
 \begin{align}
@@ -296,14 +301,14 @@ Or more generally, they  use distances rather than divergences as they are symme
 A contrario the KL is not smooth, and it can be infinite in misspecified settings.
 But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
 
-Our question is: how does the KL behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities
+Our question is: how does the KL behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities ?
 \begin{align}
 	\label{eq:bregmanMLE}
 	\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )} \\
 	\label{eq:bregmanMAP}
 	\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \mu_0 + \smallsum_i T_i}{n_0+n} \right )} 
 \end{align}
-where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d as $X_i\sim \natp^*$?
+where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d from $\cD$.
 More explicitly, can we write an upper bound that does not involve an expectation over the dataset -- e.g. where the stochasticity is removed.
 
 
@@ -346,7 +351,7 @@ This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Euclide's World}
 As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$, which kinda adresses \citet{bubeck2015entropic}), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
@@ -600,20 +605,24 @@ The tools developed to make progress on one problem might help make progress on 
 \bibliography{references.bib}
 
 
-
+\clearpage
 \section{Group Meeting}
 \begin{enumerate}
-	\item new plots : mirror map, and gaussian trajectories
-	\item the MLE is biased according to our definition. See plots. Does this definition of bias make sense ? An unbiased estimator's primal mean would be equal to the optimum, vs the dual mean. 
-	\item \citet{kakade2010learning}
+	\item new plots : mirror map, and gaussian trajectories. Add trajectories to paper, with background level set, and new legend : primal/dual expectation
+	\item the MLE is biased according to our definition. See plots. Does this definition of bias make sense ? An unbiased estimator's primal mean would be equal to the optimum, vs the dual mean.  Remark : the MLE is biased for standard parameters.
+	\item exciting pap er\citet{kakade2010learning}
 	\begin{enumerate}
 		\item assumption in the spirit of infinite order self-concordance only at the optimum
 		\item After a burn-in phase, the loss behaves quadratically. No precise description of the burn-in length.
 		\item \TODO{it is worth writing down until the end what we are obtaining with self-concordance.}
 		\item idea 1 : try to express some of their results with the mean parameter instead.
-		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization).
+		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization). How do we prove the linear convergence of Newton to the quadratic regime ? That is the problem at stake here.
 	\end{enumerate}
-	\item positioning between optimization and statistics.
+	\item Intro : positioning between optimization and statistics. Start with stats. Convince the reader that this is an essential problem, with asymptotic rate. but finite is elusive. Inspired by recent work (lepriol2021 , bach2013) we want to use optimization to give a rate. We fail, but we reveal a hole in current analysis.  Finite rate would allow us to quantify the importance of the prior, and also help us understand behavior for small numbers. 
+	\item Intro : 1 clear question and sharper contributions, with references to sections, as a memo for the reviewer writing his review. "investigate bias-variance..." "we show all these analysis suffer from this problem."
+	\item Organization : add optim parallel in insigths section, and then sprinkle references until the optim section.
+	\item Optim : find members of the exponential family where the rate of Dragomir et al. holds.
+	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle.
 \end{enumerate}
 
 
