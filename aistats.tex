@@ -44,7 +44,7 @@
 	pdfauthor={Anonymous},
 }
 
-
+\usepackage[capitalise]{cleveref}
 \newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
 \newcommand{\fdk}[1]{\textcolor{Periwinkle}{fdk:#1}}
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
@@ -101,8 +101,9 @@
 \begin{abstract}
 We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family. 
 Surprisingly, we found no general solution to this problem in the literature. 
-In particular, current theories do not hold for a gaussian, or in the very interesting few samples regime.
-After exhibiting various facets of the problem, we show the MAP can be interpreted as the result of Stochastic Mirror Descent (SMD), yet it falls out of scope for modern analysis.
+In particular, current theories do not hold for a Gaussian, or in the very interesting few samples regime.
+After exhibiting various facets of the problem, we show the MAP can be interpreted as the result of Stochastic Mirror Descent (SMD), 
+yet it falls out of scope for modern analysis.
 We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
 
@@ -142,8 +143,8 @@ Here, $A$ is the log-partition function, a Legendre function that we assume can 
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
 There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
-As we will prove, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
-Despite recent advances in this field, our convergence rates are still lacking ; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+As we will prove,\footnote{\fdk{I don't know any prior reference for this exact statement, but I'm not sure it's safe to claim this as a ``proof'' as if it was a new statement}} the MAP can be interpreted as online mirror descent with decreasing step-sizes.
+Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
 
 We do not have a solution. The goal of this paper
 is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
@@ -153,12 +154,12 @@ when the objective function is not (close to) quadratic
 and the noise is not Gaussian?
 
 We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate for which there is a wealth of asymptotic and large sample results \citep{van2000asymptotic,ostrovskii2021finite}. %TODO complete 
-However, none of the theory we found could address for instance the case of a gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions. 
+However, none of the theory we found could address for instance the case of a Gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions. 
 %TODO kind of redundant "problem - question - problem" paragraphs, not disentangling stats and optim. To improve
 
 \paragraph{Contributions}
 \begin{itemize}
-	\item We provide insights on different facets of this problem : quadratic approximations ; bias variance decomposition; and a detailed analysis of the gaussian variance estimation problem.
+	\item We provide insights on different facets of this problem : quadratic approximations ; bias variance decomposition; and a detailed analysis of the Gaussian variance estimation problem.
 	\item We show the connections between the optimization and statistical estimation view of the problem and discuss where current theories fail to fully capture the problem.
 \end{itemize}
 
@@ -351,14 +352,16 @@ This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Euclide's World}
 As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
-\paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$, which kinda adresses \citet{bubeck2015entropic}), then
+
+{\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$, which kinda adresses \citet{bubeck2015entropic}), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     &\leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu} \\
     &\leq 2L \norm{\mu^* - \mu}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz.
-\paragraph{If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $L^{-1}$-strongly convex), then
+
+{\bf If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
     \leq \frac{L}{2} \norm{\mu^* - \mu}^2
@@ -419,7 +422,8 @@ In the Euclidean realm, the average is bounded by variance becomes a bound on th
 eg the variance of the mean is $n$ times smaller than the variance of the samples.
 Adding a reference mean $\mu_0$ to get the MAP yields
 \begin{align}
-	\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2 
+	&\E \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2 
+	\\
 	&= \frac{n}{(n+n_0)^2} \sigma^2 +  \frac{n_0^2}{(n+n_0)^2} \norm{\mu^* -  \mu_0}^2 \\
 	&= O\left(\frac{\sigma^2}{n} \right) + O\left(\frac{\norm{\mu^* -  \mu_0}^2}{n^2} \right)
 \end{align}
@@ -522,82 +526,153 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 
 \section{"Burn In" Statistical Analysis}
 Self-concordant line of work : 
+\citet{bubeck2015entropic}
 \citet{kakade2010learning},
-\cite{anastasiou2017bounds},
+\citet{anastasiou2017bounds},
+\citet{marteauferey2019beyond},
 \citet{ostrovskii2021finite}.
 
+
+
 \section{Optimization Perspective}
+\fdk{Some sections are obv. too long, and some info irrelevant.}
+
 In the context of optimization, why do we care? 
 
-There is a long line work bounding the convergence rate of stochastic gradient descent.
-Beyond the results of \citet{robbins1951stochastic}, 
-we now have proofs on smooth, strongly convex problems and bounded variance 
-(as well as other assumptions on the noise, reviewed later)
-a decreasing step-size and an averaging scheme gets 
-a $1/t$ convergence rate, 
-which matches the asymptotic rate of unbiased estimation,
-through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler} \footnote{
-Those papers assume the stochastic gradients are bounded, 
-but small modifications also work for bounded variance instead.
-}
-
-We do have extensions to other notions of bounded variance, 
-for example assuming that the stochastic gradients are gradients of a perturbed smooth function $f_i$ 
-and that the minimum of $f$ and the minima of the $f_i$ 
-are bounded, $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$,
-or that the gradient noise is bounded only at the minimum. 
-For a review, see \citet{gower2019sgd}.
-
-However, for some problems, combining decreasing step-sizes and averaging is not necessary,
-even when the function is not strongly convex.
-This is the case for maximum likelihood estimation and matches the asymptotic rates, 
-but holds more generally, for example for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
-
-There has been recent advances in optimization that go beyond the Euclidean case, 
-to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
-neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
-\citep{birnbaum2011distributed,bauschke2017descent,lu2018relatively}.
-Instead of measuring strong-convexity and smoothness relative to the Euclidean norm (or any norm), 
-we use a reference function instead \fdk{maybe add a line}
-and apply mirror descent \citep{nemirovski1983problem,beck2003mirror}
-(also called NoLips \citep{bauschke2017descent}, something else?). 
-
-We have convergence results for the 
-application of stochastic mirror descent, 
-but they typically rely on assumptions that are too strong. 
-\begin{itemize}
-	\item The reference function is strongly convex [typical setup in online learning]
-	\item The variance is uniformly bounded
-\end{itemize}
-Some advances have been tried
-\begin{itemize}
-	\item The reference function is ``close to'' a norm
-	and looks like a \citet{hanzely2018fastest}
-	\item Attempt to adapt the ``bounded gradient at the minimum''
-	\citep{dragomir2021fast}
-	\item Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}.
-\end{itemize}
-
-Other work 
-\citet{marteauferey2019beyond}.
+\subsection{Stochastic mirror descent}
 
 \fdk{
-A ``simple open problem'';
-assume we have a deterministic problem, so that we know where the minimum is. 
-Can we figure out a (deterministic) path from $\theta_0$ to $\theta_*$ 
-that has optimality decreasing as $1/n^2$, 
-to mirror the bias term of gradient descent?
+- Would mirror descent and the equivalence with MLE/MAP be introduced earlier?
+- Mirror descent \citep{nemirovski1983problem,beck2003mirror}
+- (also called NoLips \citep{bauschke2017descent}, 
+relative gradient descent \citep{hanzely2018fastest},
+Bregman proximal gradient, ...)
 }
 
-\fdk{Application 
-The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
-For example, we haven't yet figured out the analog of Nesterov-type acceleration 
-on relatively smooth and strongly convex problems, 
-to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
-or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
-\citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
-The tools developed to make progress on one problem might help make progress on the other. 
+{\bf In online learning, } \fdk{bounded gradient assumption}
+
+{\bf In smooth optimization, } there has been recent advances in optimization that go beyond the Euclidean case, 
+to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
+neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
+\citep{bauschke2017descent,lu2018relatively}.
+Instead of measuring strong-convexity and smoothness in the Euclidean norm (or any norm), 
+the $\mu$-strong convexity and $L$-smoothness of a function $f$ 
+relative to a reference function $A$ is defined 
+as 
+\aligns{
+	\mu \cB_{A}(x, y)
+	\leq 
+	\cB_f(x,y)
+	\leq 
+	L \cB_A(x,y).
 }
+Those conditions ensure the linear convergence rate of mirror descent with $A$ as the reference function.
+Maximum likelihood in exponential families
+that fits the theory developped for mirror descent well. 
+Indeed, 
+\aligns{
+	f(\theta) = A(\theta) - \expect[x\sim p(x\cond\theta)]{\lin{x, \theta}}
+}
+is $1$-smooth and $1$-strongly convex relative to $A$,
+and the the optimality gap is the divergence
+\aligns{
+	f(\theta) - f(\theta_*) = 
+	\cB_A(\theta, \theta_*)
+	= \KL(p(\cdot\cond\theta_*);\, p(\cdot\cond\theta)),
+}
+where $\theta_* = \arg\min_\theta f(\theta)$.
+But the known results for stochastic mirror descent do not give convergence rates 
+for all exponential families.
+
+{\bf Traditional results}
+in stochastic optimization,
+such as the work of \citet{nemirovski2009robust,ghadimi2012optimal},
+rely on the assumption that the reference function $A$ 
+is itself strongly convex relative to a norm $\norm{\cdot}$,
+(meaning that $f$ is strongly convex). 
+This apply for the MLE problem of a Gaussian distribution 
+with fixed variance, 
+but not when the covariance is unknown,
+or for a Poisson distribution, as $-\log(\theta)$ and $\exp(\theta)$
+are not strongly convex.
+
+The work of \citet{bauschke2017descent,lu2018relatively}
+has renewed interest for analyses of mirror descent in the smooth setting, 
+and developping new tools to analyse problems
+without relying on strong-convexity in an underlying norm.
+However, they do not yet address the problem satisfactorily.
+
+\textbf{An adaptation of the bounded variance,}
+investigated by \citet{hanzely2018fastest}, 
+defines the following bounded quantity.
+Letting $\theta^+(v)$ be a step from $\theta$ with vector $v$, 
+$\theta^+(v) = \nabla A^*(\nabla A(\theta) - v)$,
+\alignn{\label{eq:assumption-hanzely}
+	\expect[\tilde g]{
+	\lin{
+		\nabla f(\theta) - \tilde g, 
+		\theta^+\!\!\paren{\eta \tilde g } - \theta^+\!\!\paren{\eta \nabla f(\theta)}
+	}
+	}
+	\leq 
+	\eta C,
+}
+for some step-size $\eta$ and constant $C$. Let us unpack this quantity; 
+
+{\bf For a Gaussian} with known variance, 
+with $A(\theta) = \frac{1}{2}\norm{\theta}^2$, 
+this definition recovers the variance of the stochastic gradient
+$\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta_t) - \tilde g_t}{}^2}\leq C$.
+More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
+the left-hand side of \cref{eq:assumption-hanzely} is bounded by 
+\aligns{
+	\frac{1}{\mu} \expect{\norm{\nabla f(\theta_t) - \tilde g_t}{}^2_*},
+}
+and a uniform bound $C$ exist if the variance of the stochastic gradient is bounded.
+
+{\bf In divergence,} this condition states that the (symmetrized) divergence between 
+a deterministic and stochastic update is bounded in expectation,
+\aligns{
+	&
+	\mathbb{E}_{\tilde g_t}\bigg[
+	\cB_{A^*}\paren{\mu - \eta g, \mu - \eta \nabla f(\theta)}
+	\\
+	&\hphantom{\mathbb{E}_{\tilde g}[}
+	+ \cB_{A^*}\paren{\mu - \eta \nabla f(\theta), \mu - \eta g}
+	\bigg]
+	\leq 
+	\eta C.
+}
+
+{\bf For a maximum likelihood problem, }
+where $\tilde g = \mu - x$ 
+where $x \sim p(x\cond\theta_*)$,
+and $\nabla f(\theta) = \mu - \mu_*$,
+\aligns{
+	&
+	\mathbb{E}_{x}\bigg[
+	\cB_{A^*}\paren{(1-\eta) \mu + \eta x, (1-\eta)\mu + \eta \mu_*}
+	\\
+	&\hphantom{\mathbb{E}_{\tilde g_t}[}
+	\cB_{A^*}\paren{(1-\eta)\mu + \eta \mu_*, (1-\eta) \mu + \eta x}
+	\bigg]
+	\leq 
+	\eta C.
+}
+
+\fdk{Example where this fails?}
+
+\textbf{Bounded variance at the minimum, }
+\fdk{\citep{dragomir2021fast}}
+
+\textbf{Bounded optimality gap,}
+\fdk{
+Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}}
+
+
+
+
+
 
 
 
@@ -625,6 +700,72 @@ The tools developed to make progress on one problem might help make progress on 
 	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle.
 \end{enumerate}
 
+
+
+
+\section{Blurbs/ideas?}
+
+
+
+\subsection{SGD blurb}
+\fdk{
+%
+There is a long line work bounding the convergence rate of stochastic gradient descent.
+Beyond the results of \citet{robbins1951stochastic}, 
+we now have proofs on smooth, strongly convex problems and bounded variance 
+(as well as other assumptions on the noise, reviewed later)
+a decreasing step-size and an averaging scheme gets 
+a $1/t$ convergence rate, 
+which matches the asymptotic rate of unbiased estimation,
+through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler} 
+\\
+Those papers assume the stochastic gradients are bounded, 
+but small modifications also work for bounded variance instead.
+\\
+We do have extensions to other notions of bounded variance, 
+for example assuming that the stochastic gradients are gradients of a perturbed smooth function $f_i$ 
+and that the minimum of $f$ and the minima of the $f_i$ 
+are bounded, $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$,
+or that the gradient noise is bounded only at the minimum. 
+For a review, see \citet{gower2019sgd}.
+\\
+However, for some problems, combining decreasing step-sizes and averaging is not necessary,
+even when the function is not strongly convex.
+This is the case for maximum likelihood estimation and matches the asymptotic rates, 
+but holds more generally, for example for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
+}
+
+
+\subsection{Poisson likelihood?}
+\fdk{
+\citet{bauschke2017descent} and \citet{hanzely2018fastest} both use the example of Poisson inverse problems/Poisson regression
+as examples. 
+The simpler case of the MLE of a Poisson distribution is also unsolved, though. 
+In this case, $h(x) = 1/x!$, $x \in \mathbb{N}$, $A(\theta) = e^\theta$ over $\theta \in \mathbb{R}$,
+$A^*(\mu) = \mu \log \mu - \mu$ over $\mu \in \mathbb{R}_+$.
+It is neither strongly-convex nor self-concordant (at least according to the standard definition, 
+although it satisfies generalized notions of self-concordance as $A'''(\theta) = A''(\theta)$).
+}
+
+\subsection{``simple'' open problem?}
+\fdk{
+A ``simple open problem'';
+assume we have a deterministic problem, so that we know where the minimum is. 
+Can we figure out a (deterministic) path from $\theta_0$ to $\theta_*$ 
+that has optimality decreasing as $1/n^2$, 
+to mirror the bias term of gradient descent?
+}
+
+\subsection{Connection with acceleration?}
+\fdk{
+The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity. 
+For example, we haven't yet figured out the analog of Nesterov-type acceleration 
+on relatively smooth and strongly convex problems, 
+to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$, 
+or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
+\citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
+The tools developed to make progress on one problem might help make progress on the other. 
+}
 
 
 \end{document}
