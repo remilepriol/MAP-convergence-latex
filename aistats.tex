@@ -69,6 +69,7 @@
 
 \newcommand{\MAPm}{\hat \m_n}
 \newcommand{\MAPt}{\hat \nat_n}
+\DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
 
 % \hypersetup{draft}
@@ -144,7 +145,7 @@ Here, $A$ is the log-partition function, a Legendre function that we assume can 
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
 There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
-As we will prove,\footnote{\fdk{I don't know any prior reference for this exact statement, but I'm not sure it's safe to claim this as a ``proof'' as if it was a new statement}} the MAP can be interpreted as online mirror descent with decreasing step-sizes.
+As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
 Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
 
 We do not have a solution. The goal of this paper
@@ -243,41 +244,35 @@ It is equal to the divergence of its convex conjugate with switched arguments
 \paragraph{Conjugate Prior}
 One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
 \begin{align}
-    p(\nat) &\propto \exp( - n_0 \bregman(\nat ; \nat_0) )
+    p(\nat) 
+    &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
+    &\propto \exp(n_0 \m_0^\top \nat - n_0 \logpart(\nat))
 \end{align}
-where $n_0$ and $\nat_0$ are (hyper)parameters of the prior, and $\bregman(\nat ; \nat_0)$ is introduced above.
-Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\nat_0$.
-The negative log-likelihood of the prior is
-\begin{align*}
-    -\log p(\nat) = n_0 (\logpart(\nat)  - \nat^\top \meanp_0 ) + \cst
-\end{align*}
-which is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
-Then the joint log-likelihood of $\mD =(X_1,\dots,X_n)$ and $\nat$ is
-\begin{multline}
-    -\log p(\mD|\nat)p(\nat) 
-    = (n_0+n) \logpart (\nat) \\
-    - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T_i \right) + \cst
-    \label{eq:joint_likelihood}
-\end{multline}
-where $T_i=T(X_i)$.
-This means the posterior given $\mD$ is part of the same family, with natural parameters $(n_0 \m_0 + \sum_i T_i , -(n_0 + n))$.
+where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
+This is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
+Intuitively, $n_0$ is a number of fictive data points observed from a distribution with parameter $\nat_0$.
 
 \paragraph{Maximum A Posteriori (MAP).}
-Minimizing~\eqref{eq:joint_likelihood} over $\nat$ yields the MAP estimate
+Using Bayes rule, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
 \begin{align}
-    \hat \nat = \argmin_\nat -\log p(\mD|\nat) + n_0 \bregman(\nat ; \nat_0) \; .
+	p(\nat | \mD_n)
+	%\propto p(\mD|\nat)p(\nat) 
+    \propto \exp(- (n_0+n) \bregman(\nat; \MAPt))
+    \label{eq:joint_likelihood}
 \end{align}
-If they can be satisfied, the MAP verifies the first oder optimality conditions
+reaching its maximum in $\MAPt$, the MAP estimate verifying the first order optimality conditions
 \begin{align}
-    \nabla \logpart(\hat \nat_\text{MAP}) = \hat \meanp_\text{MAP}
+    \nabla \logpart(\MAPt) = \MAPm
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
 \end{align}
+where $T_i=T(X_i)$.
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
 \begin{align}
-	\hat \m_\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
+	\hat \m_n^\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
 \end{align}
-These rules are known as moment matching.
-The MLE and MAP estimates are statistics of the dataset $\mD$. Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
+This last equation is known as moment matching.
+The MLE and MAP estimates are statistics of the dataset $\mD_n$. 
+Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
 
 
 \section{Open Problem}
@@ -316,7 +311,7 @@ More explicitly, can we write an upper bound that does not involve an expectatio
 
 \paragraph{Remark.}
 This could be seen as a concentration inequality, expressed with a Bregman divergence instead of a norm.
-A key difference though, is that the random variable $T(X)$ is connected to the metric $\logpart$. 
+However there is a connection between the random variable $T(X)$ and the metric $\logpart$. 
 Indeed expressions~\eqref{eq:bregmanMLE} or~\eqref{eq:bregmanMAP} can be infinite for another choice of random variable. 
 For instance, if we plug in $\conj(\m)= -\log(\m)$, which defines a divergence on positive numbers, and $T(X) \sim \cN(0,1)$ which can be negative.
 
@@ -326,8 +321,20 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 \section{Insights}
 
 \subsection{MAP as Stochastic Mirror Descent}
-\TODO{s
-}
+The posterior~\eqref{eq:joint_likelihood} can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$, so that the MAP verifies
+\begin{align*}
+	\hat \nat_{n}
+	= \argmin_\nat - \log p(X_{n} | \nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
+    %\label{eq:SBPP}
+\end{align*}
+which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$. Expanding $p(X_{n} | \nat)$ and  playing with the Bregman we get
+\begin{align}
+		\hat \nat_{n}
+	= \argmin_\nat g_{n}^\top \nat + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
+    \label{eq:SMD}
+\end{align}
+where $g_{n} := \nabla\logpart(\hat \nat_{n-1}) - T(X_n) = \hat \m_{n-1} - T_n$ is the gradient of $-\log p(X_{n} | \nat)$ evaluated at $\hat \nat_{n-1}$. 
+We recognize the update of Stochastic Mirror Descent -- a.k.a. Stochastic Bregman Gradient -- with step-size $\lr_n = \inv{n_0 + n}$.
 
 
 \subsection{Asymptote}
@@ -398,10 +405,9 @@ Under some assumptions, we can quantify  when this quadratic behavior  kicks in.
 For instance {\bf when $\conj$ is self-concordant} \citep[Ch.4.1]{nesterov2003introductory}. 
 This is true when $T$ is 1-dimensional and $\logpart$ is self-concordant 
 -- e.g. exponential distribution, 
+Gaussian and Laplace distributions with known mean,
 Pareto distribution with known minimum value, 
-Weibull distribution with known shape k, 
-Laplace distribution
-with known mean
+Weibull distribution with known shape k
 -- or when $T$ lives in a compact \citep{bubeck2015entropic}. Then the bound
 \begin{align}
 	 \bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
@@ -409,7 +415,9 @@ with known mean
 holds whenever $\norm{\m^*-\m}_{\mF^*} < 0.21$. 
 Similarly, \citet{kakade2010learning} assumes a bound on all higher order moments at $\nat^*$ to quantify when $\logpart$ starts behaving quadratically, but their rate does not directly apply to $\conj$ and $\m$.
 
-\TODO{Reference \citet{ostrovskii2021finite}.}
+\TODO{Reference \citet{ostrovskii2021finite}.} ( as well as 
+\citet{anastasiou2017bounds},
+\citet{marteauferey2019beyond})
 
 All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
 
@@ -550,15 +558,6 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
 	\label{fig:bias-variance-numerical}
 \end{figure*}
-
-\section{"Burn In" Statistical Analysis}
-Self-concordant line of work : 
-\citet{bubeck2015entropic}
-\citet{kakade2010learning},
-\citet{anastasiou2017bounds},
-\citet{marteauferey2019beyond},
-\citet{ostrovskii2021finite}.
-
 
 
 \section{Optimization Perspective}
