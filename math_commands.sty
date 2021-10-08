@@ -243,3 +243,17 @@
 \newcommand{\aligns}[1]{\begin{align*}#1\end{align*}}
 \newcommand{\alignn}[1]{\begin{align}#1\end{align}}
 \newcommand{\paren}[1]{\left(#1\right)}
+
+
+
+%% Tighter nabla symbol
+\RequirePackage{xparse}
+\RequirePackage{xkeyval}
+\RequirePackage{xifthen}
+
+\let\nablasymbol\nabla
+\RenewDocumentCommand{\nabla}{e{_^}}{%
+    \nablasymbol
+    \IfValueT{#1}{_{\mspace{-4mu}#1\,}}% tuck in the subscript
+    \IfValueT{#2}{^{#2}}{\mkern-1mu}% possible superscript
+}
