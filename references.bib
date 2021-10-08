@@ -165,13 +165,6 @@ Divergences},
   year={2012}
 }
 
-@article{bach2013nonstronglyconvex,
-  title={Non-strongly-convex smooth stochastic approximation with convergence rate O (1/n)},
-  author={Bach, Francis and Moulines, Eric},
-  journal={arXiv preprint arXiv:1306.2119},
-  year={2013}
-}
-
 @article{bubeck2015convex,
   title={Convex Optimization: Algorithms and Complexity},
   author={Bubeck, S{\'e}bastien},
@@ -206,10 +199,18 @@ Divergences},
 }
 
 @article{hanzely2018fastest,
-  title={Fastest rates for stochastic mirror descent methods},
-  author={Hanzely, Filip and Richt{\'a}rik, Peter},
-  journal={arXiv preprint arXiv:1803.07374},
-  year={2018}
+  author    = {Filip Hanzely and Peter Richt{\'{a}}rik},
+  title     = {Fastest rates for stochastic mirror descent methods},
+  journal   = {Comput. Optim. Appl.},
+  volume    = {79},
+  number    = {3},
+  pages     = {717--766},
+  year      = {2021},
+  url       = {https://doi.org/10.1007/s10589-021-00284-5},
+  doi       = {10.1007/s10589-021-00284-5},
+  timestamp = {Tue, 13 Jul 2021 13:26:51 +0200},
+  biburl    = {https://dblp.org/rec/journals/coap/HanzelyR21.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @inproceedings{gower2019sgd,
@@ -271,9 +272,10 @@ Divergences},
 @article{dorazio2021stochastic,
   title={On Stochastic Mirror Descent: Convergence Analysis and Adaptive Variants},
   year={2021},
+  journal = {NeurIPS Workshop: Beyond first-order methods in ML systems},
   journal={preprint},
   url={https://ryan-dorazio.github.io/assets/papers/28_CameraReady_polyak_step_final.pdf},
-  author={D’Orazio, Ryan and Loizou, Nicolas and Laradji, Issam and Mitliagkas, Ioannis}
+  author={D'Orazio, Ryan and Loizou, Nicolas and Laradji, Issam and Mitliagkas, Ioannis}
 }
 
 @book{nemirovski1983problem,
@@ -302,7 +304,7 @@ Divergences},
 
 @article{dragomir2021optimal,
   title = {Optimal Complexity and Certification of Bregman First-Order Methods},
-  author = {Radu{-}Alexandru Dragomir and Adrien Taylor and Alexandre d'Aspremont and Jérôme Bolte},
+  author = {Radu-Alexandru Dragomir and Adrien Taylor and Alexandre d'Aspremont and Jérôme Bolte},
   journal = {Math. Prog.},
   doi = {10.1007/s10107-021-01618-1},
   year = {2021},
@@ -340,4 +342,83 @@ Divergences},
   pages={113--123},
   year={1998},
   publisher={Springer}
+}
+
+
+## Stochastic Optim
+
+@inproceedings{rakhlin2012making,
+  author    = {Alexander Rakhlin and Ohad Shamir and Karthik Sridharan},
+  title     = {Making Gradient Descent Optimal for Strongly Convex Stochastic Optimization},
+  booktitle = {ICML},
+  year      = {2012},
+  url       = {http://icml.cc/2012/papers/261.pdf},
+  timestamp = {Wed, 03 Apr 2019 17:43:36 +0200},
+  biburl    = {https://dblp.org/rec/conf/icml/RakhlinSS12.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@misc{lacostejulien2012simpler,
+  author    = {Simon Lacoste{-}Julien and Mark Schmidt and Francis R. Bach},
+  title     = {A simpler approach to obtaining an O(1/t) convergence rate for the projected stochastic subgradient method},
+  note = {Preprint. arXiv/1212.2002},
+  year      = {2012},
+}
+
+@inproceedings{marteauferey2019,
+  author    = {Ulysse Marteau{-}Ferey and Dmitrii Ostrovskii and Francis R. Bach and Alessandro Rudi},
+  title     = {Beyond Least-Squares: Fast Rates for Regularized Empirical Risk Minimization through Self-Concordance},
+  booktitle = {COLT},
+  series    = {PMLR},
+  volume    = {99},
+  pages     = {2294--2340},
+  publisher = {{PMLR}},
+  year      = {2019},
+  url       = {http://proceedings.mlr.press/v99/marteau-ferey19a.html},
+  timestamp = {Mon, 09 Nov 2020 08:50:28 +0100},
+  biburl    = {https://dblp.org/rec/conf/colt/Marteau-FereyOB19.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{bach2013nonstronglyconvex,
+  author    = {Francis R. Bach and Eric Moulines},
+  title     = {Non-strongly-convex smooth stochastic approximation with convergence rate {$O(1/n)$}},
+  booktitle = {NeurIPS},
+  pages     = {773--781},
+  year      = {2013},
+  url       = {https://proceedings.neurips.cc/paper/2013/hash/7fe1f8abaad094e0b5cb1b01d712f708-Abstract.html},
+  timestamp = {Thu, 21 Jan 2021 15:15:23 +0100},
+  biburl    = {https://dblp.org/rec/conf/nips/BachM13.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{ghadimi2012optimal,
+  author    = {Saeed Ghadimi and Guanghui Lan},
+  title     = {Optimal Stochastic Approximation Algorithms for Strongly Convex Stochastic Composite Optimization {I:} {A} Generic Algorithmic Framework},
+  journal   = {{SIAM} J. Optim.},
+  volume    = {22},
+  number    = {4},
+  pages     = {1469--1492},
+  year      = {2012},
+  url       = {https://doi.org/10.1137/110848864},
+  doi       = {10.1137/110848864},
+  timestamp = {Mon, 08 Jun 2020 22:16:09 +0200},
+  biburl    = {https://dblp.org/rec/journals/siamjo/GhadimiL12.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+
+@article{nemirovski2009robust,
+  author    = {Arkadi Nemirovski and Anatoli B. Juditsky and Guanghui Lan and Alexander Shapiro},
+  title     = {Robust Stochastic Approximation Approach to Stochastic Programming},
+  journal   = {{SIAM} J. Optim.},
+  volume    = {19},
+  number    = {4},
+  pages     = {1574--1609},
+  year      = {2009},
+  url       = {https://doi.org/10.1137/070704277},
+  doi       = {10.1137/070704277},
+  timestamp = {Mon, 08 Jun 2020 22:15:03 +0200},
+  biburl    = {https://dblp.org/rec/journals/siamjo/NemirovskiJLS09.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
