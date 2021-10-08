@@ -323,6 +323,11 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 
 \section{Insights}
 
+\subsection{MAP as Stochastic Mirror Descent}
+\TODO{s
+}
+
+
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
 Asymptotic results typically show that natural parameters $\natp$ asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
@@ -349,8 +354,10 @@ From there, it is possible to show an asymptotic rate for the MLE and the MAP
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
 This asymptote is also independent of the optimum $\meanp^*$.
 
-\subsection{Euclide's World}
-As another reference point, if we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
+\subsection{Euclidean Case}
+As another reference point, let us consider the case $\logpart = \half \norm{\natp}_2^2$, which corresponds to finding the mean of a Gaussian with variance $1$ ($\cX=\real, \nu(dx) = \exp(\half[-x^2])dx, T(X)=X$).
+
+If we make restrictive assumptions on the log-partition function, we can ensure our objective will behave at least as nicely as a quadratic.
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$, which kinda adresses \citet{bubeck2015entropic}), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
@@ -622,7 +629,14 @@ The tools developed to make progress on one problem might help make progress on 
 	\item Intro : 1 clear question and sharper contributions, with references to sections, as a memo for the reviewer writing his review. "investigate bias-variance..." "we show all these analysis suffer from this problem."
 	\item Organization : add optim parallel in insigths section, and then sprinkle references until the optim section.
 	\item Optim : find members of the exponential family where the rate of Dragomir et al. holds.
-	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle.
+	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle. References: \begin{itemize}
+		\item \href{https://www.jstor.org/stable/4616462?seq=1#metadata_info_tab_contents}{Existence of Maximum Likelihood Estimates for Multi-Dimensional Exponential Families}, 
+		\item The singly truncated normal distribution: A non-steep exponential family, 
+		\item Statistical exponential families: A digest with flash cards,
+		\item Information and Exponential Families In Statistical Theory, 
+		\item Fundamentals of Statistical Exponential Families with Applications in Statistical Decision Theory.
+	\end{itemize}  
+
 \end{enumerate}
 
 
