@@ -75,7 +75,7 @@
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
 
-\hypersetup{draft}
+%\hypersetup{draft}
 
 \begin{document}
 
@@ -545,7 +545,7 @@ For the MAP, we get an upper bound thanks to the inequality $ - \log(z) \leq \in
  \end{align}
 The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is
  \begin{equation}
-	\expect{\bregmanconj( \m_*; \hat \m_n^\text{MAP})}
+	\expect{\bregmanconj( \m_*; \hat \m_n^\mathrm{MAP})}
 	\leq \begin{cases}
 		\inv{2(n_0+1)}  +  b_1 \ \text{if}\ n=1,\\
 		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n \ \text{if}\ n\geq 2
@@ -785,6 +785,51 @@ to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$
 or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
 \citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
 The tools developed to make progress on one problem might help make progress on the other. 
+}
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section{Notation convention}
+We use 
+\begin{itemize}
+	\item $\theta, \nat$ for natural parameters
+	\item $\m$ for mean parameters
+	\item $X_1,\ldots,X_n$ for data
+	\item $\cX$ for the data space 
+	\item $T$ for the sufficient statistics
+	\item $\nu$ for the base measure
+	\item $A, A^*$ for the log-partition and its dual
+	\item $\cB_A$ for the Bregman divergence induced by $A$
+	\item $n$ for the number of samples
+	\item $(\theta^*,m^*)$ for the optimum
+	\item $\gamma$ for the step-size
+	\item $\mu,\sigma^2$ for the parameters of a Gaussian
+	\item $\hat\theta_n$ for estimates
+	\item $\tilde\theta_n$ for $\expect{\hat\theta_n}$, which is biased
+	\item $(L, \mu)$ for strong-convexity and smoothness 
+\end{itemize}
+
+\fdk{
+	Do we use $\alpha, \beta$ anywhere? 
+	Might use those for smoothness/strong-convexity rather than $\mu, L$.
+} 
+\fdk{
+	The superscript ${}^*$ denotes the convex conjugate when applied on a function 
+	and the optimum when applied to a parameter. 
+	How about we use $\theta_n, \theta_*$ for parameter at time $n$ and at the optimum 
+	and $f^*$ for the convex conjugate?
+}
+\fdk{
+	On $X_i$ for data; I'm more used to seeing $x_i$ for data, which is the realization of the random variable $X_i$. 
+	We don't talk about random variables and don't need the distinction? 
 }
 
 
