@@ -72,7 +72,7 @@
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
 
-% \hypersetup{draft}
+\hypersetup{draft}
 
 \begin{document}
 
@@ -137,7 +137,7 @@ But our understanding of stochastic optimization lacks in other domains.
 A generalization of the above problem, at the intersection of optimization and statistics, 
 is the problem of minimizing 
 \begin{equation}
-	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta_*)},
+	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta)},
 \end{equation}
 When $p(x\cond\theta)$ is an exponential family distribution,
 $-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference distribution).
@@ -255,7 +255,7 @@ Intuitively, $n_0$ is a number of fictive data points observed from a distributi
 \paragraph{Maximum A Posteriori (MAP).}
 Using Bayes rule, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
 \begin{align}
-	p(\nat | \mD_n)
+	p(\nat \cond \mD_n)
 	%\propto p(\mD|\nat)p(\nat) 
     \propto \exp(- (n_0+n) \bregman(\nat; \MAPt))
     \label{eq:joint_likelihood}
@@ -321,6 +321,7 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 \section{Insights}
 
 \subsection{MAP as Stochastic Mirror Descent}
+\label{ssec:MAP=SMD}
 The posterior~\eqref{eq:joint_likelihood} can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$, so that the MAP verifies
 \begin{align*}
 	\hat \nat_{n}
@@ -334,7 +335,9 @@ which is the update of a Stochastic Bregman Proximal Point update with step-size
     \label{eq:SMD}
 \end{align}
 where $g_{n} := \nabla\logpart(\hat \nat_{n-1}) - T(X_n) = \hat \m_{n-1} - T_n$ is the gradient of $-\log p(X_{n} | \nat)$ evaluated at $\hat \nat_{n-1}$. 
-We recognize the update of Stochastic Mirror Descent -- a.k.a. Stochastic Bregman Gradient -- with step-size $\lr_n = \inv{n_0 + n}$.
+We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$ -- a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
+This parallel means it would be possible to obtain a finite convergence rate for the  MAP from an analysis of these algorithms. 
+We give a special focus on this approach in Section~\ref{sec:optimization}.
 
 
 \subsection{Asymptote}
@@ -380,6 +383,7 @@ Adding a reference mean $\m_0$ to get the MAP yields
 	\expect{\bregmanconj(\meanp^*; \MAPm)}
 	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{(n+n_0)^2}
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
+	\label{eq:MAP_quadratic}
 \end{align}
 so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. We would like to get a similar result for arbitrary exponential families.
 If we make restrictive assumptions on the log-partition function, we can relate $\bregmanconj$ to a norm or a quadratic.
@@ -397,7 +401,7 @@ so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
     \bregmanconj(\m^* ; \m) 
     \leq \frac{L}{2} \norm{\m^* - \m}^2
 \end{align}
-so $\bregmanconj$ is upper bounded by a quadratic, and we get the same rate as a Gaussian.
+so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 
 \subsection{Locally Quadratic Case}
 All Bregman divergences are locally quadratic. 
@@ -432,7 +436,7 @@ As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman 
 	\label{eq:primal_pivot}
 \end{align}
 
-Remark : In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. 
+\textbf{Remark:} In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero. 
 This is not true for the MLE. In fact for the gaussian variance MLE, the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$.
 A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition there is not clean.
 
@@ -561,30 +565,20 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 
 
 \section{Optimization Perspective}
-\fdk{Some sections are obv. too long, and some info irrelevant.}
+\label{sec:optimization}
+As we saw in Section~\ref{ssec:MAP=SMD}, MAP can be interpreted as Stochastic Mirror Descent (SMD). 
+There are two consequences of this observation: 1. we may obtain a convergence rate for MAP from an optimization analysis, and 2. any insights gained from the MAP may inform further design and analysis of SMD.
 
-In the context of optimization, why do we care? 
+\subsection{Relative Smoothness}
+Mirror Descent (MD) \footnote{Mirror Descent is going by many names : Bregman (proximal) Gradient, Relative Gradient Descent, NoLips.} \citep{nemirovski1983problem, beck2003mirror} was first introduced to optimize non-smooth functions, typically under bounded gradient assumption on the objective $f$ or strong convexity assumption on the potential $\logpart$\citep{bubeck}\TODO{bubeck online learning 2011, or monograph?}.
 
-\subsection{Stochastic mirror descent}
-
-\fdk{
-- Would mirror descent and the equivalence with MLE/MAP be introduced earlier?
-- Mirror descent \citep{nemirovski1983problem,beck2003mirror}
-- (also called NoLips \citep{bauschke2017descent}, 
-relative gradient descent \citep{hanzely2018fastest},
-Bregman proximal gradient, ...)
-}
-
-{\bf In online learning, } \fdk{bounded gradient assumption}
-
-{\bf In smooth optimization, } there has been recent advances in optimization that go beyond the Euclidean case, 
+More recently, advances in optimization that go beyond the Euclidean case, 
 to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
 neither strongly convex in the Euclidean norm, using the concept of relative smoothness 
-\citep{bauschke2017descent,lu2018relatively}.
+\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}.
 Instead of measuring strong-convexity and smoothness in the Euclidean norm (or any norm), 
 the $\mu$-strong convexity and $L$-smoothness of a function $f$ 
-relative to a reference function $A$ is defined 
-as 
+relative to a reference function $A$ is defined  as 
 \aligns{
 	\mu \cB_{A}(x, y)
 	\leq 
@@ -593,21 +587,12 @@ as
 	L \cB_A(x,y).
 }
 Those conditions ensure the linear convergence rate of mirror descent with $A$ as the reference function.
-Maximum likelihood in exponential families
-that fits the theory developped for mirror descent well. 
-Indeed, 
+ Exponential families log-likelihood perfectly fits into this theory.
 \aligns{
 	f(\theta) = A(\theta) - \expect[x\sim p(x\cond\theta)]{\lin{x, \theta}}
 }
-is $1$-smooth and $1$-strongly convex relative to $A$,
-and the the optimality gap is the divergence
-\aligns{
-	f(\theta) - f(\theta_*) = 
-	\cB_A(\theta, \theta_*)
-	= \KL(p(\cdot\cond\theta_*);\, p(\cdot\cond\theta)),
-}
-where $\theta_* = \arg\min_\theta f(\theta)$.
-But the known results for stochastic mirror descent do not give convergence rates 
+is $1$-smooth and $1$-strongly convex relative to $A$.
+However, the MAP is stochastic, and known results for stochastic mirror descent do not give convergence rates 
 for all exponential families.
 
 {\bf Traditional results}
@@ -621,12 +606,11 @@ with fixed variance,
 but not when the covariance is unknown,
 or for a Poisson distribution, as $-\log(\theta)$ and $\exp(\theta)$
 are not strongly convex.
-
-The work of \citet{bauschke2017descent,lu2018relatively}
-has renewed interest for analyses of mirror descent in the smooth setting, 
-and developping new tools to analyse problems
+Relative smoothness has renewed interest for analyses of mirror descent
 without relying on strong-convexity in an underlying norm.
 However, they do not yet address the problem satisfactorily.
+
+\TODO{table of results of all 3 papers.}
 
 \textbf{An adaptation of the bounded variance,}
 investigated by \citet{hanzely2018fastest}, 
