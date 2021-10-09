@@ -10,7 +10,7 @@
 %\setlength{\pdfpagewidth}{8.5in}
 
 \let\oldsection\section
-\renewcommand{\section}[1]{\oldsection{\uppercase{#1}}}
+\renewcommand{\section}[1]{\oldsection{\texorpdfstring{\uppercase{#1}}{#1}}}
 
 % If you use natbib package, activate the following three lines:
 \usepackage[round]{natbib}
@@ -70,7 +70,7 @@
 \newcommand{\MAPt}{\hat \natp_n}
 
 
-\hypersetup{draft}
+%\hypersetup{draft}
 
 \begin{document}
 
