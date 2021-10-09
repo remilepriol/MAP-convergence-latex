@@ -196,9 +196,11 @@ Here $\logpart$ is the log-partition function -- i.e. the normalization term
     \logpart(\nat) = \log \int e^{\nat^\top T(x)} \nu(dx) \; .
 \end{align}
 When explicit, we will write the random variable $T = T(X)$ for lightness.
-For convenience, we focus on steep exponential families with $\logpart$ a convex function of Legendre type.
-In particular, the set $\nat \in \Theta$ such that $\logpart(\nat) < \infty$ is open and convex.
-This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}, \nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$. 
+For convenience, we focus on steep, regular exponential families 
+where $\logpart$ is strictly convex function of Legendre type,
+and the set $\nat \in \Theta$ such that $\logpart(\nat) < \infty$ is open and convex
+(See \citet{barndoffnielsen2014information}).
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$. 
 
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
@@ -408,7 +410,7 @@ so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quad
 
 \subsection{Locally Quadratic Case}
 All Bregman divergences are locally quadratic. 
-Under some assumptions, we can quantify  when this quadratic behavior  kicks in.
+Under some assumptions, we can quantify  when this quadratic behavior kicks in.
 For instance {\bf when $\conj$ is self-concordant} \citep[Ch.4.1]{nesterov2003introductory}. 
 This is true when $T$ is 1-dimensional and $\logpart$ is self-concordant 
 -- e.g. exponential distribution, 
@@ -572,8 +574,12 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 As we saw in Section~\ref{ssec:MAP=SMD}, MAP can be interpreted as Stochastic Mirror Descent (SMD). 
 There are two consequences of this observation: 1. we may obtain a convergence rate for MAP from an optimization analysis, and 2. any insights gained from the MAP may inform further design and analysis of SMD.
 
-\subsection{Relative Smoothness}
 Mirror Descent (MD) \footnote{Mirror Descent is going by many names : Bregman (proximal) Gradient, Relative Gradient Descent, NoLips.} \citep{nemirovski1983problem, beck2003mirror} was first introduced to optimize non-smooth functions, typically under bounded gradient assumption on the objective $f$ or strong convexity assumption on the potential $\logpart$\citep{bubeck}\TODO{bubeck online learning 2011, or monograph?}.
+
+\fdk{Online learning;
+\citet{azoury2001relative,freund1996predicting,dasgupta2007online}
+}
+
 
 More recently, advances in optimization that go beyond the Euclidean case, 
 to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
@@ -609,13 +615,70 @@ with fixed variance,
 but not when the covariance is unknown,
 or for a Poisson distribution, as $-\log(\theta)$ and $\exp(\theta)$
 are not strongly convex.
+
 Relative smoothness has renewed interest for analyses of mirror descent
 without relying on strong-convexity in an underlying norm.
+Recent works have made attempts to generalize the assumptions 
+that leads to the convergence of mirror descent 
+with strongly-convex reference functions, 
+such as a uniform bound on the variance of the stochastic gradients $\tilde g(\theta)$,
+$\expect*{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq \sigma^2$, 
+or only requiring this bounded variance at the minimum $\theta_*$.
 However, they do not yet address the problem satisfactorily.
+We present those generalization here 
+and they are summarized in the context of maximum likelihood estimation 
+in \cref{tbl:assumptions}.
 
-\TODO{table of results of all 3 papers.}
+\begin{table*}[t]\begingroup
+\renewcommand*{\arraystretch}{1.25}%
+\centering
+\begin{tabular}{p{.35\textwidth}p{.6\textwidth}}
+\toprule
+Assumption &  \\
+\midrule
+Strongly convex and bounded variance\newline
+\citep[e.g.,][]{??}
+&
+$
+\cB_A(\theta,\theta') \geq \frac{1}{2}\norm{\theta-\theta'}^2,
+\quad 
+\expect[x]{\norm{\m - x}}^2\leq\sigma^2
+$
+\\
+Uniformly bounded ``variance''\newline
+\citep{hanzely2018fastest}
+& 
+	$
+	\expect[x]{
+	\begin{aligned}
+	\cB_{A^*}\paren{(1-\eta) \m + \eta x, (1-\eta)\m + \eta \m_*}\\
+	+\, \cB_{A^*}\paren{(1-\eta)\m + \eta \m_*, (1-\eta) \m + \eta x}
+	\end{aligned}
+	}
+	\leq 
+	\eta C
+	$
+\\
+Bounded ``variance'' at $\theta_*$\newline
+\citep{dragomir2021fast}
+&
+	$\expect[x]{
+		\cB_{A^*}(\m - 2\eta (\m_* - x), \m)
+	} \leq 2 \eta^2 C$
+\\
+Bounded optimality gap\newline 
+\citep{dorazio2021stochastic} 
+&
+? 
+\\
+\bottomrule
+\end{tabular}
+\caption{Caption}
+\label{tbl:assumptions}
+\endgroup\end{table*}
 
-\textbf{An adaptation of the bounded variance,}
+\subsection{Bounded variance}
+An adaptation of the bounded variance,
 investigated by \citet{hanzely2018fastest}, 
 defines the following bounded quantity.
 Letting $\theta^+(v)$ be a step from $\theta$ with vector $v$, 
@@ -623,8 +686,8 @@ $\theta^+(v) = \nabla A^*(\nabla A(\theta) - v)$,
 \alignn{\label{eq:assumption-hanzely}
 	\expect[\tilde g]{
 	\lin{
-		\nabla f(\theta) - \tilde g, 
-		\theta^+\!\!\paren{\eta \tilde g } - \theta^+\!\!\paren{\eta \nabla f(\theta)}
+		\nabla f(\theta) - \tilde g(\theta), 
+		\theta^+\!\!\paren{\eta \tilde g(\theta)} - \theta^+\!\!\paren{\eta \nabla f(\theta)}
 	}
 	}
 	\leq 
@@ -635,52 +698,72 @@ for some step-size $\eta$ and constant $C$. Let us unpack this quantity;
 {\bf For a Gaussian} with known variance, 
 with $A(\theta) = \frac{1}{2}\norm{\theta}^2$, 
 this definition recovers the variance of the stochastic gradient
-$\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta_t) - \tilde g_t}{}^2}\leq C$.
+$\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C$.
 More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
 the left-hand side of \cref{eq:assumption-hanzely} is bounded by 
 \aligns{
-	\frac{1}{\mu} \expect{\norm{\nabla f(\theta_t) - \tilde g_t}{}^2_*},
+	\frac{1}{\mu} \expect{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*},
 }
 and a uniform bound $C$ exist if the variance of the stochastic gradient is bounded.
 
 {\bf In divergence,} this condition states that the (symmetrized) divergence between 
 a deterministic and stochastic update is bounded in expectation,
-\aligns{
+\alignn{\label{eq:hanzely-in-divergence}
+	\begin{aligned}
 	&
-	\mathbb{E}_{\tilde g_t}\bigg[
-	\cB_{A^*}\paren{\mu - \eta g, \mu - \eta \nabla f(\theta)}
+	\mathbb{E}_{\tilde g}\bigg[
+	\cB_{A^*}\paren{\m - \eta \tilde g(\theta), \m - \eta \nabla f(\theta)}
 	\\
 	&\hphantom{\mathbb{E}_{\tilde g}[}
-	+ \cB_{A^*}\paren{\mu - \eta \nabla f(\theta), \mu - \eta g}
+	+ \cB_{A^*}\paren{\m - \eta \nabla f(\theta), \m - \eta \tilde g(\theta)}
 	\bigg]
 	\leq 
 	\eta C.
+	\end{aligned}
 }
 
 {\bf For a maximum likelihood problem, }
-where $\tilde g = \mu - x$ 
+where $\tilde g(\theta) = \m - x$ 
 where $x \sim p(x\cond\theta_*)$,
-and $\nabla f(\theta) = \mu - \mu_*$,
+and $\nabla f(\theta) = \m - \m_*$,
 \aligns{
 	&
 	\mathbb{E}_{x}\bigg[
-	\cB_{A^*}\paren{(1-\eta) \mu + \eta x, (1-\eta)\mu + \eta \mu_*}
+	\cB_{A^*}\paren{(1-\eta) \m + \eta x, (1-\eta)\m + \eta \m_*}
 	\\
 	&\hphantom{\mathbb{E}_{\tilde g_t}[}
-	\cB_{A^*}\paren{(1-\eta)\mu + \eta \mu_*, (1-\eta) \mu + \eta x}
+	\cB_{A^*}\paren{(1-\eta)\m + \eta \m_*, (1-\eta) \m + \eta x}
 	\bigg]
 	\leq 
 	\eta C.
 }
+\fdk{How do we show that this fails?}
 
-\fdk{Example where this fails?}
+\subsection{Bounded variance at the minimum}
 
-\textbf{Bounded variance at the minimum, }
-\fdk{\citep{dragomir2021fast}}
+\citep{dragomir2021fast} is similar to \cref{eq:hanzely-in-divergence}, 
+where we take only the first part of it 
+and care only about gradients at the minimum, replacing 
+$\tilde g(\theta)$ and  $\nabla f(\theta)$ with $\tilde g(\theta_*)$ and $\nabla f(\theta_*) = 0$
+\aligns{
+	\expect[\tilde g]{
+		\cB_{A^*}(\m - 2\eta \tilde g(\theta_*), \m)
+	} \leq 2 \eta^2 C.
+}
+{\bf For a maximum likelihood problem, }
+\aligns{
+	\expect[x]{
+		\cB_{A^*}(\m - 2\eta (\m_* - x), \m)
+	} \leq 2 \eta^2 C.
+}
+\fdk{How do we show that this fails?}
 
 \textbf{Bounded optimality gap,}
 \fdk{
-Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}}
+Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}?
+\\
+Do they do something with that? It seems to be fixed step-size only.
+}
 
 
 
@@ -821,16 +904,21 @@ We use
 	Do we use $\alpha, \beta$ anywhere? 
 	Might use those for smoothness/strong-convexity rather than $\mu, L$.
 } 
+
 \fdk{
 	The superscript ${}^*$ denotes the convex conjugate when applied on a function 
 	and the optimum when applied to a parameter. 
 	How about we use $\theta_n, \theta_*$ for parameter at time $n$ and at the optimum 
 	and $f^*$ for the convex conjugate?
 }
+
 \fdk{
 	On $X_i$ for data; I'm more used to seeing $x_i$ for data, which is the realization of the random variable $X_i$. 
 	We don't talk about random variables and don't need the distinction? 
 }
 
+\fdk{
+	Need to check 
+}
 
 \end{document}
