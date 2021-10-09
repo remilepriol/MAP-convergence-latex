@@ -704,10 +704,10 @@ so we immediately get the recursion
     \hat \natp_n^\text{MAP}
     &= \argmin_\natp - \log p(\natp | \cD_n) \\
     &= \argmin_\natp - \log p(X_n|\natp) - \log p(\natp | \cD_{n-1}) \\
-    &= \argmin_\natp f(\natp; X_{n}) + (n+n_0) \bregman(\natp; \hat \natp_{n-1}^\text{MAP})  \; .
+    &= \argmin_\natp f(\natp; X_{n}) + (n+n_0 - 1) \bregman(\natp; \hat \natp_{n-1}^\text{MAP})  \; .
     \label{eq:SBPP}
 \end{align} 
-Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0}$. As a reminder this algorithm is defined with the update
+Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0 -1}$. As a reminder this algorithm is defined with the update
 \begin{align}
 	 \hat \natp_n
     &= \argmin_\natp \lr_n f(\natp; X_{n}) + \bregman(\natp; \hat \natp_{n-1}) \\
@@ -1812,10 +1812,10 @@ We first assume that $A^*$ is self-concordant.
     \item $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$
     \item $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$
     \item $\lambda(x) = \|(A^*)'(x)\|_x^*$ (Newton decrements)
-    \item $\omega = t-\ln (1+t)$
-    \item $\omega^* = -t-\ln(1-t)$
+    \item $\omega(t) = t-\ln (1+t)$
+    \item $\omega^*(t) = -t-\ln(1-t)$
 \end{itemize}
-Note that $\omega^*$ is convex and monotonne.
+Note that $\omega^*$ is convex and monotone, and $\omega^*(t) \leq t^2, \forall t\leq 0.68$.
 
 \begin{proposition}
     (Conversion of norms) We have
@@ -1852,10 +1852,11 @@ then, if $\|\mu^*-\mu_n\|_{\mu^*} < 1$, we have
 \[
     \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-\|\mu^*-\mu_n\|_{\mu^*}}\right) .
 \]
-Assume $\|\mu^*-\mu_n\|_{\mu^*} < c$,
+Assume $\|\mu^*-\mu_n\|_{\mu^*} < 0.21$, then
 \[
-    \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-c}\right) .
+    \bregmanconj(\mu^*,\mu_n) \leq \|\mu^*-\mu_n\|_{\mu^*}^2
 \]
+so we have a local quadratic behavior. To put into euclide's world. Problem is it requires global self-concordance.
 
 \paragraph{Discarded}
 However,
