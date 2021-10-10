@@ -27,6 +27,7 @@
 \graphicspath{{figs/}}
 %\usepackage{subfigure}
 \usepackage{subcaption}
+\usepackage{placeins}
 \usepackage{hyperref}       % hyperlinks
 \usepackage[dvipsnames]{xcolor}
 
@@ -54,6 +55,7 @@
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
+\newcommand*{\expecti}[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }} % expectation operator
 
 \newcommand{\cond}{\,\vert\,}
 \newcommand{\logpart}{A}
@@ -567,15 +569,32 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 \end{figure*}
 
 
+
+
+
+
+\newpage~\null\\
+\FloatBarrier 
+
 \section{Optimization Perspective}
 \label{sec:optimization}
 As we saw in Section~\ref{ssec:MAP=SMD}, MAP can be interpreted as Stochastic Mirror Descent (SMD). 
 There are two consequences of this observation: 1. we may obtain a convergence rate for MAP from an optimization analysis, and 2. any insights gained from the MAP may inform further design and analysis of SMD.
 
-Mirror Descent (MD) \footnote{Mirror Descent is going by many names : Bregman (proximal) Gradient, Relative Gradient Descent, NoLips.} \citep{nemirovski1983problem, beck2003mirror} was first introduced to optimize non-smooth functions, typically under bounded gradient assumption on the objective $f$ or strong convexity assumption on the potential $\logpart$\citep{bubeck}\TODO{bubeck online learning 2011, or monograph?}.
+Mirror Descent (MD)\footnote{%
+Also known as is going by many names: 
+Bregman (proximal) Gradient, Relative Gradient Descent, NoLips.
+} 
+\citep{nemirovski1983problem} 
+was first introduced to optimize non-smooth functions \fdk{(Is typically encountered in non-smooth, online optimization?)},
+typically under bounded gradient assumption on the objective $f$ 
+or strong convexity assumption on the potential $\logpart$
 
-\fdk{Online learning;
-\citet{azoury2001relative,freund1996predicting,dasgupta2007online}
+
+\fdk{
+{\bf Online learning paragraph?}
+\citet{azoury2001relative,freund1996predicting,dasgupta2007online},
+Bubeck's paragraph
 }
 
 
@@ -593,8 +612,8 @@ relative to a reference function $A$ is defined  as
 	\leq 
 	L \cB_A(x,y).
 }
-Those conditions ensure the linear convergence rate of mirror descent with $A$ as the reference function.
- Exponential families log-likelihood perfectly fits into this theory.
+Those conditions ensure the linear convergence rate of MD with $A$ as the reference function.
+Exponential families log-likelihood perfectly fits into this theory.
 \aligns{
 	f(\theta) = A(\theta) - \expect[x\sim p(x\cond\theta)]{\lin{x, \theta}}
 }
@@ -602,7 +621,9 @@ is $1$-smooth and $1$-strongly convex relative to $A$.
 However, the MAP is stochastic, and known results for stochastic mirror descent do not give convergence rates 
 for all exponential families.
 
-{\bf Traditional results}
+\subsection{Strongly-convex reference function}
+
+{Traditional results}
 in stochastic optimization,
 such as the work of \citet{nemirovski2009robust,ghadimi2012optimal},
 rely on the assumption that the reference function $A$ 
@@ -610,24 +631,29 @@ is itself strongly convex relative to a norm $\norm{\cdot}$,
 (meaning that $f$ is strongly convex). 
 This apply for the MLE problem of a Gaussian distribution 
 with fixed variance, 
-but not when the covariance is unknown,
+but not in a general case. 
+when the covariance is unknown,
 or for a Poisson distribution, as $-\log(\theta)$ and $\exp(\theta)$
 are not strongly convex.
 
-Relative smoothness has renewed interest for analyses of mirror descent
+The introduction of relative smoothness has renewed interest for analyses of mirror descent
 without relying on strong-convexity in an underlying norm.
 Recent works have made attempts to generalize the assumptions 
-that leads to the convergence of mirror descent 
-with strongly-convex reference functions, 
-such as a uniform bound on the variance of the stochastic gradients $\tilde g(\theta)$,
-$\expect{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq \sigma^2$, 
-or only requiring this bounded variance at the minimum $\theta_*$.
+that are used to control the convergence of stochastic gradient descent 
+to this setting. 
+Those include 
+bounded gradients $(\expecti{\norm{\tilde g(\theta)}^2} \leq C$, 
+bounded variance $(\expecti{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq C$
+uniformly or only at the minimum $\theta_*$,
+or bounded disparities between the minimum of $f$ at $\theta_*$ and the minima of individual functions $f_i$, 
+if $f(\theta) = \expect[i]{f_i(\theta)}$ $(\expect{f(\theta_*) - \min_\theta f_i(\theta)} < C)$.
+(\fdk{For a review of those assumptions, see that paper by Richtarik's students})
+
 However, they do not yet address the problem satisfactorily.
 We present those generalization here 
 and they are summarized in the context of maximum likelihood estimation 
 in \cref{tbl:assumptions}.
 
-\subsection{Strongly-convex reference function}
 
 \begin{table*}[t]\begingroup
 \renewcommand*{\arraystretch}{1.25}%
@@ -684,27 +710,27 @@ defines the following bounded quantity.
 Letting $\theta^+(v)$ be a step from $\theta$ with vector $v$, 
 $\theta^+(v) = \nabla A^*(\nabla A(\theta) - v)$,
 \alignn{\label{eq:assumption-hanzely}
-	\expect[\tilde g]{
+	\expect[\tilde g\!]{
 	\lin{
-		\nabla f(\theta) - \tilde g(\theta), 
-		\theta^+\!\!\paren{\eta \tilde g(\theta)} - \theta^+\!\!\paren{\eta \nabla f(\theta)}
+		\nabla\! f(\theta) 
+		- \tilde g(\theta), 
+		\theta^+\!\!\paren{\eta \tilde g(\theta)} 
+		- \theta^+\!\!\paren{\eta \nabla\! f(\theta)}
 	}
 	}
 	\leq 
 	\eta C,
 }
-for some step-size $\eta$ and constant $C$. Let us unpack this quantity; 
+for some step-size $\eta$. Let us unpack this quantity; 
 
-{\bf For a Gaussian} with known variance, 
-with $A(\theta) = \frac{1}{2}\norm{\theta}^2$, 
+{\bf For a Gaussian} with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$), 
 this definition recovers the variance of the stochastic gradient
 $\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C$.
 More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
-the left-hand side of \cref{eq:assumption-hanzely} is bounded by 
-\aligns{
-	\frac{1}{\mu} \expect{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*},
-}
-and a uniform bound $C$ exist if the variance of the stochastic gradient is bounded.
+the LHS of \cref{eq:assumption-hanzely} is bounded by 
+$\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
+and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:assumption-hanzely}
+to hold.
 
 {\bf In divergence,} this condition states that the (symmetrized) divergence between 
 a deterministic and stochastic update is bounded in expectation,
@@ -713,7 +739,7 @@ a deterministic and stochastic update is bounded in expectation,
 	&
 	\mathbb{E}_{\tilde g}\bigg[
 	\cB_{A^*}\paren{\m - \eta \tilde g(\theta), \m - \eta \nabla f(\theta)}
-	\\
+	\\[-1em]
 	&\hphantom{\mathbb{E}_{\tilde g}[}
 	+ \cB_{A^*}\paren{\m - \eta \nabla f(\theta), \m - \eta \tilde g(\theta)}
 	\bigg]
@@ -721,7 +747,6 @@ a deterministic and stochastic update is bounded in expectation,
 	\eta C.
 	\end{aligned}
 }
-
 {\bf For a maximum likelihood problem, }
 where $\tilde g(\theta) = \m - x$ 
 where $x \sim p(x\cond\theta_*)$,
@@ -766,6 +791,15 @@ Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesi
 \\
 Do they do something with that? It seems to be fixed step-size only.
 }
+\aligns{
+	A(\theta_*) - \lin{x, \theta_*} - \expecti{ \min_\theta A(\theta) - \lin{x, \theta} }
+}
+
+\subsection{Issues with current analyses}
+
+\fdk{They don't hold for problems we care about}
+
+\fdk{Existing techniques only deal with fixed step-sizes and show convergence to a ball}
 
 
 
@@ -774,6 +808,7 @@ Do they do something with that? It seems to be fixed step-size only.
 
 
 
+\newpage
 \bibliographystyle{apalike}
 \bibliography{references.bib}
 
