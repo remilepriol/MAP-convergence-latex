@@ -46,9 +46,9 @@
 }
 
 \usepackage[capitalise]{cleveref}
-\newcommand{\rlp}[1]{\textcolor{red}{RLP:#1}}
-\newcommand{\fdk}[1]{\textcolor{Periwinkle}{fdk:#1}}
-\newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
+\newcommand{\rlp}[1]{\textcolor{BrickRed}{(RLP:#1)}}
+\newcommand{\fdk}[1]{\textcolor{Periwinkle}{(fdk:#1)}}
+\newcommand{\TODO}[1]{\textcolor{cyan}{(TODO #1)}}
 \newcommand{\tocite}{\textcolor{purple}{(add citation)}}
 
 % my packages
@@ -187,6 +187,8 @@ On the other hand, optimization can become  a more versatile and general tool fo
 % - potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
 % - conclusion?
 
+\paragraph{Notation}
+$\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 \section{Technical background}
 
@@ -196,9 +198,9 @@ Here we review some of their properties.
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
 The exponential family for data $X\in \cX$ with natural (or primal) parameter $\nat$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
 \begin{equation}
-	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; ,
+	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; .
+	 \label{eq:def_expfamily}
 \end{equation}
-where $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 Here $\logpart$ is the log-partition function -- i.e. the normalization term
 \begin{align}
     \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \; .
@@ -260,22 +262,23 @@ One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
     p(\nat)
     &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
     &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat))
+    \label{eq:def_prior}
 \end{align}
 where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
 This is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
 Intuitively, $n_0$ is a number of fictive data points observed from a distribution with parameter $\nat_0$.
 
 \paragraph{Maximum A Posteriori (MAP).}
-Using Bayes rule, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
+Using Bayes rule with~\eqref{eq:def_expfamily}~\&~\eqref{eq:def_prior}, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
 \begin{align}
 	p(\nat \cond \mD_n)
 	%\propto p(\mD|\nat)p(\nat)
-    \propto \exp(- (n_0+n) \bregman(\nat; \MAPt))
+    \propto \exp(- (n_0+n) \bregman(\nat; \MAPt^\text{MAP}))
     \label{eq:joint_likelihood}
 \end{align}
-reaching its maximum in $\MAPt$, the MAP estimate verifying the first order optimality conditions
+reaching its maximum in $\MAPt^\text{MAP}$ such that
 \begin{align}
-    \nabla \logpart(\MAPt) = \MAPm
+    \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
 \end{align}
 where $T_i=T(X_i)$.
@@ -284,6 +287,7 @@ When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Max
 	\hat \m_n^\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
 \end{align}
 This last equation is known as moment matching.
+In general, we will write $\MAPt$ to refer to the MAP, and view the MLE as a very special case.
 The MLE and MAP estimates are statistics of the dataset $\mD_n$.
 Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
 
@@ -332,30 +336,6 @@ For instance, if we plug in $\conj(\m)= -\log(\m)$, which defines a divergence o
 The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
 
 \section{Insights}
-
-\subsection{MAP as Stochastic Mirror Descent}
-\label{ssec:MAP=SMD}
-By Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
-Plugging in~\eqref{eq:joint_likelihood}, we see that the MAP verifies
-\begin{align*}
-	\hat \nat_{n}
-	= \argmin_\nat - \log p(X_{n} | \nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
-    %\label{eq:SBPP}
-\end{align*}
-which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$. Expanding $p(X_{n} | \nat)$ and  playing with the Bregman we get
-\begin{align}
-		\hat \nat_{n}
-	= \argmin_\nat g_{n}^\top \nat + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
-    \label{eq:SMD}
-\end{align}
-where $g_{n} := \nabla\logpart(\hat \nat_{n-1}) - T(X_n) = \hat \m_{n-1} - T_n$ is the gradient of $-\log p(X_{n} | \nat)$ evaluated at $\hat \nat_{n-1}$.
-We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$ -- a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
-This parallel means we could obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
-In particular, it could potentially apply to a wide range of $\cD$.
-Note that this optimization perspective does not hold for the MLE %($n_0=0$)
-as the initial prior uniform prior may correspond to an initialization outside of $\Theta$.
-We focus more on this approach in Section~\ref{sec:optimization}.
-
 
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
@@ -591,82 +571,87 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 
 \section{Optimization Perspective}
 \label{sec:optimization}
-As we saw in Section~\ref{ssec:MAP=SMD}, MAP can be interpreted as Stochastic Mirror Descent (SMD).
-There are two consequences of this observation: 1. we may obtain a convergence rate for MAP from an optimization analysis, and 2. any insights gained from the MAP may inform further design and analysis of SMD.
 
-Mirror Descent (MD)\footnote{%
-Also known as is going by many names:
-Bregman (proximal) Gradient, Relative Gradient Descent, NoLips.
+We now show how MAP can be interpreted as stochastic mirror descent (SMD).
+This means that 1. we may obtain a convergence rate for MAP from an optimization analysis, and 2. any insights gained from the MAP may inform further design and analysis of SMD.
+We then review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating 3 analysis of SMD with the MAP.
+\rlp{mention that examples have so far been lacking for relative SMD.}
+
+\subsection{MAP as Stochastic Mirror Descent}
+\label{ssec:MAP=SMD}
+By Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
+Plugging in~\eqref{eq:joint_likelihood}, and introducing $f_n(\nat) = - \log p(X_{n} | \nat)$, we see that the MAP verifies
+\begin{align*}
+	\hat \nat_{n}
+	= \argmin_\nat f_n(\nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
+    %\label{eq:SBPP}
+\end{align*}
+which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$.
+%Maybe skip this SBPP story altogether
+Expanding $f_n(\nat) = \logpart(\nat) - T_n$ and  playing with the Bregman we get
+\begin{align*}
+		\hat \nat_{n}
+	= \argmin_\nat \langle g_{n}(\hat \nat_{n-1}), \nat \rangle + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
+    %\label{eq:SMD}
+\end{align*}
+where $g_{n}(\nat) := \nabla f_n(\nat) = \hat \m_{n-1} - T_n$.
+We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$.
+From the first order optimality condition, we see this is a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
+This parallel means we could obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
+In particular, it could potentially apply to a wide range of distribution $\cD$ on $X$.
+Note that this optimization perspective does not hold for the MLE %($n_0=0$)
+as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
+
+\subsection{Relative Smoothness}
+Mirror descent (MD)\footnote{
+Also known as
+Bregman (proximal) gradient, relative gradient descent or NoLips.
 }
-\citep{nemirovski1983problem}
-was first introduced to optimize non-smooth functions \fdk{(Is typically encountered in non-smooth, online optimization?)},
-typically under bounded gradient assumption on the objective $f$
-or strong convexity assumption on the potential $\logpart$
-
+\citep{nemirovski1983problem,beck2003mirror}
+%Nemirovski introduced the algorithm, and Beck established the connection with Bregman divergences, e.g. the argmin form.
+and SMD 
+\citet{nemirovski2009robust,ghadimi2012optimal}  \TODO{verify what these citations are talking about} 
+are typically encountered in non-smooth (online) optimization,
+under bounded (or Lipschitz) gradient assumption on the objective $f$
+and strong convexity assumption on the potential $\logpart$
+\citep[Th.4.2 \& Th.6.3]{bubeck2015convex}.
+In our case, none of these assumptions may hold. 
+For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
 \fdk{
 {\bf Online learning paragraph?}
 \citet{azoury2001relative,freund1996predicting,dasgupta2007online},
-Bubeck's paragraph
+Bubeck's 2011.
 }
 
 
-More recently, advances in optimization that go beyond the Euclidean case,
-to optimize a function $f$ when it is not smooth, meaning its gradient is not $L$-Lipschitz,
-neither strongly convex in the Euclidean norm, using the concept of relative smoothness
-\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}.
-Instead of measuring strong-convexity and smoothness in the Euclidean norm (or any norm),
-the $\mu$-strong convexity and $L$-smoothness of a function $f$
-relative to a reference function $A$ is defined  as
+Recently, these assumptions have been relaxed to allow for non-smooth functions $f$
+\footnote{$f$ is $L$-smooth if its gradient is $L$-Lipschitz}.
+and non-strongly convex potential $\logpart$, first in the deterministic setting
+\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}, then in the stochastic setting \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}.
+These assumptions have been replaced with
+the $\mu$-strong convexity and $L$-smoothness of $f$
+\emph{relative} to $\logpart$, defined as
 \aligns{
 	\mu \cB_{A}(x, y)
 	\leq
 	\cB_f(x,y)
 	\leq
-	L \cB_A(x,y).
+	L \cB_A(x,y) \; .
 }
+When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent. 
 Those conditions ensure the linear convergence rate of MD with $A$ as the reference function.
-Exponential families log-likelihood perfectly fits into this theory.
+Exponential families log-likelihood perfectly fit into this framework, as
 \aligns{
-	f(\theta) = A(\theta) - \expect[x\sim p(x\cond\theta)]{\lin{x, \theta}}
+	f(\theta) = A(\theta) - \expect{\lin{X, \theta}}
 }
 is $1$-smooth and $1$-strongly convex relative to $A$.
-However, the MAP is stochastic, and known results for stochastic mirror descent do not give convergence rates
-for all exponential families.
 
-\subsection{Strongly-convex reference function}
-
-{Traditional results}
-in stochastic optimization,
-such as the work of \citet{nemirovski2009robust,ghadimi2012optimal},
-rely on the assumption that the reference function $A$
-is itself strongly convex relative to a norm $\norm{\cdot}$,
-(meaning that $f$ is strongly convex).
-This apply for the MLE problem of a Gaussian distribution
-with fixed variance,
-but not in a general case.
-when the covariance is unknown,
-or for a Poisson distribution, as $-\log(\theta)$ and $\exp(\theta)$
-are not strongly convex.
-
-The introduction of relative smoothness has renewed interest for analyses of mirror descent
-without relying on strong-convexity in an underlying norm.
-Recent works have made attempts to generalize the assumptions
-that are used to control the convergence of stochastic gradient descent
-to this setting.
-Those include
-bounded gradients $(\expecti{\norm{\tilde g(\theta)}^2} \leq C$,
-bounded variance $(\expecti{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq C$
-uniformly or only at the minimum $\theta_*$,
-or bounded disparities between the minimum of $f$ at $\theta_*$ and the minima of individual functions $f_i$,
-if $f(\theta) = \expect[i]{f_i(\theta)}$ $(\expect{f(\theta_*) - \min_\theta f_i(\theta)} < C)$.
-(\fdk{For a review of those assumptions, see that paper by Richtarik's students})
-
-However, they do not yet address the problem satisfactorily.
-We present those generalization here
-and they are summarized in the context of maximum likelihood estimation
-in \cref{tbl:assumptions}.
-
+\subsection{Bounding the Randomness}
+Smoothness is not the only issue.
+To analyze stochastic algorithms, one also need to quantify the randomness. 
+We now review these modern attempts at analyzing SMD, and illustrate their limits  in the context of the MAP.
+See \cref{tbl:assumptions} for a summary.
 
 \begin{table*}[t]\begingroup
 \renewcommand*{\arraystretch}{1.25}%
@@ -716,27 +701,14 @@ Bounded optimality gap\newline
 \label{tbl:assumptions}
 \endgroup\end{table*}
 
-\subsection{Bounded variance}
-An adaptation of the bounded variance,
-investigated by \citet{hanzely2018fastest},
-defines the following bounded quantity.
-Letting $\theta^+(v)$ be a step from $\theta$ with vector $v$,
-$\theta^+(v) = \nabla A^*(\nabla A(\theta) - v)$,
-\alignn{\label{eq:assumption-hanzely}
-	\expect[\tilde g\!]{
-	\lin{
-		\nabla\! f(\theta)
-		- \tilde g(\theta),
-		\theta^+\!\!\paren{\eta \tilde g(\theta)}
-		- \theta^+\!\!\paren{\eta \nabla\! f(\theta)}
-	}
-	}
-	\leq
-	\eta C,
+\subsubsection{Bounded variance}
+\citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step
+\alignn{
+\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C, \forall n \geq 1
+\label{eq:assumption-hanzely}
 }
-for some step-size $\eta$. Let us unpack this quantity;
-
-{\bf For a Gaussian} with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
+for some constant $C$.
+For a Gaussian with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
 this definition recovers the variance of the stochastic gradient
 $\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C$.
 More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
@@ -745,41 +717,16 @@ $\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
 and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:assumption-hanzely}
 to hold.
 
-{\bf In divergence,} this condition states that the (symmetrized) divergence between
-a deterministic and stochastic update is bounded in expectation,
-\alignn{\label{eq:hanzely-in-divergence}
-	\begin{aligned}
-	&
-	\mathbb{E}_{\tilde g}\bigg[
-	\cB_{A^*}\paren{\m - \eta \tilde g(\theta), \m - \eta \nabla f(\theta)}
-	\\[-1em]
-	&\hphantom{\mathbb{E}_{\tilde g}[}
-	+ \cB_{A^*}\paren{\m - \eta \nabla f(\theta), \m - \eta \tilde g(\theta)}
-	\bigg]
-	\leq
-	\eta C.
-	\end{aligned}
-}
-{\bf For a maximum likelihood problem, }
-where $\tilde g(\theta) = \m - x$
-where $x \sim p(x\cond\theta_*)$,
-and $\nabla f(\theta) = \m - \m_*$,
-\aligns{
-	&
-	\mathbb{E}_{x}\bigg[
-	\cB_{A^*}\paren{(1-\eta) \m + \eta x, (1-\eta)\m + \eta \m_*}
-	\\
-	&\hphantom{\mathbb{E}_{\tilde g_t}[}
-	\cB_{A^*}\paren{(1-\eta)\m + \eta \m_*, (1-\eta) \m + \eta x}
-	\bigg]
-	\leq
-	\eta C.
-}
-\fdk{Could work with decreasing step-sizes}
+Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest} , which is precisely what we wish to obtain. 
 
-\fdk{How do we show that this fails?}
+In general however, this assumption hardly holds.
+For the MAP, this translates into
+\alignn{
+\expect[T_n]{\lin{T_n - \mu^* , \MAPt}} \leq \lr_n C, \forall n \geq 1
+}
+which fails to hold on the gaussian variance example for instance. \TODO{short proof or formalize.}
 
-\subsection{Bounded variance at the minimum}
+\subsubsection{Bounded variance at the minimum}
 
 \citep{dragomir2021fast} is similar to \cref{eq:hanzely-in-divergence},
 where we take only the first part of it
@@ -798,7 +745,7 @@ $\tilde g(\theta)$ and  $\nabla f(\theta)$ with $\tilde g(\theta_*)$ and $\nabla
 }
 \fdk{How do we show that this fails?}
 
-\textbf{Bounded optimality gap,}
+\subsubsection{Bounded optimality gap,}
 \fdk{
 Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}?
 \\
