@@ -54,8 +54,7 @@
 % some custom math commands
 \newtheorem{proposition}{Proposition}
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
-\usepackage{suffix}
-\WithSuffix\newcommand\expect*[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }} % expectation operator
+\newcommand*{\expecta}[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }} % expectation operator
 
 \newcommand{\cond}{\,\vert\,}
 \newcommand{\logpart}{A}
@@ -432,7 +431,7 @@ All these works give \textit{large sample} results -- results that hold only for
 
 \subsection{Bias-Variance Decomposition}
 In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
-Let $\tilde \theta_n := \expect*{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
+Let $\tilde \theta_n := \expecta{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
 As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
 \begin{align}
 	\expect{\bregmanconj(\m^* ; \hat \m_n)} 
@@ -622,7 +621,7 @@ Recent works have made attempts to generalize the assumptions
 that leads to the convergence of mirror descent 
 with strongly-convex reference functions, 
 such as a uniform bound on the variance of the stochastic gradients $\tilde g(\theta)$,
-$\expect*{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq \sigma^2$, 
+$\expecta{\norm{\nabla f(\theta) - \tilde g(\theta)}^2} \leq \sigma^2$, 
 or only requiring this bounded variance at the minimum $\theta_*$.
 However, they do not yet address the problem satisfactorily.
 We present those generalization here 
