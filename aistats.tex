@@ -46,9 +46,10 @@
 }
 
 \usepackage[capitalise]{cleveref}
-\newcommand{\RLP}[1]{\textcolor{red}{RLP:#1}}
+\newcommand{\rlp}[1]{\textcolor{red}{RLP:#1}}
 \newcommand{\fdk}[1]{\textcolor{Periwinkle}{fdk:#1}}
 \newcommand{\TODO}[1]{\textcolor{cyan}{TODO #1}}
+\newcommand{\tocite}{\textcolor{purple}{(add citation)}}
 
 % my packages
 \usepackage{math_commands}
@@ -147,6 +148,12 @@ $-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference
 Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
+Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \tocite
+Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \tocite 
+A contrario the KL is not smooth, and it can be infinite in misspecified settings.
+But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
+
+
 There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
 As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
 Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
@@ -189,11 +196,12 @@ Here we review some of their properties.
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
 The exponential family for data $X\in \cX$ with natural (or primal) parameter $\nat$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
 \begin{equation}
-	 p(X|\nat) = \exp( \nat^\top T(X) - \logpart(\nat)) \; ,
+	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; ,
 \end{equation}
+where $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 Here $\logpart$ is the log-partition function -- i.e. the normalization term
 \begin{align}
-    \logpart(\nat) = \log \int e^{\nat^\top T(x)} \nu(dx) \; .
+    \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \; .
 \end{align}
 When explicit, we will write the random variable $T = T(X)$ for lightness.
 For convenience, we focus on steep, regular exponential families
@@ -251,7 +259,7 @@ One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
 \begin{align}
     p(\nat)
     &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
-    &\propto \exp(n_0 \m_0^\top \nat - n_0 \logpart(\nat))
+    &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat))
 \end{align}
 where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
 This is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
@@ -281,29 +289,26 @@ Given a random dataset, we wish to bound their deviation from the optimum $\nat^
 
 
 \section{Open Problem}
-
-Let $\nat^* := \argmin \expect[X\sim\cD]{-\log p(X|\nat)}$, where $\cD$ is any distribution such that $\E[T] = \meanp^* \in \cM$.
-Then the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
-\begin{multline}
-    \expect[X\sim \cD]{-\log p(X|\nat) + \log p(X|\nat^*) } \\
-	= \KL( p(.|\nat^*) ; p(.|\nat)) \; .
-\end{multline}
-Note that $\cD$ does not have to be part of the exponential family.
-For the exponential family, the KL is equal to the Bregman divergence induced by the log-partition function, or alternatively by the entropy, being careful with the order of the arguments
+Given a distribution $\cD$, our objective is the expected log-likelihood 
 \begin{align}
-\boxed{
-	\KL( p(.|\nat^*) ; p(.|\nat))
-    = \bregman (\nat ; \nat^*)
-    = \bregmanconj ( \meanp^* ; \meanp)
-}
+	f(\nat) = \expect[X \sim \cD]{-\log p(X \cond \nat)} 
+	 = \logpart(\nat) - \langle \E[T] , \nat \rangle
 \end{align}
-
-Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \TODO{cite}
-Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \TODO{cite}
-A contrario the KL is not smooth, and it can be infinite in misspecified settings.
-But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
-
-Our question is: how does the KL behave when $\nat$ is the maximum-likelihood or the MAP estimate ? Can we get upper-bounds on the following quantities ?
+Up to a constant, it is also the KL  $f(\nat) = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$.
+Note that $\cD$ does not have to be part of the exponential family.
+Let $\nat^* := \argmin f(\nat)$.
+Assuming $\nat^*$ exists within $\Theta$ means $\cD$ is such that $\E[T] = \meanp^* \in \cM$.
+Then the suboptimality on the population log-likelihood can be written with Bregman divergences
+\footnote{
+Since for exponential families, $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, this proves on the way the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
+}
+\begin{align}
+	 f(\nat) - f(\nat^*)
+	 %&= \logpart(\nat) - \logpart(\nat^*) - \langle \E[T] , \nat - \nat^* \rangle \\
+	 = \bregman(\nat ; \nat^*) 
+	 = \bregmanconj(\m^* ; \m) \; .
+\end{align}
+Our question is: how does this suboptimality behave when $\nat$ is the MLE or the MAP ? Can we get upper-bounds in expectations ? e.g. on these quantities
 \begin{align}
 	\label{eq:bregmanMLE}
 	\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )} \\
@@ -311,16 +316,19 @@ Our question is: how does the KL behave when $\nat$ is the maximum-likelihood or
 	\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )}
 \end{align}
 where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d from $\cD$.
-More explicitly, can we write an upper bound that does not involve an expectation over the dataset -- e.g. where the stochasticity is removed.
+More explicitly, can we write an upper bound that does not involve this expectation over the dataset.
 
+In general, for arbitrary distributions $\cD$, it is a hard problem, especially since the KL is known for being brittle to misspecification \tocite, so let us focus on the well-specified case first $\cD = p(\cdot \cond \nat^*)$. Surely this problem has been solved, hasn't it ?
+In some special cases yes, but it seems the general answer is no. 
+We are yet to find a solution encompassing a broad range of exponential families, and applicable to small sample sizes $n$.
 
-\paragraph{Remark.}
+{\bf Remark.}
 This could be seen as a concentration inequality, expressed with a Bregman divergence instead of a norm.
 However there is a connection between the random variable $T(X)$ and the metric $\logpart$.
 Indeed expressions~\eqref{eq:bregmanMLE} or~\eqref{eq:bregmanMAP} can be infinite for another choice of random variable.
 For instance, if we plug in $\conj(\m)= -\log(\m)$, which defines a divergence on positive numbers, and $T(X) \sim \cN(0,1)$ which can be negative.
 
-\paragraph{Remark 2.}
+{\bf Remark 2.}
 The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
 
 \section{Insights}
@@ -414,9 +422,10 @@ Under some assumptions, we can quantify  when this quadratic behavior kicks in.
 For instance {\bf when $\conj$ is self-concordant} \citep[Ch.4.1]{nesterov2003introductory}.
 This is true when $T$ is 1-dimensional and $\logpart$ is self-concordant
 -- e.g. exponential distribution,
-Gaussian\fdk{with known variance?} and Laplace distributions with known mean,
-Pareto distribution with known minimum value,
-Weibull distribution with known shape $k$
+Gaussian with known mean,
+Laplace with known mean,
+Pareto with known minimum value,
+Weibull with known shape $k$
 -- or when $T$ lives in a compact \citep{bubeck2015entropic}. Then the bound
 \begin{align}
 	 \bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
@@ -447,7 +456,7 @@ A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition t
 
 \paragraph{Illustrations.}
 We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_decomposition} and  $\cN(\mu, \sigma^2)$ in Figure~\ref{fig:gaussian_decomposition}.
-In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \RLP{Tune figures.}
+In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \rlp{Tune figures.}
 
 
 \begin{figure*}[ht]
@@ -926,11 +935,11 @@ We use
 	\item $\cX$ for the data space
 	\item $T$ for the sufficient statistics
 	\item $\nu$ for the base measure
-	\item $A, A^*$ for the log-partition and its dual
+	\item $A, A^*, \logpart, \conj$ for the log-partition and its dual
 	\item $\cB_A$ for the Bregman divergence induced by $A$
 	\item $n$ for the number of samples
 	\item $(\theta^*,m^*)$ for the optimum
-	\item $\gamma$ for the step-size
+	\item $\gamma, \lr$ for the step-size
 	\item $\mu,\sigma^2$ for the parameters of a Gaussian
 	\item $\hat\theta_n$ for estimates
 	\item $\tilde\theta_n$ for $\expect{\hat\theta_n}$, which is biased
