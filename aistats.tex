@@ -294,13 +294,13 @@ Given a distribution $\cD$, our objective is the expected log-likelihood
 	f(\nat) = \expect[X \sim \cD]{-\log p(X \cond \nat)} 
 	 = \logpart(\nat) - \langle \E[T] , \nat \rangle
 \end{align}
-Up to a constant, it is also the KL  $f(\nat) = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$.
 Note that $\cD$ does not have to be part of the exponential family.
 Let $\nat^* := \argmin f(\nat)$.
 Assuming $\nat^*$ exists within $\Theta$ means $\cD$ is such that $\E[T] = \meanp^* \in \cM$.
 Then the suboptimality on the population log-likelihood can be written with Bregman divergences
 \footnote{
-Since for exponential families, $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, this proves on the way the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
+Since $f$ is also the KL (up to a constant)  $f(\nat) + \cst = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$, 
+and for exponential families $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, we recover the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
 }
 \begin{align}
 	 f(\nat) - f(\nat^*)
@@ -335,7 +335,8 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 
 \subsection{MAP as Stochastic Mirror Descent}
 \label{ssec:MAP=SMD}
-The posterior~\eqref{eq:joint_likelihood} can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$, so that the MAP verifies
+By Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
+Plugging in~\eqref{eq:joint_likelihood}, we see that the MAP verifies
 \begin{align*}
 	\hat \nat_{n}
 	= \argmin_\nat - \log p(X_{n} | \nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
@@ -349,8 +350,11 @@ which is the update of a Stochastic Bregman Proximal Point update with step-size
 \end{align}
 where $g_{n} := \nabla\logpart(\hat \nat_{n-1}) - T(X_n) = \hat \m_{n-1} - T_n$ is the gradient of $-\log p(X_{n} | \nat)$ evaluated at $\hat \nat_{n-1}$.
 We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$ -- a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
-This parallel means it would be possible to obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
-We give a special focus on this approach in Section~\ref{sec:optimization}.
+This parallel means we could obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
+In particular, it could potentially apply to a wide range of $\cD$.
+Note that this optimization perspective does not hold for the MLE %($n_0=0$)
+as the initial prior uniform prior may correspond to an initialization outside of $\Theta$.
+We focus more on this approach in Section~\ref{sec:optimization}.
 
 
 \subsection{Asymptote}
