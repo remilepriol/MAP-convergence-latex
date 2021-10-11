@@ -64,7 +64,7 @@
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}%
 
 % Swap the definition of \abs* and \norm*, so that \abs
-% and \norm resizes the size of the brackets, and the 
+% and \norm resizes the size of the brackets, and the
 % starred version does not.
 \makeatletter
 \let\oldabs\abs
@@ -246,6 +246,13 @@
 
 
 %% Tighter nabla symbol
-\RequirePackage{xparse}
-\RequirePackage{xkeyval}
-\RequirePackage{xifthen}
+% \RequirePackage{xparse}
+% \RequirePackage{xkeyval}
+% \RequirePackage{xifthen}
+%
+% \let\nablasymbol\nabla
+% \RenewDocumentCommand{\nabla}{e{_^}}{%
+%     \nablasymbol
+%     \IfValueT{#1}{_{\mspace{-4mu}#1\,}}% tuck in the subscript
+%     \IfValueT{#2}{^{#2}}{\mkern-1mu}% possible superscript
+% }
