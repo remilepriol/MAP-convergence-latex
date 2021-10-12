@@ -663,15 +663,15 @@ Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\
 \toprule
 Assumption &  \\
 \midrule
-Strongly convex and bounded variance\newline
-\citep[e.g.,][]{??}
-&
-$
-\cB_A(\theta,\theta') \geq \frac{1}{2}\norm{\theta-\theta'}^2,
-\quad
-\expect[x]{\norm{\m - x}}^2\leq\sigma^2
-$
-\\
+%Strongly convex and bounded variance\newline
+%\citep[e.g.,][]{??}
+%&
+%$
+%\cB_A(\theta,\theta') \geq \frac{1}{2}\norm{\theta-\theta'}^2,
+%\quad
+%\expect[x]{\norm{\m - x}}^2\leq\sigma^2
+%$
+%\\
 Uniformly bounded ``variance''\newline
 \citep{hanzely2018fastest}
 &
@@ -720,7 +720,7 @@ $\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
 and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:assumption-hanzely}
 to hold.
 
-Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest} , which is precisely what we wish to obtain. 
+Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest}, by applying a polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
 In general however, this assumption hardly holds.
 For the MAP, this translates into $\forall n \geq 1,$
@@ -746,14 +746,26 @@ Their descent lemma \citep[Eq.(12)]{dragomir2021fast} is the exact analog  of a 
 Seems like a perfect fit then ? Well not really, this variance assumption does not hold for exactly the same reason as the one of Hanzely. Having something valid for every possible iterates is way too strong. 
 
 \subsubsection{Bounded Optimality Gap}
-\fdk{
-Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}?
-\\
-Do they do something with that? It seems to be fixed step-size only.
-}
+Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explores the hypothesis
 \aligns{
-	A(\theta_*) - \lin{x, \theta_*} - \expecti{ \min_\theta A(\theta) - \lin{x, \theta} }
+\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C 
 }
+where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
+In words, this is lower bounding the expectation of the minimum of these stochastic estimates.
+For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
+This holds for instance for discrete distributions 
+-- $f_x\geq 0$ because the probability mass is upper bounded by $1$ -- 
+but it rules out  many families.
+For normal distributions set $\mu=x$ and $\sigma^2 \rightarrow 0$ to get $p(x\cond \nat) \rightarrow +\infty$. 
+For gamma, set $\alpha = \beta x$ and $beta \rightarrow +\infty$.
+For beta, set $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
+ Other examples include inverse Gaussians, log-normal, gamma, inverse gamma.
+ 
+ It is possible to overcome this limitation though, by treating batches of samples as 1 sample, and averaging sufficient statistics -- e.g. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
+ For instance a multivariate normals of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
+
+So it seems this approach can yield interesting convergence rates for the MAP, and they do prove linear convergence of the last iterate up a to a variance ball with constant step-size, but the size of this ball $\frac{C}{\alpha}$ \rlp{strong convexity notation} is independent of  the step-size. Their descent lemma does not lead to convergence with a decreasing $O(1/t)$ step-size. 
+
 
 \subsection{Issues with current analyses}
 
