@@ -119,6 +119,16 @@ We believe solving this very fundamental problem may bring progress to both the 
 %No rates hold either when the loss is ill-behaved : infinite domain, not smooth, not self-concordant
 
 
+\begin{figure}[t]
+	\centering
+\includegraphics[width=.4\textwidth]{fewsamples.pdf}
+	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval.
+		While the expected value is infinite for $n=1$ or $n=2$, it quickly matches the upper bound, and the $1/2n$ asymptote.
+	}
+	\label{fig:curves}
+\end{figure}
+
+
 \section{Motivation}
 
 We kind of know how to do optimization
@@ -445,26 +455,26 @@ We show these decompositions for $\cN(0,\sigma^2)$ in Figure~\ref{fig:variance_d
 In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters)  in Figure~\ref{fig:bias-variance-numerical}. \rlp{Tune figures.}
 
 
-\begin{figure*}[ht]
+\begin{figure}[t]
 	\centering
-	\includegraphics[width=\textwidth]{{figs/biasvariance/new_linear_ratio=0.8_n0=10}.pdf}
+	\includegraphics[width=.4\textwidth]{{figs/gaussian_variance.pdf}}
 	\caption{
 	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound.
 	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
 	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
 	}
 	\label{fig:variance_decomposition}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[ht]
+\begin{figure}[t]
 	\centering
-	\includegraphics[width=\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
+	\includegraphics[width=.4\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
 	\caption{
 	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote.
 	\textbf{Right:} bias-variance decomposition.
 	}
 	\label{fig:gaussian_decomposition}
-\end{figure*}
+\end{figure}
 
 
 \section{Examples}
@@ -502,15 +512,6 @@ Below we report upper bounds on the expected value of this divergence for the ML
 	\includegraphics[width=.4\textwidth]{phi.pdf}
 	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics, but it admits another upper-bound (in grey).}
 	\label{fig:phi}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-\includegraphics[width=.4\textwidth]{fewsamples.pdf}
-	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval.
-		While the expected value is infinite for $n=1$ or $n=2$, it quickly matches the upper bound, and the $1/2n$ asymptote.
-	}
-	\label{fig:curves}
 \end{figure}
 
 
@@ -552,7 +553,7 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 \end{theorem}
 
 This inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$.
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations.
 Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$. We are basically losing a factor 2 compared to $1/2n$.
 
 
@@ -563,13 +564,6 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 	\label{fig:bias-variance-numerical}
 \end{figure*}
 
-
-
-
-
-
-\newpage~\null\\
-\FloatBarrier
 
 \section{Optimization Perspective}
 \label{sec:optimization}
@@ -612,7 +606,7 @@ Bregman (proximal) gradient, relative gradient descent or NoLips.
 \citep{nemirovski1983problem,beck2003mirror}
 %Nemirovski introduced the algorithm, and Beck established the connection with Bregman divergences, e.g. the argmin form.
 and SMD 
-\citet{nemirovski2009robust,ghadimi2012optimal}  \TODO{verify what these citations are talking about} 
+\citep{nemirovski2009robust,ghadimi2012optimal} 
 are typically encountered in non-smooth (online) optimization,
 under bounded (or Lipschitz) gradient assumption on the objective $f$
 and strong convexity assumption on the potential $\logpart$
@@ -667,7 +661,7 @@ Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\
 \begin{tabular}{lccc}
 %{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
 \toprule
-Boundedness & Barrier &  $\lr_n \sim \inv{n}$ & Last iterate \\
+Boundedness & Barriers &  $\lr_n \sim \inv{n}$ & Last iterate \\
 \midrule
 %Strongly convex and bounded variance\newline
 %\citep[e.g.,][]{??}
