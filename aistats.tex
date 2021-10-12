@@ -31,6 +31,8 @@
 \usepackage{hyperref}       % hyperlinks
 \usepackage[dvipsnames]{xcolor}
 
+\usepackage{array}
+
 \hypersetup{ % SLJ: my standard paper setup...
 	pdftitle={MAP convergence},
 	pdfkeywords={},
@@ -656,12 +658,16 @@ See \cref{tbl:assumptions} for a summary.
 
 Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
 
-\begin{table*}[t]\begingroup
+\begin{table}[t]
+\begingroup
 \renewcommand*{\arraystretch}{1.25}%
+\newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
+\newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
 \centering
-\begin{tabular}{p{.35\textwidth}p{.6\textwidth}}
+\begin{tabular}{lccc}
+%{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
 \toprule
-Assumption &  \\
+Boundedness & Barrier &  $\lr_n \sim \inv{n}$ & Last iterate \\
 \midrule
 %Strongly convex and bounded variance\newline
 %\citep[e.g.,][]{??}
@@ -672,37 +678,25 @@ Assumption &  \\
 %\expect[x]{\norm{\m - x}}^2\leq\sigma^2
 %$
 %\\
-Uniformly bounded ``variance''\newline
-\citep{hanzely2018fastest}
-&
-	$
-	\expect[x]{
-	\begin{aligned}
-	\cB_{A^*}\paren{(1-\eta) \m + \eta x, (1-\eta)\m + \eta \m_*}\\
-	+\, \cB_{A^*}\paren{(1-\eta)\m + \eta \m_*, (1-\eta) \m + \eta x}
-	\end{aligned}
-	}
-	\leq
-	\eta^2 C
-	$
+Variance on all $\Theta$ % \newline \citep{hanzely2018fastest}
+& \redxmark & \greencmark  & \redxmark
 \\
-Bounded ``variance'' at $\theta_*$\newline
-\citep{dragomir2021fast}
-&
-	$\expect[x]{
-		\cB_{A^*}(\m - 2\eta (\m_* - x), \m)
-	} \leq 2 \eta^2 C$
+Variance at $\theta_*$ %\newline \citep{dragomir2021fast}
+& \redxmark & \greencmark  & \greencmark
 \\
-Bounded optimality gap\newline
-\citep{dorazio2021stochastic}
-&
-?
+Optimality gap %\newline \citep{dorazio2021stochastic}
+& \greencmark & \redxmark & \greencmark
 \\
 \bottomrule
 \end{tabular}
-\caption{Caption}
+\caption{
+Summary of results about SMD with relative smoothness and relative strong convexity assumptions. 
+Barrier tells whether the assumption can hold with barrier objectives.
+$\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size scheduling, and the last column tells whether the rate applies to the last iterate or to some average iterate.
+}
 \label{tbl:assumptions}
-\endgroup\end{table*}
+\endgroup
+\end{table}
 
 \subsubsection{Bounded Variance}
 \citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step: $\forall n \geq 1, \forall \hat \nat_{n-1},$
