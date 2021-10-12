@@ -76,7 +76,7 @@
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
 
-%\hypersetup{draft}
+\hypersetup{draft}
 
 \begin{document}
 
@@ -654,6 +654,8 @@ Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}
 We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
 See \cref{tbl:assumptions} for a summary.
 
+Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
+
 \begin{table*}[t]\begingroup
 \renewcommand*{\arraystretch}{1.25}%
 \centering
@@ -681,7 +683,7 @@ Uniformly bounded ``variance''\newline
 	\end{aligned}
 	}
 	\leq
-	\eta C
+	\eta^2 C
 	$
 \\
 Bounded ``variance'' at $\theta_*$\newline
@@ -702,10 +704,10 @@ Bounded optimality gap\newline
 \label{tbl:assumptions}
 \endgroup\end{table*}
 
-\subsubsection{Bounded variance}
-\citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step
+\subsubsection{Bounded Variance}
+\citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step: $\forall n \geq 1, \forall \hat \nat_{n-1},$
 \alignn{
-\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C, \forall n \geq 1
+\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C
 \label{eq:assumption-hanzely}
 }
 for some constant $C$.
@@ -721,32 +723,29 @@ to hold.
 Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest} , which is precisely what we wish to obtain. 
 
 In general however, this assumption hardly holds.
-For the MAP, this translates into
+For the MAP, this translates into $\forall n \geq 1,$
 \alignn{
-\expect[T_n]{\lin{T_n - \mu^* , \MAPt}} \leq \lr_n C, \forall n \geq 1
+\expect[T_n]{\lin{T_n - \mu^* , \MAPt}} \leq \lr_n C
 }
 which fails to hold on the gaussian variance example for instance. \TODO{short proof or formalize.}
 
-\subsubsection{Bounded variance at the minimum}
+\subsubsection{Bounded Variance at the Minimum}
 
-\citep{dragomir2021fast} is similar to \cref{eq:hanzely-in-divergence},
-where we take only the first part of it
-and care only about gradients at the minimum, replacing
-$\tilde g(\theta)$ and  $\nabla f(\theta)$ with $\tilde g(\theta_*)$ and $\nabla f(\theta_*) = 0$
-\aligns{
+\citet{dragomir2021fast} introduce a much weaker assumption $\forall n \geq 1, \forall \MAPm,$
+\alignn{
 	\expect[\tilde g]{
-		\cB_{A^*}(\m - 2\eta \tilde g(\theta_*), \m)
-	} \leq 2 \eta^2 C.
+		\cB_{A^*}(\MAPm - 2\lr g(\theta_*), \MAPm)
+	} \leq 2 \lr^2 C \; .
+	\label{eq:assumption-dragomir}
 }
-{\bf For a maximum likelihood problem, }
-\aligns{
-	\expect[x]{
-		\cB_{A^*}(\m - 2\eta (\m_* - x), \m)
-	} \leq 2 \eta^2 C.
-}
-\fdk{How do we show that this fails?}
+In words, this is bounding the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
+% As observed by Frederick, this is really weaker than Hanzely, because it is only the first half of their assumption. There is only a factor 2 that's preventing a direct inequality. 
+Under this assumption, they prove convergence up to a variance ball with a constant step-size.
+Their descent lemma \citep[Eq.(12)]{dragomir2021fast} is the exact analog  of a modern analysis of SGD \citep[Th.3.2]{gower2019sgd}, meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
 
-\subsubsection{Bounded optimality gap,}
+Seems like a perfect fit then ? Well not really, this variance assumption does not hold for exactly the same reason as the one of Hanzely. Having something valid for every possible iterates is way too strong. 
+
+\subsubsection{Bounded Optimality Gap}
 \fdk{
 Adaptation of the $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$ hypothesis \citep{dorazio2021stochastic}?
 \\
@@ -762,7 +761,8 @@ Do they do something with that? It seems to be fixed step-size only.
 
 \fdk{Existing techniques only deal with fixed step-sizes and show convergence to a ball}
 
-
+If assumptions~\eqref{eq:assumption-hanzely} and~\eqref{eq:assumption-dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
+\TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
 
 
 
