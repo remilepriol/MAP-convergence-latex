@@ -672,13 +672,13 @@ Boundedness & Barriers &  $\lr_n \sim \inv{n}$ & Last iterate \\
 %\expect[x]{\norm{\m - x}}^2\leq\sigma^2
 %$
 %\\
-Variance on all $\Theta$ % \newline \citep{hanzely2018fastest}
+Variance $\forall \nat\in\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
 & \redxmark & \greencmark  & \redxmark
 \\
-Variance at $\theta_*$ %\newline \citep{dragomir2021fast}
+Variance at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
 & \redxmark & \greencmark  & \greencmark
 \\
-Optimality gap %\newline \citep{dorazio2021stochastic}
+Optimality gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 & \greencmark & \redxmark & \greencmark
 \\
 \bottomrule
@@ -696,18 +696,22 @@ $\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size 
 \citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step: $\forall n \geq 1, \forall \hat \nat_{n-1},$
 \alignn{
 \Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C
-\label{eq:assumption-hanzely}
+\label{eq:hanzely}
 }
 for some constant $C$.
 For a Gaussian with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
 this definition recovers the variance of the stochastic gradient
 $\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C$.
 More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
-the LHS of \cref{eq:assumption-hanzely} is bounded by
+the LHS of \cref{eq:hanzely} is bounded by
 $\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
-and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:assumption-hanzely}
+and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:hanzely}
 to hold.
-
+Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
+\aligns{
+\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
+}
+thus showing positivity.
 Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest}, by applying a polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
 In general however, this assumption hardly holds.
@@ -724,7 +728,7 @@ which fails to hold on the gaussian variance example for instance. \TODO{short p
 	\expect[\tilde g]{
 		\cB_{A^*}(\MAPm - 2\lr g(\theta_*), \MAPm)
 	} \leq 2 \lr^2 C \; .
-	\label{eq:assumption-dragomir}
+	\label{eq:dragomir}
 }
 In words, this is bounding the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
 % As observed by Frederick, this is really weaker than Hanzely, because it is only the first half of their assumption. There is only a factor 2 that's preventing a direct inequality. 
@@ -735,8 +739,9 @@ Seems like a perfect fit then ? Well not really, this variance assumption does n
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explores the hypothesis
-\aligns{
+\alignn{
 \min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C 
+\label{eq:dorazio}
 }
 where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
 In words, this is lower bounding the expectation of the minimum of these stochastic estimates.
@@ -761,11 +766,20 @@ So it seems this approach can yield interesting convergence rates for the MAP, a
 
 \fdk{Existing techniques only deal with fixed step-sizes and show convergence to a ball}
 
-If assumptions~\eqref{eq:assumption-hanzely} and~\eqref{eq:assumption-dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
+If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
 
-
-
+\section{Conclusion}
+Exponential family MLE and MAP are used everywhere -- everytime someone computes a mean and variance to fit some bell-shaped data. 
+MLE and MAP are both maximizing the (regularized) likelihood of the data, whose suboptimality is the Kullback-Leibler (KL) divergence.
+The KL is a very natural measure of discrepancy between a model and the true disribution.
+Yet we do not have convergence rates on the expected KL, even in the well-specified setting.
+Such a rate could inform us on how many samples we may need, or on the influence of the prior.
+There are many results close from such a rate, in particular large sample results \citep{kakade2010learning, ostrovskii2021finite}, which describe how many samples are needed to ensure a locally quadratic regime.
+Another approach to obtain rates is stochastic optimization \citep{bach2013nonstronglyconvex}. 
+Here we observed that MAP perfectly fits the framework of stochastic mirror descent with relative smoothness assumptions.
+Yet none of the current analysis of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing area for progress in non-Euclidean optimization.
+In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
 
 
