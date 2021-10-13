@@ -323,8 +323,10 @@ If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n
 \nabla\conj(\hat \nat_{n}) 
 = \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
 }
-which we recognize as the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$ and step-size schedule $\lr_n$.
+which we recognize as the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$ and step-size schedule $\lr_n$ initialized at $\nat_0$.
 \emph{MAP is an instantiation of SMD.}
+Note that this analogy does not hold for the MLE %($n_0=0$)
+as it does not have any initialization to start from.
 
 \section{Open Problem}
 Let us assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
@@ -612,36 +614,10 @@ In the next section, we investigate what this problem is brining to optimization
 
 \section{Optimization Perspective}
 \label{sec:optimization}
-
-We now show how MAP can be interpreted as stochastic mirror descent (SMD).
+As we saw in the technical background, MAP can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
-We then review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating 3 analysis of SMD with the MAP.
+We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating 3 analysis of SMD with the MAP.
 \rlp{mention that examples have so far been lacking for relative SMD.}
-
-\subsection{MAP as Stochastic Mirror Descent}
-\label{ssec:MAP=SMD}
-By Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
-Plugging in~\eqref{eq:joint_likelihood}, and introducing $f_n(\nat) = - \log p(X_{n} | \nat)$, we see that the MAP verifies
-\begin{align*}
-	\hat \nat_{n}
-	= \argmin_\nat f_n(\nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
-    %\label{eq:SBPP}
-\end{align*}
-which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$.
-%Maybe skip this SBPP story altogether
-Expanding $f_n(\nat) = \logpart(\nat) - T_n$ and  playing with the Bregman we get
-\begin{align*}
-		\hat \nat_{n}
-	= \argmin_\nat \langle g_{n}(\hat \nat_{n-1}), \nat \rangle + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
-    %\label{eq:SMD}
-\end{align*}
-where $g_{n}(\nat) := \nabla f_n(\nat) = \hat \m_{n-1} - T_n$.
-We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$.
-From the first order optimality condition, we see this is a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
-This parallel means we could obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
-In particular, it could potentially apply to a wide range of distribution $\cD$ on $X$.
-Note that this optimization perspective does not hold for the MLE %($n_0=0$)
-as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
 
 \subsection{Relative Smoothness}
 Mirror descent (MD)\footnote{
@@ -655,7 +631,7 @@ and SMD
 are typically encountered in non-smooth (online) optimization,
 under bounded (or Lipschitz) gradient assumption on the objective $f$
 and strong convexity assumption on the potential $\logpart$
-\citep[Th.4.2 \& Th.6.3]{bubeck2015convex}.
+\citep[Th.4.2(MD) \& Th.6.3(SMD)]{bubeck2015convex}.
 In our case, none of these assumptions may hold. 
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
