@@ -324,6 +324,7 @@ If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n
 = \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
 }
 which we recognize as the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$ and step-size schedule $\lr_n$.
+\emph{MAP is an instantiation of SMD.}
 
 \section{Open Problem}
 Let us assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
@@ -353,16 +354,20 @@ More explicitly, can we write an upper bound that does not involve this expectat
 Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators, when the statistical loss is given by the KL divergence ?
 
 Surprisingly, we found no general solution to this seemingly simple problem, whether in the literature or by our own means.
-%TODO. what we did and are going to present next.
-We are yet to find a solution encompassing a broad range of exponential families, and applicable to small sample sizes $n$.
+There is a large body of work about asymptotic or large sample results, which we partially review in \S\ref{sec:insights}.
+There are also results for special cases, such as $\cN(0, \sigma^2)$ (See \S\ref{sec:example}). 
+But we are yet to find a solution encompassing a broad range of exponential families, and applicable to small sample sizes $n \lesssim d$.
 
-{\bf Remark.}
+{\bf Unboundedness of~\eqref{eq:bregmanMLE}.}
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite, 
 for instance in Gaussian covariance estimation when $n \leq d + 1$.
-Even worse with categorical variables, the MLE is always ill-defined. %TODO
-Instead of taking the expectation, one might want to bound the risk in high probability, without resorting to Markov inequality.
+Even worse, with categorical variables, there is always a non-zero probability to never sample one of the categories. In such the MLE will give zero weight to this category and $KL(p_{\nat^*} || p_\text{MLE} ) = +\infty$. 
+This means that the expected KL~\eqref{eq:bregmanMLE} is infinite for any number of samples.
+Instead of taking the expectation, one might want to bound the risk in high probability, without resorting to Markov inequality but this is a difficult endeavor.
+These examples are rather making a case for regularized estimators such as MAP, for which we may find interesting upper bounds.
 
 \section{Insights}
+\label{sec:insights}
 
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
@@ -514,6 +519,7 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 
 
 \section{Examples}
+\label{sec:example}
 
 
 \subsection{Gaussian Variance}
