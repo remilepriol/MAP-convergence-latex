@@ -136,6 +136,7 @@ They are both flexible enough to model a variety of data sources $X$, and easy t
 In particular, they are appreciated for their convex log-likelihood
 \alignn{
 f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat}
+\label{eq:defNLL}
 }
 where $\logpart$ is a convex function and $\nat$ is a parameter vector.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} 
@@ -166,6 +167,7 @@ This question has connections with optimization.
 For one, the MLE is minimizing $f$ (or a regularized version for MAP), and the KL is the sub-optimality
 \alignn{
 f(\nat) - f(\nat^*) = \KL\paren{p(\cdot \cond \nat^*) || p(\cdot \cond \nat) }
+\label{eq:suboptimalityKL}
 }
 where $\nat^* \in \argmin f(\nat)$.
 For two, in exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
@@ -198,12 +200,13 @@ In this section, we review the formalism of exponential families, their duality,
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more exhaustive introduction.
 
 
-The exponential family for data $X\in \cX$ reads
+The density of an exponential family for data $x \in \cX$ reads
 \begin{equation}
-	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; ,
+	 p_\nat(x) = p(x|\nat) = \exp( \langle \nat, T(x) \rangle - \logpart(\nat)) \; ,
 	 \label{eq:def_expfamily}
 \end{equation}
-where  $\nat$ is called natural (or primal) parameter is specified by 1) $T: \cX \rightarrow \real^d$, the sufficient statistic, and 2) $\nu(dx)$, the density with respect to a base measure.
+where  $\nat$ is called natural (or primal) parameter.
+It is fully specified by 1) $T: \cX \rightarrow \real^d$, the sufficient statistic, and 2) a base measure$\nu$ on $\cX$.
 Since the exponential is positive, $p$ has the same support as $\nu$.
 The function $\logpart$ is called the log-partition function that acts as a normalization term, since
 \begin{align}
@@ -212,34 +215,36 @@ The function $\logpart$ is called the log-partition function that acts as a norm
 
 This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
 
-For convenience, in this paper we focus on steep, regular exponential families
-where $\logpart$ is strictly convex function of Legendre type,
-and the set $\nat \in \Theta$ such that $\logpart(\nat) < \infty$ is open and convex
-(See \citet{barndoffnielsen2014information}). Also, when explicit, we write the random variable $T = T(X)$.
+For convenience, in this paper we focus on steep, regular exponential families with minimal statistic $T$.
+Then $\logpart$ is a strictly convex function of Legendre type,
+and the set $\Theta = \{ \nat \cond \logpart(\nat) < \infty\}$ is open and convex
+\citep{barndoffnielsen2014information}. 
+Also, when explicit, we write the random variable $T = T(X)$.
 
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
 \paragraph{Duality}
-The logpartition function $\logpart$ verifies the two following identities:
+The log-partition function $\logpart$ verifies the two following identities:
 \begin{align}
-    \nabla\logpart(\nat) &=  \expect[p(T|\nat)]{T} =: \meanp \\
-    \nabla^2 \logpart(\nat) &= \Cov_\nat[T] \geq 0
+    \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp \\
+    \nabla^2 \logpart(\nat) &= \Cov_{p_\nat}[T(X)] > 0
 \end{align}
 where $\meanp$ is called the mean (or dual) parameter, which lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
-We will write interchangeably $\m$ or  $\nat$ depending on the context, being aware that both represent the same distribution.
+Given that $\logpart$ is strictly convex, its Hessian is positive definite and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$.
+We will write interchangeably $\m$ or  $\nat$ depending on the context, being aware that both are linked and represent the same distribution.
 
-We now introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
+We now introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the log-partition function
 \begin{align}
-	\conj(\m) = \min_{\nat\in\Theta}\langle \m, \nat \rangle - \logpart(\nat) \; ,
+	\conj(\m) =  \langle \m, \nat \rangle - \logpart(\nat)
+	=  \max_{\nat'\in\Theta}  \langle \m, \nat' \rangle - \logpart(\nat')\; ,
 \end{align}
-which matches the common notion of \textit{entropy} in information theory. In this paper, we assume that the sufficient statistic $T$ is minimal, e.g., its covariance is definite positive for all $\nat$. In such case, the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$, and moreover, $\nabla\conj=\nabla\logpart^{-1}$ (cf Fig.~\ref{fig:duality}). More concisely,
-\[
+which matches the common notion of \textit{entropy} in information theory.
+By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  $\nabla\conj=\nabla\logpart^{-1}$ (cf Fig.~\ref{fig:duality}). More concisely,
+\aligns{
 	\nabla\conj \circ \nabla\logpart(\nat) = \nat, \quad \nabla\logpart\circ \nabla\conj(\meanp) = \meanp.
-\]
+}
 
-% The entropy is eating mean parameters, and its gradient is mapping back to natural parameters $\nabla\conj \circ \nabla\logpart(\nat) = \nat$ (cf Fig.~\ref{fig:duality}).
-
-\begin{figure}[t] % @remi In the figure you use mu instead of m??
+\begin{figure}[t] 
 	\centering
 	\includegraphics{duality}
 	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\nat, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
@@ -247,8 +252,8 @@ which matches the common notion of \textit{entropy} in information theory. In th
 	\label{fig:duality}
 \end{figure}
 
-\paragraph{Bregman Divergences} %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps)
-We now introduce the Bregman divergence induced by $\logpart$, that measure the distance between two parameters $\nat$ and $\nat_0$,
+\paragraph{Bregman Divergences} %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
+We now introduce the Bregman divergence induced by $\logpart$, that measures the discrepancy between two parameters $\nat$ and $\nat_0$,
 \begin{align}
     \bregman (\nat ; \nat_0)
     & = \logpart(\nat) - \logpart(\nat_0)
@@ -258,6 +263,7 @@ with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean para
 \begin{align}
 	\bregman (\nat ; \nat_0)
     = \bregmanconj ( \meanp_0 ; \meanp) \; .
+    \label{eq:bregman_switch}
 \end{align}
 
 \paragraph{Conjugate Prior}
@@ -270,44 +276,59 @@ One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
 \end{align}
 where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
 This is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
-Intuitively, $n_0$ is the number of fictive data points observed from a distribution with parameter mean $\nat_0$.
+Intuitively, $n_0$ is the number of fictive data points observed from a distribution with natural parameter $\nat_0$.
 
 \paragraph{Maximum A Posteriori (MAP).} 
-\textcolor{red}{\textbf{D.S.: This section is very unclear. }}
-Using Bayes rule with~\eqref{eq:def_expfamily}~\&~\eqref{eq:def_prior}, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
+Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD|\nat)p(\nat)$.
+Plugging in~\eqref{eq:def_expfamily} and ~\eqref{eq:def_prior} yields
 \begin{align}
 	p(\nat \cond \mD_n)
-	%\propto p(\mD|\nat)p(\nat)
     \propto \exp(- (n_0+n) \bregman(\nat; \MAPt^\text{MAP}))
     \label{eq:joint_likelihood}
 \end{align}
-reaching its maximum in $\MAPt^\text{MAP}$ such that
+which reaches its maximum in $\MAPt^\text{MAP}$ such that
 \begin{align}
     \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
     \label{eq:defMAP}
 \end{align}
 where $T_i=T(X_i)$.
-When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE).
+When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)~ \eqref{eq:defMLE}.
 In general, we will write $\MAPt$ to refer to the MAP, and view the MLE as a very special case.
-The MLE and MAP estimates are statistics of the dataset $\mD_n$.
-Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
+%The MLE and MAP estimates are statistics of the dataset $\mD_n$.
 
 
 \section{Open Problem}
+Let us assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
+We further assume that our model is well-specified and there exist $\nat^*\in\Theta$ such that $\cD = p(\cdot \cond \nat)$.
+As we will see, this is already an interesting setting.
+We wish to estimate how well the MLE or a MAP model the true distribution.
+
+A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$.
+In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
+Using~\eqref{eq:defNLL} and~\eqref{eq:bregman_switch}, we can also write the KLwith Bregman divergences
+\alignn{
+	\KL(p_{\nat^*} || p_\nat)
+	 = \bregman(\nat ; \nat^*) 
+	 = \bregmanconj(\m^* ; \m) \; .
+}
+
+In the words of statistical decision theory would refer to these quantities as \emph{frequentist risk} of the estimators, when the statistical loss is given by the divergence the KL.
+
+
+
 Given a distribution $\cD$, our objective is the expected log-likelihood 
 \begin{align}
 	f(\nat) = \expect[X \sim \cD]{-\log p(X \cond \nat)} 
 	 = \logpart(\nat) - \langle \E[T] , \nat \rangle
 \end{align}
 Note that $\cD$ does not have to be part of the exponential family.
-Let $\nat^* := \argmin f(\nat)$.
-Assuming $\nat^*$ exists within $\Theta$ means $\cD$ is such that $\E[T] = \meanp^* \in \cM$.
+If $\cD$ is such that $\E[T] = \meanp^* \in \cM$, then $f(\nat)$ reaches its minimum $\nat^*\in\Theta$.
 Then the suboptimality on the population log-likelihood can be written with Bregman divergences
-\footnote{
-Since $f$ is also the KL (up to a constant)  $f(\nat) + \cst = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$, 
-and for exponential families $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, we recover the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
-}
+%\footnote{
+%Since $f$ is also the KL (up to a constant)  $f(\nat) + \cst = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$, 
+%and for exponential families $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, we recover the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
+%}
 \begin{align}
 	 f(\nat) - f(\nat^*)
 	 %&= \logpart(\nat) - \logpart(\nat^*) - \langle \E[T] , \nat - \nat^* \rangle \\
@@ -324,18 +345,14 @@ Our question is: how does this suboptimality behave when $\nat$ is the MLE or th
 where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d from $\cD$.
 More explicitly, can we write an upper bound that does not involve this expectation over the dataset.
 
+
 In general, for arbitrary distributions $\cD$, it is a hard problem, especially since the KL is known for being brittle to misspecification \tocite, so let us focus on the well-specified case first $\cD = p(\cdot \cond \nat^*)$. Surely this problem has been solved, hasn't it ?
 In some special cases yes, but it seems the general answer is no. 
 We are yet to find a solution encompassing a broad range of exponential families, and applicable to small sample sizes $n$.
 
 {\bf Remark.}
-This could be seen as a concentration inequality, expressed with a Bregman divergence instead of a norm.
-However there is a connection between the random variable $T(X)$ and the metric $\logpart$.
-Indeed expressions~\eqref{eq:bregmanMLE} or~\eqref{eq:bregmanMAP} can be infinite for another choice of random variable.
-For instance, if we plug in $\conj(\m)= -\log(\m)$, which defines a divergence on positive numbers, and $T(X) \sim \cN(0,1)$ which can be negative.
-
-{\bf Remark 2.}
-The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ and $n\leq 2$. Instead of taking the expectation,  we might want to bound this quantity in high probability, without resorting to Markov inequality, but that is a difficult endeavor.
+While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite, for instance in Gaussian covariance estimation when $n \leq d + 1$.
+Instead of taking the expectation, one might want to bound the risk in high probability, without resorting to Markov inequality.
 
 \section{Insights}
 
