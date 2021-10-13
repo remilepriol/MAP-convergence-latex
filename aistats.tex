@@ -1,4 +1,15 @@
 \documentclass[twoside]{article}
+
+\usepackage{silence}
+% Disable all warnings issued by latex starting with "You have..."
+% This is a hack, there is no clean solution for that unless we install locally the package
+\WarningFilter{latex}{You have requested package}
+
+
+\pdfsuppresswarningpagegroup=1 %removes the warning
+% This is a hack, the other way to remove is to convert all pdf into postscript or eps.
+
+
 \usepackage{aistats/aistats2022}
 % If your paper is accepted, change the options for the package
 % aistats2022 as follows:
@@ -19,6 +30,7 @@
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{lmodern}
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
@@ -45,6 +57,8 @@
 	urlcolor=blue, %mydarkblue,
 	pdfview=FitH,
 	pdfauthor={Anonymous},
+	% draft,
+	final,
 }
 
 \usepackage[capitalise]{cleveref}
@@ -78,7 +92,6 @@
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
 
-\hypersetup{draft}
 
 \begin{document}
 
@@ -480,7 +493,7 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=.4\textwidth]{{figs/gaussian_variance.pdf}}
+	\includegraphics[width=.4\textwidth]{figs/gaussian_variance.pdf}
 	\caption{
 	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound.
 	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
@@ -491,7 +504,7 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 
 \begin{figure}[t]
 	\centering
-	\includegraphics[width=.4\textwidth]{{figs/gaussians/new_linear_n0=1}.pdf}
+	\includegraphics[width=.4\textwidth]{figs/gaussians/new_linear_n0=1.pdf}
 	\caption{
 	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote.
 	\textbf{Right:} bias-variance decomposition.
@@ -800,7 +813,7 @@ Other works focus instead on the online estimation of $\theta$ and minimize the 
 \[
 R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
 \]
-where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
+where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} prove the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
 
 
 \section{Conclusion}
@@ -819,7 +832,7 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 
 \newpage
 \bibliographystyle{apalike}
-\bibliography{references.bib}
+\bibliography{references} % Removed the .bib as this mess up with the compiler
 
 
 \clearpage
