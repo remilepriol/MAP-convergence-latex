@@ -98,7 +98,7 @@
 
 \twocolumn[
 
-\aistatstitle{Convergence Rates for the MAP of an Exponential Family, and Stochastic Mirror Descent -- an Open Problem}
+\aistatstitle{Convergence Rates for the MAP of an Exponential Family\\ and Stochastic Mirror Descent -- an Open Problem}
 
 
 \aistatsauthor{R\'emi Le Priol \And Frederik Kunstner \And  Damien Scieur \And Simon Lacoste-Julien }
@@ -132,12 +132,12 @@ We believe solving this very fundamental problem may bring progress to both the 
 
 Exponential families are among the most widely used statistical models.
 Many standard random variables fall into this category: Gaussians, categorical, Gamma or Dirichlet.
-They are flexible both enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
+They are both flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 In particular, they are appreciated for their convex log-likelihood
 \alignn{
 f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat}
 }
-where $\logpart$ is a convex function.
+where $\logpart$ is a convex function and $\nat$ is a parameter vector.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} 
 or variants of principal component analysis \citep{collins2001generalization} among other applications.
 Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching
@@ -147,9 +147,9 @@ Another interest of exponential families is their closed form maximum-likelihood
 Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP).
 
 How can we assess the quality of the MLE, or any other estimator?
-Let us distinguish two lines of work answering this question in statistic.
-(1.) Parameter estimation has focused on the quality of the resulting parameters, using norms or distances between parameter themselves, and yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
-(2.) Density estimation has focused on measuring the discrepancy between the model and the true distribution.
+Let us distinguish two lines of work addressing this question in statistic.
+(1.) \emph{Parameter estimation} has focused on the quality of the resulting parameters, using norms or distances between parameter themselves, and yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
+(2.) \emph{Density estimation} has focused on measuring the discrepancy between the model and the true distribution.
 For this purpose, the Kullback-Leibler (KL) divergence arises naturally from information theory,
 but its lack of robustness to misspecification has led statisticians to study other distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}.
 As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research. 
@@ -168,14 +168,17 @@ f(\nat) - f(\nat^*) = \KL\paren{p(\cdot \cond \nat^*) || p(\cdot \cond \nat) }
 }
 where $\nat^* \in \argmin f(\nat)$.
 For two, in exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
-A convergence rate for this algorithm would translate into the upper bound we seek, similarly to other works on stochastic approximation \citep{bach2013nonstronglyconvex}. %TODO check this
+A convergence rate for this algorithm would translate into the upper bound we seek.
+%similarly to other works on stochastic approximation \citep{bach2013nonstronglyconvex}. %TODO check this
 From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
+In fact we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
 \paragraph{Contributions}
 After formalizing the problem along with its asymptotic properties, we make the following contributions
 \begin{itemize}
+	\itemsep0em 
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation is valid.
-	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}.
+	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem}
 	\item We provide a full solution in the case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$.
 	\item We establish a connection with optimization, and use this problem to highlight areas for progress in the stochastic optimization of barrier objectives.
 \end{itemize}
@@ -200,6 +203,7 @@ The exponential family for data $X\in \cX$ reads
 	 \label{eq:def_expfamily}
 \end{equation}
 where  $\nat$ is called natural (or primal) parameter is specified by 1) $T: \cX \rightarrow \real^d$, the sufficient statistic, and 2) $\nu(dx)$, the density with respect to a base measure.
+Since the exponential is positive, $p$ has the same support as $\nu$.
 The function $\logpart$ is called the log-partition function that acts as a normalization term, since
 \begin{align}
     \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \; .
@@ -335,17 +339,17 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-Asymptotic results typically show that natural parameters $\nat$ is asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
-Here the MAP is more simply expressed with mean parameters $\meanp$.
+Asymptotic results typically show that the MLE expressed with natural parameters $\nat$ is asymptotically normal: it reaches the Cramér-Rao lower bound \citep[for instance Ch4.2]{vdv1998asymptotic}.
+With exponential families, the MAP is more simply expressed with mean parameters $\meanp$.
 We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\m^* ; \m)
-    &= \frac{\norm{\m^* - \m}^2_{\mF^*}}{2}
+    &= \frac{\norm{\m^* - \m}^2_{\mF}}{2}
     + O(\norm{\m - \m^*}^3),
 \end{align}
-where the Mahalanobis norm  $\| x \|_{\mF^*}^2 = x^\top \mF^* x$  is induced by $\mF^*  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $F^*$ is also the inverse \textit{Fisher information matrix}, since
+where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix}, since
 \begin{align}
-    \mF^*
+    \mF
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
@@ -358,8 +362,10 @@ From there, it is possible to show an asymptotic rate for the MLE and the MAP \t
 \end{align}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
 This asymptote is also independent of the optimum $\meanp^*$.
+We point the curious reader towards \citet[\S1.1]{ostrovskii2021finite} for a more comprehensive review.
 
 \subsection{Quadratic Case}
+\rlp{make it multivariate, with a reference to \citep{bach2013nonstronglyconvex}?}
 As another reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
 For instance, this is the log-partition of a Gaussian with variance $1$ and unknown mean 
 \[ \cX=\real,\quad \nu(dx) = \exp(\half[-x^2])dx,\quad T(X)=X.\]
@@ -390,24 +396,26 @@ If we make restrictive assumptions on the log-partition function, we can relate 
     &\leq 2L \norm{\m^* - \m}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
+\TODO{connection with optim non-smooth rate.}
 
-{\bf If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex), then
+{\bf If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     \leq \frac{L}{2} \norm{\m^* - \m}^2
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
+\TODO{connection with optim smooth rate.}
 
 \subsection{Locally Quadratic Case}
 \textcolor{red}{Check this! In our case, since we assume $A$ and $A^*$ to be strictly convex,}
 all Bregman divergences are locally quadratic.
 Under some assumptions, like self-concordance of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF^* = \nabla \conj(\m^*)$. Then%\footnote{$0.21$ is the value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then%\footnote{$0.21$ is the value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
 \aligns{
-	\norm{\m^*-\m}_{\mF^*} < 0.21 
+	\norm{\m^*-\m}_{\mF} < 0.21 
 	\implies
-	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
+	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
 }
 \end{proposition}
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
@@ -428,10 +436,9 @@ All these works give \textit{large sample} results -- results that hold only for
 \citet{anastasiou2017bounds} and
 \citet{marteauferey2019beyond})
 \fdk{
-We know that if the problem is strongly convex (in $\norm{\cdot}_2$), averaged SGD achieves $O(1/n)$ rate 
-%[Robust stochastic approximation approach to stochastic programming]. (The paper uses a bounded stochastic gradient assumption, but can be relaxed to bounded variance instead.) However, strong-convexity in the Euclidean norm is not strictly necessary to find an algorithm with convergence rate of $O(1/n)$, as shown by [Non-strongly-convex smooth stochastic approximation with convergence rate O(1/n)] for linear and logistic regression. Their proof techniques based on self-concordance have been extended to other setting, [Finite-sample analysis of M-estimators using self-concordance, Learning Exponential Families in High-Dimensions: Strong Convexity and Sparsity].
-%The same tools are used in statistics, and evething essentially boils down to controlling how different we are from a Gaussian rv, that we're going to get by the CLT, like [Bounds for the normal approximation of the maximum likelihood estimator, Anastasiou].
-%The paper [Finite-sample analysis of 𝑀-estimators using self-concordance*] has a good background section on the work of local asymptotic normality (1.1 Classical asymptotic theory) that might be useful. The first 2-3 pages of [PARAMETRIC ESTIMATION. FINITE SAMPLE THEORY] are also nice
+We know that if the problem is strongly convex (in $\norm{\cdot}_2$), averaged SGD achieves $O(1/n)$ rate.
+[Robust stochastic approximation approach to stochastic programming]. (The paper uses a bounded stochastic gradient assumption, but can be relaxed to bounded variance instead.) However, strong-convexity in the Euclidean norm is not strictly necessary to find an algorithm with convergence rate of $O(1/n)$, as shown by [Non-strongly-convex smooth stochastic approximation with convergence rate O(1/n)] for linear and logistic regression. Their proof techniques based on self-concordance have been extended to other setting, [Finite-sample analysis of M-estimators using self-concordance, Learning Exponential Families in High-Dimensions: Strong Convexity and Sparsity].
+The same tools are used in statistics, and evething essentially boils down to controlling how different we are from a Gaussian rv, that we're going to get by the CLT, like [Bounds for the normal approximation of the maximum likelihood estimator, Anastasiou].
 }
 
 \subsection{Bias-Variance Decomposition} % DS: Arrived here
@@ -613,13 +620,6 @@ and strong convexity assumption on the potential $\logpart$
 In our case, none of these assumptions may hold. 
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
-\fdk{
-{\bf Online learning paragraph?}
-\citet{azoury2001relative,freund1996predicting,dasgupta2007online},
-Bubeck's 2011.
-}
-
-
 Recently, these assumptions have been relaxed to allow for non-smooth functions $f$
 \footnote{$f$ is $L$-smooth if its gradient is $L$-Lipschitz}.
 and non-strongly convex potential $\logpart$, first in the deterministic setting
@@ -657,6 +657,11 @@ Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\
 \newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
 \newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
 \centering
+\caption{Comparison of Analysis of SMD, \\
+under relative smoothness and relative strong convexity assumptions. 
+Barrier tells whether the assumption can hold with barrier objectives.
+$\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size scheduling, and the last column tells whether the rate applies to the last iterate or to some average iterate.
+}
 \begin{tabular}{lccc}
 %{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
 \toprule
@@ -682,11 +687,6 @@ Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 \\
 \bottomrule
 \end{tabular}
-\caption{
-Summary of results about SMD with relative smoothness and relative strong convexity assumptions. 
-Barrier tells whether the assumption can hold with barrier objectives.
-$\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size scheduling, and the last column tells whether the rate applies to the last iterate or to some average iterate.
-}
 \label{tbl:assumptions}
 \endgroup
 \end{table}
