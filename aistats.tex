@@ -66,7 +66,7 @@
 \newcommand{\bregman}{\cB_\logpart}
 \newcommand{\bregmanconj}{\cB_{\logpart^*}}
 \newcommand{\nat}{\theta}
-\newcommand{\m}{m}
+\newcommand{\m}{\mu}
 \newcommand{\meanp}{\m}
 \newcommand{\decrement}{D}
 \newcommand{\linear}{\ell} % linearization of a function
@@ -130,93 +130,68 @@ We believe solving this very fundamental problem may bring progress to both the 
 
 \section{Motivation}
 
-We kind of know how to do optimization
-on smooth, strongly convex functions
-when there is some bound on the stochasticity,
-for example in the form of a bounded variance,
-say for the problem
-\begin{equation} %We might want to add a feasible set for theta?
-\min_\theta f(\theta)
-\end{equation}
-with access to stochastic gradients
-$g(\theta)$ such that
-\begin{equation}
-	\expect{\norm{g(\theta) - \nabla f(\theta)}^2} \leq \sigma^2.
-\end{equation}
-Estimating the mean of Gaussian noise is a special case of this problem class, using
-$f(\theta) = \frac{1}{2}\norm{\theta - \mu}^2$ and $g(\theta) \sim \cN(- \mu, \sigma^2)$.
-SGD with a decreasing step-size coincides with the maximum likelihood estimate (MLE),
-and attains the $1/t$ convergence rate.
+Exponential families are among the most widely used statistical models.
+Many standard random variables fall into this category: Gaussians, categorical, Gamma or Dirichlet.
+They are flexible both enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
+In particular, they are appreciated for their convex log-likelihood
+\alignn{
+f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat}
+}
+where $\logpart$ is a convex function.
+This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} 
+or variants of principal component analysis \citep{collins2001generalization} among other applications.
+Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching
+\begin{align}
+	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} 
+\end{align}
+Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP).
 
-But our understanding of stochastic optimization lacks in other domains.
-A generalization of the above problem, at the intersection of optimization and statistics,
-is the problem of minimizing
-\begin{equation}
-	f(\theta) = \expect[x \sim p(x\cond\theta_*)]{-\log p(x\cond\theta)},
-\end{equation}
-When $p(x\cond\theta)$ is an exponential family distribution,
-$-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference distribution).
-Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
-The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
+How can we assess the quality of the MLE, or any other estimator?
+Let us distinguish two lines of work answering this question in statistic.
+(1.) Parameter estimation has focused on the quality of the resulting parameters, using norms or distances between parameter themselves, and yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
+(2.) Density estimation has focused on measuring the discrepancy between the model and the true distribution.
+For this purpose, the Kullback-Leibler (KL) divergence arises naturally from information theory,
+but its lack of robustness to misspecification has led statisticians to study other distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}.
+As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research. 
+In this work, we are addressing the following question.
 
-There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori. As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes. Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP ?}
 
+If $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
+or close to quadratic, there are simple upper bounds. 
+But without further assumptions, this problem is difficult.
 
-We do not have a solution. The goal of this paper
-is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
-in the hope that we can make progress on this question;
-Can we build algorithms for stochastic estimation
-when the objective function is not (close to) quadratic
-and the noise is not Gaussian?
-
-We are aware that \emph{a} solution to this problem would be the maximum likelihood estimate for which there is a wealth of asymptotic and large sample results \citep{van2000asymptotic,ostrovskii2021finite}. %TODO complete
-However, none of the theory we found could address for instance the case of a Gaussian with unknown mean and variance $\cN(\mu,\sigma^2)$, hence our contributions.
-%TODO kind of redundant "problem - question - problem" paragraphs, not disentangling stats and optim. To improve
+This question has connections with optimization.
+For one, the MLE is minimizing $f$ (or a regularized version for MAP), and the KL is the sub-optimality
+\alignn{
+f(\nat) - f(\nat^*) = \KL\paren{p(\cdot \cond \nat^*) || p(\cdot \cond \nat) }
+}
+where $\nat^* \in \argmin f(\nat)$.
+For two, in exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
+A convergence rate for this algorithm would translate into the upper bound we seek, similarly to other works on stochastic approximation \citep{bach2013nonstronglyconvex}. %TODO check this
+From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
 
 \paragraph{Contributions}
+After formalizing the problem along with its asymptotic properties, we make the following contributions
 \begin{itemize}
-	\item We provide insights on different facets of this problem : quadratic approximations ; bias variance decomposition; and a detailed analysis of the Gaussian variance estimation problem.
-	\item We show the connections between the optimization and statistical estimation view of the problem and discuss where current theories fail to fully capture the problem.
+	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation is valid.
+	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}.
+	\item We provide a full solution in the case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$.
+	\item We establish a connection with optimization, and use this problem to highlight areas for progress in the stochastic optimization of barrier objectives.
 \end{itemize}
 
-The statistics and optimization perspective are so tightly linked in this problem, that we believe progress from one field would help the other one.
-Progress from statistics could bring forward research in non-euclidean optimization, or the optimization of barrier losses, for instance helping in the development of accelerated methods.
-On the other hand, optimization can become  a more versatile and general tool for statisticians. % handwavy and shady af.
+A solution to this problem would allow the field of optimization tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression).
+It could also help develop accelerated optimization methods.
 
-\subsection{Related Work}
-
-\paragraph{Density Estimation}
-Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \tocite
-Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \tocite 
-A contrario the KL is not smooth, and it can be infinite in misspecified settings.
-But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
-
-
-\paragraph{Online Learning}
-Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
-\[
-R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
-\]
-where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
-
-% Then;
-% - description of the setting
-% - statistical solutions (asymptotic, l1 or l2 error)
-% - optimization solutions (online+bounded gradient, self-concordance, more recent relative smoothness results)
-% - potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
-% - conclusion?
-
-\subsection{Notation}
+\paragraph{Notation}
 $X, T(X)$ and $T$ are random variables, while $x$ is a sample. 
 $n$ is the number of samples and $d= \dim(T)$. 
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 
 \section{Technical background}
-
-Exponential families are to statistics what linear models are to regression.
-Many classical model are exponential families, for instance the Gaussian or Bernoulli distributions. Their convexity or modeling flexibility make them one of the most widely used statistical models. In this section, we review some of their properties.
-We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
+In this section, we review the formalism of exponential families, their duality, a conjugate prior and the corresponding MAP.
+We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more exhaustive introduction.
 
 
 The exponential family for data $X\in \cX$ reads
@@ -307,11 +282,7 @@ reaching its maximum in $\MAPt^\text{MAP}$ such that
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
 \end{align}
 where $T_i=T(X_i)$.
-When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
-\begin{align}
-	\hat \m_n^\text{MLE} = \frac{\sum_{i=1}^n T_i}{n}
-\end{align}
-This last equation is known as moment matching.
+When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE).
 In general, we will write $\MAPt$ to refer to the MAP, and view the MLE as a very special case.
 The MLE and MAP estimates are statistics of the dataset $\mD_n$.
 Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
@@ -430,19 +401,25 @@ so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quad
 \subsection{Locally Quadratic Case}
 \textcolor{red}{Check this! In our case, since we assume $A$ and $A^*$ to be strictly convex,}
 all Bregman divergences are locally quadratic.
-Under some assumptions, like self-concordance \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
-For instance, when $T$ is 1-dimensional, we have that $\logpart$ in the following settings:
-exponential distribution,
-Gaussian with known mean,
+Under some assumptions, like self-concordance of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
+\begin{proposition}
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF^* = \nabla \conj(\m^*)$. Then%\footnote{$0.21$ is the value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
+\aligns{
+	\norm{\m^*-\m}_{\mF^*} < 0.21 
+	\implies
+	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
+}
+\end{proposition}
+We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
+This is true for
+exponential distributions,
+Gaussians with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
-Weibull with known shape $k$. This also holds when
--- or when $T$ lives in a compact \citep{bubeck2015entropic}. Then the bound
-\begin{align}
-	 \bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
-\end{align}
-holds whenever $\norm{\m^*-\m}_{\mF^*} < 0.21$.\footnote{The value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
-Similarly, \citet{kakade2010learning} assumes a bound on all higher order moments at $\nat^*$ to quantify when $\logpart$ starts behaving quadratically, but their rate does not directly apply to $\conj$ and $\m$.
+or Weibull with known shape $k$. 
+The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic}. 
+
+\citet{kakade2010learning} assumes a bound similar to self concordance, but only at $\nat^*$ and on all higher order moments. They quantify when $\logpart$ starts behaving quadratically, but their rate does not directly apply yield a norm on $\m$.
 
 All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
 
@@ -676,7 +653,7 @@ Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\
 
 \begin{table}[t]
 \begingroup
-\renewcommand*{\arraystretch}{1.25}%
+%\renewcommand*{\arraystretch}{1.25}%
 \newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
 \newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
 \centering
@@ -694,13 +671,13 @@ Boundedness & Barriers &  $\lr_n \sim \inv{n}$ & Last iterate \\
 %\expect[x]{\norm{\m - x}}^2\leq\sigma^2
 %$
 %\\
-Variance $\forall \nat\in\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
+Var. on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
 & \redxmark & \greencmark  & \redxmark
 \\
-Variance at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
+Var. at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
 & \redxmark & \greencmark  & \greencmark
 \\
-Optimality gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
+Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 & \greencmark & \redxmark & \greencmark
 \\
 \bottomrule
@@ -790,6 +767,21 @@ So it seems this approach can yield interesting convergence rates for the MAP, a
 
 If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
+
+\subsection{Related Work}
+
+\paragraph{Density Estimation}
+While statistics has a plethora of asymptotic results \citep{vdv1998asymptotic}, there is less work in finite sample bounds.
+Since the KL explode to $\infty$ if the model is unable to give weight to some samples, a lot of this work has been devoted to distances, such as $L^2$ \citep{tsybakov2009introduction}, $L^1$ \citep{devroye2001combinatorial} or more recently Hellinger distance \citep{baraud2017new}.
+Contrary to the KL, these distance are symmetric and behave smoothly.
+
+\paragraph{Online Learning}
+Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
+\[
+R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
+\]
+where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
+
 
 \section{Conclusion}
 Exponential family MLE and MAP are used everywhere -- everytime someone computes a mean and variance to fit some bell-shaped data. 
