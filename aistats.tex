@@ -258,11 +258,12 @@ We now introduce the Bregman divergence induced by $\logpart$, that measures the
     \bregman (\nat ; \nat_0)
     & = \logpart(\nat) - \logpart(\nat_0)
     - \langle \nabla \logpart(\nat_0)  , \nat - \nat_0 \rangle,
+    \label{eq:defBregman}
 \end{align}
 with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\nat_0$. In general, bregman distances are non-symmetric, i.e., $\bregman (\nat ; \nat_0)\neq \bregman (\nat_0 ; \nat)$. Finally, it is equal to the divergence of its convex conjugate with switched arguments,
 \begin{align}
-	\bregman (\nat ; \nat_0)
-    = \bregmanconj ( \meanp_0 ; \meanp) \; .
+	\bregman (\nat ; \nat^*)
+    = \bregmanconj ( \meanp^* ; \meanp) \; .
     \label{eq:bregman_switch}
 \end{align}
 
@@ -280,7 +281,7 @@ Intuitively, $n_0$ is the number of fictive data points observed from a distribu
 
 \paragraph{Maximum A Posteriori (MAP).} 
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD|\nat)p(\nat)$.
-Plugging in~\eqref{eq:def_expfamily} and ~\eqref{eq:def_prior} yields
+Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
 \begin{align}
 	p(\nat \cond \mD_n)
     \propto \exp(- (n_0+n) \bregman(\nat; \MAPt^\text{MAP}))
@@ -295,8 +296,21 @@ which reaches its maximum in $\MAPt^\text{MAP}$ such that
 where $T_i=T(X_i)$.
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)~ \eqref{eq:defMLE}.
 In general, we will write $\MAPt$ to refer to the MAP, and view the MLE as a very special case.
-%The MLE and MAP estimates are statistics of the dataset $\mD_n$.
 
+\paragraph{Optimization}
+We can rewrite~\eqref{eq:defMAP} as
+\alignn{
+\m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
+\label{eq:mean_update}
+}
+where $\lr_n := \inv{n_0 + n}$. 
+Now let $f_X(\nat) = -\log p(X \cond \nat)$ such that $\E[f_X] = f$.
+If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
+\alignn{
+\nabla\conj(\hat \nat_{n}) 
+= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
+}
+which we recognize as the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$ and step-size schedule $\lr_n$.
 
 \section{Open Problem}
 Let us assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
@@ -304,54 +318,35 @@ We further assume that our model is well-specified and there exist $\nat^*\in\Th
 As we will see, this is already an interesting setting.
 We wish to estimate how well the MLE or a MAP model the true distribution.
 
-A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$.
+A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$. % should we define it ?
 In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
-Using~\eqref{eq:defNLL} and~\eqref{eq:bregman_switch}, we can also write the KLwith Bregman divergences
+Using~\eqref{eq:defNLL} and~\eqref{eq:bregman_switch}, we can also write the KL with Bregman divergences
 \alignn{
 	\KL(p_{\nat^*} || p_\nat)
 	 = \bregman(\nat ; \nat^*) 
 	 = \bregmanconj(\m^* ; \m) \; .
 }
 
-In the words of statistical decision theory would refer to these quantities as \emph{frequentist risk} of the estimators, when the statistical loss is given by the divergence the KL.
-
-
-
-Given a distribution $\cD$, our objective is the expected log-likelihood 
-\begin{align}
-	f(\nat) = \expect[X \sim \cD]{-\log p(X \cond \nat)} 
-	 = \logpart(\nat) - \langle \E[T] , \nat \rangle
-\end{align}
-Note that $\cD$ does not have to be part of the exponential family.
-If $\cD$ is such that $\E[T] = \meanp^* \in \cM$, then $f(\nat)$ reaches its minimum $\nat^*\in\Theta$.
-Then the suboptimality on the population log-likelihood can be written with Bregman divergences
-%\footnote{
-%Since $f$ is also the KL (up to a constant)  $f(\nat) + \cst = \KL(\cD || \nat) := \KL(\cD || p(\cdot \cond \nat))$, 
-%and for exponential families $\bregman(\nat ; \nat^*) = KL(\nat^* || \nat)$, we recover the Pythagorean theorem of information geometry $KL(\cD || \nat) = \KL(\cD || \nat^*) + \KL(\nat^* || \nat)$.
-%}
-\begin{align}
-	 f(\nat) - f(\nat^*)
-	 %&= \logpart(\nat) - \logpart(\nat^*) - \langle \E[T] , \nat - \nat^* \rangle \\
-	 = \bregman(\nat ; \nat^*) 
-	 = \bregmanconj(\m^* ; \m) \; .
-\end{align}
-Our question is: how does this suboptimality behave when $\nat$ is the MLE or the MAP ? Can we get upper-bounds in expectations ? e.g. on these quantities
+How does this quantity behave when $\nat$ is the MLE or a MAP ? 
+For instance can we get upper bounds on the expected KL ?
 \begin{align}
 	\label{eq:bregmanMLE}
 	\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )} \\
 	\label{eq:bregmanMAP}
 	\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )}
 \end{align}
-where the outer expectation is on the dataset $\mD = \{X_1, \dots, X_n \}$ sampled i.i.d from $\cD$.
-More explicitly, can we write an upper bound that does not involve this expectation over the dataset.
+where the outer expectation is on the dataset $\mD$.
+More explicitly, can we write an upper bound that does not involve this expectation over the dataset?
+Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators, when the statistical loss is given by the KL divergence ?
 
-
-In general, for arbitrary distributions $\cD$, it is a hard problem, especially since the KL is known for being brittle to misspecification \tocite, so let us focus on the well-specified case first $\cD = p(\cdot \cond \nat^*)$. Surely this problem has been solved, hasn't it ?
-In some special cases yes, but it seems the general answer is no. 
+Surprisingly, we found no general solution to this seemingly simple problem, whether in the literature or by our own means.
+%TODO. what we did and are going to present next.
 We are yet to find a solution encompassing a broad range of exponential families, and applicable to small sample sizes $n$.
 
 {\bf Remark.}
-While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite, for instance in Gaussian covariance estimation when $n \leq d + 1$.
+While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite, 
+for instance in Gaussian covariance estimation when $n \leq d + 1$.
+Even worse with categorical variables, the MLE is always ill-defined. %TODO
 Instead of taking the expectation, one might want to bound the risk in high probability, without resorting to Markov inequality.
 
 \section{Insights}
