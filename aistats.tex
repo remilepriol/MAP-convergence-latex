@@ -603,14 +603,13 @@ Remark that the variance term is not asymptotically tight as the log-inequality 
 \section{Optimization Perspective}
 \label{sec:optimization}
 
-We now show how MAP can be interpreted as stochastic mirror descent (SMD).
-This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
-We then review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating 3 analysis of SMD with the MAP.
+This section show how MAP can be interpreted as stochastic mirror descent (SMD). Thanks to this strong link, we show that \textbf{1)} we may obtain a convergence rate for MAP from the rate od SMD, and \textbf{2)} any insights gained from the MAP may inform on further design and analysis of SMD.
+Then, we review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three different analyses of SMD with the MAP.
 \rlp{mention that examples have so far been lacking for relative SMD.}
 
 \subsection{MAP as Stochastic Mirror Descent}
 \label{ssec:MAP=SMD}
-By Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
+By the Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
 Plugging in~\eqref{eq:joint_likelihood}, and introducing $f_n(\nat) = - \log p(X_{n} | \nat)$, we see that the MAP verifies
 \begin{align*}
 	\hat \nat_{n}
@@ -619,7 +618,7 @@ Plugging in~\eqref{eq:joint_likelihood}, and introducing $f_n(\nat) = - \log p(X
 \end{align*}
 which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$.
 %Maybe skip this SBPP story altogether
-Expanding $f_n(\nat) = \logpart(\nat) - T_n$ and  playing with the Bregman we get
+If we expand $f_n(\nat) = \logpart(\nat) - T_n$,  we get (after some manipulation with the Bregman divergence)
 \begin{align*}
 		\hat \nat_{n}
 	= \argmin_\nat \langle g_{n}(\hat \nat_{n-1}), \nat \rangle + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
@@ -634,11 +633,8 @@ Note that this optimization perspective does not hold for the MLE %($n_0=0$)
 as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
 
 \subsection{Relative Smoothness}
-Mirror descent (MD)\footnote{
-Also known as
-Bregman (proximal) gradient, relative gradient descent or NoLips.
-}
-\citep{nemirovski1983problem,beck2003mirror}
+Mirror descent (MD) \citep{nemirovski1983problem,beck2003mirror}, also known as
+Bregman (proximal) gradient, relative gradient descent or NoLips,
 %Nemirovski introduced the algorithm, and Beck established the connection with Bregman divergences, e.g. the argmin form.
 and SMD 
 \citep{nemirovski2009robust,ghadimi2012optimal} 
@@ -649,12 +645,7 @@ and strong convexity assumption on the potential $\logpart$
 In our case, none of these assumptions may hold. 
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
-Recently, these assumptions have been relaxed to allow for non-smooth functions $f$
-\footnote{$f$ is $L$-smooth if its gradient is $L$-Lipschitz}.
-and non-strongly convex potential $\logpart$, first in the deterministic setting
-\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}, then in the stochastic setting \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}.
-These assumptions have been replaced with
-the $\mu$-strong convexity and $L$-smoothness of $f$
+Recently, these assumptions have been relaxed to the $\mu$-strong convexity and $L$-smoothness of $f$
 \emph{relative} to $\logpart$, defined as
 \aligns{
 	\mu \cB_{A}(x, y)
@@ -663,16 +654,18 @@ the $\mu$-strong convexity and $L$-smoothness of $f$
 	\leq
 	L \cB_A(x,y) \; .
 }
-When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent. 
+This extends the theory to a family of non-smooth functions $f$ and non-strongly convex potential $\logpart$, first in the deterministic setting
+\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}, then in the stochastic setting \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}. When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent. 
 Those conditions ensure the linear convergence rate of MD with $A$ as the reference function.
-Exponential families log-likelihood perfectly fit into this framework, as
+
+
+\textcolor{red}{Sure of this formulation?} Exponential families log-likelihood perfectly fit into this framework, as
 \aligns{
 	f(\theta) = A(\theta) - \expect{\lin{X, \theta}}
 }
-is $1$-smooth and $1$-strongly convex relative to $A$.
+is $1$-smooth and $1$-strongly convex relative to $A$. However, the (relative) smoothness is not biggest issue in our convergence analysis, but the bound on the variance, as explained in the next section.
 
 \subsection{Bounding the Randomness}
-Smoothness is not the only issue.
 To analyze stochastic algorithms, one also need to quantify the randomness.
 Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}.
 We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
@@ -729,18 +722,20 @@ Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 for some constant $C$.
 For a Gaussian with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
 this definition recovers the variance of the stochastic gradient
-$\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C$.
-More generally, if $A$ is $\mu$-strongly convex in $\norm{\cdot}$,
+\[
+	\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C.
+\]
+More generally, if $A$ is $\mu$-strongly convex w.r.t. $\norm{\cdot}$,
 the LHS of \cref{eq:hanzely} is bounded by
 $\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
 and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:hanzely}
 to hold.
-Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
+\textcolor{red}{check formulation} Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
 \aligns{
 \Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
 }
 thus showing positivity.
-Under this assumption, they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest}, by applying a polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
+Under this assumption, \textcolor{red}{who is they?}they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest}, by applying a polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
 In general however, this assumption hardly holds.
 For the MAP, this translates into $\forall n \geq 1,$
@@ -758,34 +753,31 @@ which fails to hold on the gaussian variance example for instance. \TODO{short p
 	} \leq 2 \lr^2 C \; .
 	\label{eq:dragomir}
 }
-In words, this is bounding the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
+In words, this bounds the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
 % As observed by Frederick, this is really weaker than Hanzely, because it is only the first half of their assumption. There is only a factor 2 that's preventing a direct inequality. 
 Under this assumption, they prove convergence up to a variance ball with a constant step-size.
 Their descent lemma \citep[Eq.(12)]{dragomir2021fast} is the exact analog  of a modern analysis of SGD \citep[Th.3.2]{gower2019sgd}, meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
 
-Seems like a perfect fit then ? Well not really, this variance assumption does not hold for exactly the same reason as the one of Hanzely. Having something valid for every possible iterates is way too strong. 
+\textcolor{red}{Too informal, plz rephrase} Seems like a perfect fit then ? Well not really, this variance assumption does not hold for exactly the same reason as the one of \textcolor{red}{use cite command} Hanzely. Having something valid for every possible iterates is way too strong. 
 
 \subsubsection{Bounded Optimality Gap}
-Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explores the hypothesis
+Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
 \alignn{
-\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C 
+\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C,
 \label{eq:dorazio}
 }
 where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
-In words, this is lower bounding the expectation of the minimum of these stochastic estimates.
+In words, this lower bounds the expectation of the minimum of the stochastic estimates.
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
-This holds for instance for discrete distributions 
--- $f_x\geq 0$ because the probability mass is upper bounded by $1$ -- 
+This holds for instance for discrete distributions because the probability mass is upper bounded by $1$,
 but it rules out  many families.
-For normal distributions set $\mu=x$ and $\sigma^2 \rightarrow 0$ to get $p(x\cond \nat) \rightarrow +\infty$. 
-For gamma, set $\alpha = \beta x$ and $\beta \rightarrow +\infty$.
-For beta, set $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
+In the case of normal distributions, setting $\mu=x$ and $\sigma^2 \rightarrow 0$ gets $p(x\cond \nat) \rightarrow +\infty$. \textcolor{red}{Check this, I changed the formulation but i am not sure if this remains correct or not.} We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
  Other examples include inverse Gaussians, log-normal, gamma, inverse gamma.
  
- It is possible to overcome this limitation though, by treating batches of samples as 1 sample, and averaging sufficient statistics -- e.g. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
- For instance a multivariate normals of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
+It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
+For instance, a multivariate normals of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
 
-So it seems this approach can yield interesting convergence rates for the MAP, and they do prove linear convergence of the last iterate up a to a variance ball with constant step-size, but the size of this ball $\frac{C}{\alpha}$ \rlp{strong convexity notation} is independent of  the step-size. Their descent lemma does not lead to convergence with a decreasing $O(1/t)$ step-size. 
+In conclusion, it seems these approaches can yield to interesting convergence rates for the MAP, and they do prove linear convergence of the last iterate up a to a variance ball with constant step-size, but the size of this ball $\frac{C}{\alpha}$ \rlp{strong convexity notation} is independent of the step-size. \textcolor{red}{Who is their?} Their descent lemma does not lead to convergence with a decreasing $O(1/t)$ step-size. 
 
 
 \subsection{Issues with current analyses}
