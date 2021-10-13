@@ -107,11 +107,10 @@
 ]
 
 \begin{abstract}
-We consider the problem of upper bounding the expected sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family.
-Surprisingly, we found no general solution to this problem in the literature.
-In particular, current theories do not hold for a Gaussian, or in the very interesting few samples regime.
-After exhibiting various facets of the problem, we show the MAP can be interpreted as the result of Stochastic Mirror Descent (SMD),
-yet it falls out of scope for modern analysis.
+We consider the problem of upper bounding the expected log-likelihood sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family, in a non-asymptotic way. 
+Surprisingly, we found no general solution to this problem in the literature. In particular, current theories do not hold for a Gaussian, or in the very interesting few samples regime. 
+After exhibiting various facets of the problem, we show the MAP can be interpreted as running stochastic mirror descent (SMD) on the log-likelihood, 
+yet modern convergence results do not apply for standard examples of exponential family, highlighting holes in the convergence literature. 
 We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
 
@@ -160,19 +159,7 @@ $-\log p(x\cond\theta) = A(\theta) - \lin{t(x), \theta}$ (omitting the reference
 Here, $A$ is the log-partition function, a Legendre function that we assume can be minimized in closed form.
 The Gaussian example is the special case $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 
-Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \tocite
-Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \tocite 
-A contrario the KL is not smooth, and it can be infinite in misspecified settings.
-But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
-
-
 There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori. As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes. Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
-
-Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
-\[
-R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
-\]
-where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
 
 
 We do not have a solution. The goal of this paper
@@ -196,6 +183,21 @@ The statistics and optimization perspective are so tightly linked in this proble
 Progress from statistics could bring forward research in non-euclidean optimization, or the optimization of barrier losses, for instance helping in the development of accelerated methods.
 On the other hand, optimization can become  a more versatile and general tool for statisticians. % handwavy and shady af.
 
+\subsection{Related Work}
+
+\paragraph{Density Estimation}
+Typical works on parameter estimation bound the deviation with norms -- e.g. bounding $\expect[p(x\cond\theta_*)]{\norm{\theta-\theta_*}^p}$ for some norm and some power. \tocite
+Or more generally, they  use distances rather than divergences as they are symmetric and usually behave smoothly. \tocite 
+A contrario the KL is not smooth, and it can be infinite in misspecified settings.
+But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
+
+
+\paragraph{Online Learning}
+Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
+\[
+R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
+\]
+where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
 
 % Then;
 % - description of the setting
@@ -204,8 +206,11 @@ On the other hand, optimization can become  a more versatile and general tool fo
 % - potential application of ideas that would solve this, beyond this problem (acceleration, causality?)
 % - conclusion?
 
-\paragraph{Notation}
+\subsection{Notation}
+$X, T(X)$ and $T$ are random variables, while $x$ is a sample. 
+$n$ is the number of samples and $d= \dim(T)$. 
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
+
 
 \section{Technical background}
 
@@ -439,11 +444,18 @@ Weibull with known shape $k$. This also holds when
 holds whenever $\norm{\m^*-\m}_{\mF^*} < 0.21$.\footnote{The value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
 Similarly, \citet{kakade2010learning} assumes a bound on all higher order moments at $\nat^*$ to quantify when $\logpart$ starts behaving quadratically, but their rate does not directly apply to $\conj$ and $\m$.
 
-\TODO{Reference \citet{ostrovskii2021finite}.} ( as well as
-\citet{anastasiou2017bounds},
-\citet{marteauferey2019beyond})
-
 All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
+
+
+\TODO{Incorporate this content} ( about \citet{ostrovskii2021finite} as well as
+\citet{anastasiou2017bounds} and
+\citet{marteauferey2019beyond})
+\fdk{
+We know that if the problem is strongly convex (in $\norm{\cdot}_2$), averaged SGD achieves $O(1/n)$ rate 
+%[Robust stochastic approximation approach to stochastic programming]. (The paper uses a bounded stochastic gradient assumption, but can be relaxed to bounded variance instead.) However, strong-convexity in the Euclidean norm is not strictly necessary to find an algorithm with convergence rate of $O(1/n)$, as shown by [Non-strongly-convex smooth stochastic approximation with convergence rate O(1/n)] for linear and logistic regression. Their proof techniques based on self-concordance have been extended to other setting, [Finite-sample analysis of M-estimators using self-concordance, Learning Exponential Families in High-Dimensions: Strong Convexity and Sparsity].
+%The same tools are used in statistics, and evething essentially boils down to controlling how different we are from a Gaussian rv, that we're going to get by the CLT, like [Bounds for the normal approximation of the maximum likelihood estimator, Anastasiou].
+%The paper [Finite-sample analysis of 𝑀-estimators using self-concordance*] has a good background section on the work of local asymptotic normality (1.1 Classical asymptotic theory) that might be useful. The first 2-3 pages of [PARAMETRIC ESTIMATION. FINITE SAMPLE THEORY] are also nice
+}
 
 \subsection{Bias-Variance Decomposition} % DS: Arrived here
 In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
