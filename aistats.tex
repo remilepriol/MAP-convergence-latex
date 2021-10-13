@@ -380,7 +380,7 @@ We get the asymptote by approximating the Bregman divergence using a second orde
     \bregmanconj(\m^* ; \m)
     &= \frac{\norm{\m^* - \m}^2_{\mF}}{2}
     + O(\norm{\m - \m^*}^3),
-    \label{eq:bregman_asymptote}
+    \label{eq:bregmanTaylor}
 }
 where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
 \aligns{
@@ -389,7 +389,7 @@ where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
 }
-Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregman_asymptote}, one can show that MLE and MAP verify 
+Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, one can show that MLE and MAP verify 
 \begin{align}
 	\label{eq:MAP_asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
@@ -439,22 +439,24 @@ Note that none of the standard exponential families verify this assumption.
     \leq \frac{L}{2} \norm{\m^* - \m}^2
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
+Besides the Gaussian with known mean, no standard exponential family verify this assumption either.
 Note that it is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
 \TODO{connection with optim smooth rate.}
 
 \subsection{Locally Quadratic Case}
-\textcolor{red}{Check this! In our case, since we assume $A$ and $A^*$ to be strictly convex,}
-all Bregman divergences are locally quadratic.
+FromTaylor expansion~~\eqref{eq:bregmanTaylor}, 
+we know that all Bregman divergences are locally quadratic.
 Under some assumptions, like self-concordance of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then%\footnote{$0.21$ is the value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21 
 	\implies
 	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
 }
 \end{proposition}
-Proof in the appendix.
+Proof in the appendix
+\footnote{In case the reader is intrigued, $0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
 This is true for
 exponential distributions,
@@ -520,12 +522,8 @@ Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:bias-variance-numerical
 \end{figure}
 
 
-\section{Examples}
-\label{sec:example}
-
-
-\subsection{Gaussian Variance}
-A core example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
+\section{Gaussian Variance Example}
+A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its density reads 
 \[
 	p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}.
@@ -560,9 +558,9 @@ illustrated in Figure~\ref{fig:phi}.
 	\label{fig:phi}
 \end{figure}
 
-Theorem \ref{eq:MLE_rate} reports upper bounds on the expected value of this divergence for the MLE and the MAP.
-
+In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
 \begin{theorem}[MLE Tight Bound]
+\label{thm:varianceMLE}
 	The MLE of $\cN(0,\m_*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
 	Its expected suboptimality is infinite when $n\leq 2$, and otherwise upper-bounded as
 	\begin{align}
@@ -571,19 +569,19 @@ Theorem \ref{eq:MLE_rate} reports upper bounds on the expected value of this div
 			\label{eq:MLE_rate}
 	\end{align}
 \end{theorem}
-
 This upper bound is asymptotically tight.
 We illustrate its numerical behavior in Figure~\ref{fig:curves}.
 We get a similar bound for the multivariate generalization :
-the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$.
+the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$ (see appendix).
 
-For the MAP, we get an upper bound thanks to the inequality $ - \log(z) \leq \inv{z} - 1$, which implies
+For MAP, we get an upper bound thanks to
 \begin{align}
 	\label{eq:log_bound}
-	\phi(z) \leq \half (z + \inv{z}) - 1 = \frac{(z-1)^2}{2 z} \; .
+	\phi(z) \leq \phi(z) + \phi(\inv{z}) =  \half (z + \inv{z}) - 1 \; .
 \end{align}
 
 \begin{theorem}[MAP Bound]
+\label{thm:varianceMAP}
 For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is
  \begin{align}
 	& \expect{\bregmanconj( \m_*; \hat \m_n^\mathrm{MAP})}
@@ -595,11 +593,14 @@ For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*
 	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
-
+\rlp{upper bound and compare the symmetrized bregman instead?}
 This inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations.
-Remark that the variance term is not asymptotically tight as the log-inequality we used \eqref{eq:log_bound} is not quadratically tight around $1$, therefore losing a factor 2 compared to $1/2n$.
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations (see appendix).
+Remark that in using~\eqref{eq:log_bound} we lost a factor $2$ and got a rate$\inv{n}$ instead of $\inv{2n}$.
 
+
+These results are instantiation the bias-variance decomposition and giving us a flavor of what we would like as a general result for exponential families : a finit sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
+In the next section, we investigate what this problem is brining to optimization.
 
 \begin{figure*}[t]
 	\centering
