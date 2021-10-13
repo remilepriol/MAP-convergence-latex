@@ -402,14 +402,14 @@ Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman diverge
 \end{align}
 Thanks to the independence of samples, we can break down the MLE into individual point's contributions
 \begin{align}
-	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}.
+	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}
 	=\frac{\Var(T)}{2n}
 	=\frac{1}{2n}
 \end{align}
 Adding a reference mean $\m_0$ to get the MAP yields to
 \begin{align}
 	\expect{\bregmanconj(\meanp^*; \MAPm)}
-	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{(n+n_0)^2}.
+	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
@@ -431,6 +431,7 @@ so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
     \leq \frac{L}{2} \norm{\m^* - \m}^2
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
+Note that it is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
 \TODO{connection with optim smooth rate.}
 
 \subsection{Locally Quadratic Case}
@@ -445,6 +446,7 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
 }
 \end{proposition}
+Proof in the appendix.
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
 This is true for
 exponential distributions,
@@ -454,12 +456,13 @@ Pareto with known minimum value,
 or Weibull with known shape $k$. 
 The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic}. 
 
-\citet{kakade2010learning} assumes a bound similar to self concordance, but only at $\nat^*$ and on all higher order moments. They quantify when $\logpart$ starts behaving quadratically, but their rate does not directly apply yield a norm on $\m$.
+With some more work, it is possible to get a wealth of results under this assumption.
+For instance \citet{ostrovskii2021finite} characterizes the number of samples needed to reach this quadratic behavior for arbitrary parametric models, under the assumptions of self-concordance, or pseudo self-concordance \citep{bach2010self}.
+Or in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to quantify when $\logpart$ can be sandwiched between quadratics in $\nat$, but this does not directly translate into quadratics in $\m$.
 
 All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
 
 
-\TODO{Incorporate this content} ( about \citet{ostrovskii2021finite} as well as
 \citet{anastasiou2017bounds} and
 \citet{marteauferey2019beyond})
 \fdk{
@@ -775,7 +778,7 @@ This holds for instance for discrete distributions
 -- $f_x\geq 0$ because the probability mass is upper bounded by $1$ -- 
 but it rules out  many families.
 For normal distributions set $\mu=x$ and $\sigma^2 \rightarrow 0$ to get $p(x\cond \nat) \rightarrow +\infty$. 
-For gamma, set $\alpha = \beta x$ and $beta \rightarrow +\infty$.
+For gamma, set $\alpha = \beta x$ and $\beta \rightarrow +\infty$.
 For beta, set $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
  Other examples include inverse Gaussians, log-normal, gamma, inverse gamma.
  
