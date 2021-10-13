@@ -371,36 +371,38 @@ These examples are rather making a case for regularized estimators such as MAP, 
 
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
+We now review classical asymptotic results. 
+We point the reader towards \citet[\S1.1]{ostrovskii2021finite} for a more comprehensive overview.
 Asymptotic results typically show that the MLE expressed with natural parameters $\nat$ is asymptotically normal: it reaches the Cramér-Rao lower bound \citep[for instance Ch4.2]{vdv1998asymptotic}.
 With exponential families, the MAP is more simply expressed with mean parameters $\meanp$.
 We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
-\begin{align}
+\alignn{
     \bregmanconj(\m^* ; \m)
     &= \frac{\norm{\m^* - \m}^2_{\mF}}{2}
     + O(\norm{\m - \m^*}^3),
-\end{align}
-where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix}, since
-\begin{align}
+    \label{eq:bregman_asymptote}
+}
+where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
+\aligns{
     \mF
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
-\end{align}
-From there, it is possible to show an asymptotic rate for the MLE and the MAP \textcolor{red}{D.S.: How?}
+}
+Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregman_asymptote}, one can show that MLE and MAP verify 
 \begin{align}
-\label{eq:MAP_asymptote}
+	\label{eq:MAP_asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
+See proof in the Appendix.
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
 This asymptote is also independent of the optimum $\meanp^*$.
-We point the curious reader towards \citet[\S1.1]{ostrovskii2021finite} for a more comprehensive review.
 
 \subsection{Quadratic Case}
-\rlp{make it multivariate, with a reference to \citep{bach2013nonstronglyconvex}?}
-As another reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
-For instance, this is the log-partition of a Gaussian with variance $1$ and unknown mean 
-\[ \cX=\real,\quad \nu(dx) = \exp(\half[-x^2])dx,\quad T(X)=X.\]
+As another classical reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
+For instance, this is the log-partition of a Gaussian with variance $I$ and unknown mean 
+\[ \cX=\real^d,\quad \nu(dx) = \exp(\half[-\|x\|^2])dx,\quad T(x)=x.\]
 Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances:
 \begin{align}
 	\bregmanconj(\meanp^* ; \meanp) = \half \norm{\meanp^* -  \meanp }_2^2  \; .
@@ -428,6 +430,7 @@ If we make restrictive assumptions on the log-partition function, we can relate 
     &\leq 2L \norm{\m^* - \m}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
+Note that none of the standard exponential families verify this assumption.
 \TODO{connection with optim non-smooth rate.}
 
 {\bf If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
