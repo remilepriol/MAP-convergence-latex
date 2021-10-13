@@ -136,7 +136,7 @@ on smooth, strongly convex functions
 when there is some bound on the stochasticity,
 for example in the form of a bounded variance,
 say for the problem
-\begin{equation}
+\begin{equation} %We might want to add a feasible set for theta?
 \min_\theta f(\theta)
 \end{equation}
 with access to stochastic gradients
@@ -166,9 +166,14 @@ A contrario the KL is not smooth, and it can be infinite in misspecified setting
 But as the MLE is the minimizer of the log-likelihood, we wish to bound the sub-optimality.
 
 
-There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori.
-As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes.
-Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+There are algorithms for this setting, for example the MLE -- the (online) maximum likelihood after seeing $t$ samples -- or adding regularization, the MAP -- the maximum a posteriori. As we show, the MAP can be interpreted as online mirror descent with decreasing step-sizes. Despite recent advances in this field, our convergence rates are still lacking; they are either asymptotic, cover only special cases or require having seen many ($n \gg d$) samples.
+
+Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
+\[
+R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
+\]
+where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} proves the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
+
 
 We do not have a solution. The goal of this paper
 is to bring this issue to the attention of the community working at the intersection of machine learning, optimization and statistics,
@@ -204,48 +209,52 @@ $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 \section{Technical background}
 
-Exponential Families are to statistics what linear models are to regression.
-Many classical model are exponential families, and their convexity and modeling flexibility make them one of the most widely used statistical models.
-Here we review some of their properties.
+Exponential families are to statistics what linear models are to regression.
+Many classical model are exponential families, for instance the Gaussian or Bernoulli distributions. Their convexity or modeling flexibility make them one of the most widely used statistical models. In this section, we review some of their properties.
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a full review.
-The exponential family for data $X\in \cX$ with natural (or primal) parameter $\nat$  is specified by a sufficient statistic $T: \cX \rightarrow \real^d$ and a density with respect to a base measure $\nu(dx)$
+
+
+The exponential family for data $X\in \cX$ reads
 \begin{equation}
-	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; .
+	 p(X|\nat) = \exp( \langle \nat, T(X) \rangle - \logpart(\nat)) \; ,
 	 \label{eq:def_expfamily}
 \end{equation}
-Here $\logpart$ is the log-partition function -- i.e. the normalization term
+where  $\nat$ is called natural (or primal) parameter is specified by 1) $T: \cX \rightarrow \real^d$, the sufficient statistic, and 2) $\nu(dx)$, the density with respect to a base measure.
+The function $\logpart$ is called the log-partition function that acts as a normalization term, since
 \begin{align}
     \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \; .
 \end{align}
-When explicit, we will write the random variable $T = T(X)$ for lightness.
-For convenience, we focus on steep, regular exponential families
+
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
+
+For convenience, in this paper we focus on steep, regular exponential families
 where $\logpart$ is strictly convex function of Legendre type,
 and the set $\nat \in \Theta$ such that $\logpart(\nat) < \infty$ is open and convex
-(See \citet{barndoffnielsen2014information}).
-This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
+(See \citet{barndoffnielsen2014information}). Also, when explicit, we write the random variable $T = T(X)$.
 
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
 \paragraph{Duality}
-The logpartition function $\logpart$ verifies the two following identities
+The logpartition function $\logpart$ verifies the two following identities:
 \begin{align}
     \nabla\logpart(\nat) &=  \expect[p(T|\nat)]{T} =: \meanp \\
     \nabla^2 \logpart(\nat) &= \Cov_\nat[T] \geq 0
 \end{align}
-where $\meanp$ is called the mean (or dual) parameter.
-From now on, we assume that the sufficient statistic $T$ is minimal
--- e.g. its covariance is definite positive for all $\nat$ --
-then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\nat$ and mean parameters $\m$.
-$\meanp$ lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
+where $\meanp$ is called the mean (or dual) parameter, which lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
 We will write interchangeably $\m$ or  $\nat$ depending on the context, being aware that both represent the same distribution.
-At this point it is useful to introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
-\begin{align}
-	\conj(\m) = \langle \m, \nat \rangle - \logpart(\nat) \; .
-\end{align}
-which matches the common notion of \textit{entropy} in information theory.
-The entropy is eating mean parameters, and its gradient is mapping back to natural parameters $\nabla\conj \circ \nabla\logpart(\nat) = \nat$ (cf Fig.~\ref{fig:duality}).
 
-\begin{figure}[ht]
+We now introduce the convex conjugate (a.k.a. Fenchel-Legendre transform) of the logpartition function
+\begin{align}
+	\conj(\m) = \min_{\nat\in\Theta}\langle \m, \nat \rangle - \logpart(\nat) \; ,
+\end{align}
+which matches the common notion of \textit{entropy} in information theory. In this paper, we assume that the sufficient statistic $T$ is minimal, e.g., its covariance is definite positive for all $\nat$. In such case, the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$, and moreover, $\nabla\conj=\nabla\logpart^{-1}$ (cf Fig.~\ref{fig:duality}). More concisely,
+\[
+	\nabla\conj \circ \nabla\logpart(\nat) = \nat, \quad \nabla\logpart\circ \nabla\conj(\meanp) = \meanp.
+\]
+
+% The entropy is eating mean parameters, and its gradient is mapping back to natural parameters $\nabla\conj \circ \nabla\logpart(\nat) = \nat$ (cf Fig.~\ref{fig:duality}).
+
+\begin{figure}[t] % @remi In the figure you use mu instead of m??
 	\centering
 	\includegraphics{duality}
 	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\nat, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
@@ -253,16 +262,14 @@ The entropy is eating mean parameters, and its gradient is mapping back to natur
 	\label{fig:duality}
 \end{figure}
 
-\paragraph{Bregman Divergences}
-A very useful object to keep in mind is the Bregman divergence induced by $\logpart$ between two parameters $\nat$ and $\nat_0$
+\paragraph{Bregman Divergences} %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps)
+We now introduce the Bregman divergence induced by $\logpart$, that measure the distance between two parameters $\nat$ and $\nat_0$,
 \begin{align}
     \bregman (\nat ; \nat_0)
     & = \logpart(\nat) - \logpart(\nat_0)
-    - \langle \nabla \logpart(\nat_0)  , \nat - \nat_0 \rangle
+    - \langle \nabla \logpart(\nat_0)  , \nat - \nat_0 \rangle,
 \end{align}
-with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\nat_0$.
-It is a non-symmetric measure of distance between parameters.
-It is equal to the divergence of its convex conjugate with switched arguments
+with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\nat_0$. In general, bregman distances are non-symmetric, i.e., $\bregman (\nat ; \nat_0)\neq \bregman (\nat_0 ; \nat)$. Finally, it is equal to the divergence of its convex conjugate with switched arguments,
 \begin{align}
 	\bregman (\nat ; \nat_0)
     = \bregmanconj ( \meanp_0 ; \meanp) \; .
@@ -273,14 +280,15 @@ One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
 \begin{align}
     p(\nat)
     &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
-    &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat))
+    &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat)),
     \label{eq:def_prior}
 \end{align}
 where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
 This is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \m_0, -n_0)$.
-Intuitively, $n_0$ is a number of fictive data points observed from a distribution with parameter $\nat_0$.
+Intuitively, $n_0$ is the number of fictive data points observed from a distribution with parameter mean $\nat_0$.
 
-\paragraph{Maximum A Posteriori (MAP).}
+\paragraph{Maximum A Posteriori (MAP).} 
+\textcolor{red}{\textbf{D.S.: This section is very unclear. }}
 Using Bayes rule with~\eqref{eq:def_expfamily}~\&~\eqref{eq:def_prior}, the posterior of $\nat$ given a dataset $\mD_n =(X_1,\dots,X_n)$ is
 \begin{align}
 	p(\nat \cond \mD_n)
@@ -351,22 +359,22 @@ The expectation of the MLE may be infinite, for instance with $\cN(0,\sigma^2)$ 
 
 \subsection{Asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-Asymptotic results typically show that natural parameters $\nat$ asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
+Asymptotic results typically show that natural parameters $\nat$ is asymptotically normal ; reaching the Cramer-Rao lower bound \citep[for instance Ch4.2]{van2000asymptotic}.
 Here the MAP is more simply expressed with mean parameters $\meanp$.
 We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
 \begin{align}
     \bregmanconj(\m^* ; \m)
-    &=\half  \norm{\m^* - \m}^2_{\nabla^2\conj(\m^*)}
-    + O(\norm{\m - \m^*}^3)
+    &= \frac{\norm{\m^* - \m}^2_{\mF^*}}{2}
+    + O(\norm{\m - \m^*}^3),
 \end{align}
-where the Mahalanobis norm  $\| x \|_\mM^2 = x^\top \mM x$  is induced by the hessian of the entropy -- the inverse \textit{Fisher information matrix} -- at the optimum,
+where the Mahalanobis norm  $\| x \|_{\mF^*}^2 = x^\top \mF^* x$  is induced by $\mF^*  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $F^*$ is also the inverse \textit{Fisher information matrix}, since
 \begin{align}
     \mF^*
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
 \end{align}
-From there, it is possible to show an asymptotic rate for the MLE and the MAP
+From there, it is possible to show an asymptotic rate for the MLE and the MAP \textcolor{red}{D.S.: How?}
 \begin{align}
 \label{eq:MAP_asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
@@ -377,24 +385,25 @@ This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Quadratic Case}
 As another reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
-For instance, this is the log-partition of a Gaussian with variance $1$ and unknown mean ($\cX=\real, \nu(dx) = \exp(\half[-x^2])dx, T(X)=X$).
-Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances
+For instance, this is the log-partition of a Gaussian with variance $1$ and unknown mean 
+\[ \cX=\real, \nu(dx) = \exp(\half[-x^2])dx, T(X)=X$).\]
+Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances:
 \begin{align}
 	\bregmanconj(\meanp^* ; \meanp) = \half \norm{\meanp^* -  \meanp }_2^2  \; .
 \end{align}
-Thanks to the independence of samples we can break down the MLE into individual point's contributions
+Thanks to the independence of samples, we can break down the MLE into individual point's contributions
 \begin{align}
-	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}
+	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}.
 	=\frac{\Var(T)}{2n}
 \end{align}
-Adding a reference mean $\m_0$ to get the MAP yields
+Adding a reference mean $\m_0$ to get the MAP yields to
 \begin{align}
 	\expect{\bregmanconj(\meanp^*; \MAPm)}
-	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{(n+n_0)^2}
+	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{(n+n_0)^2}.
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
-so we have a variance term in $O(n^{-1})$ and a bias term decreasing as $O(n^{-2})$. We would like to get a similar result for arbitrary exponential families.
+In both cases, we have a variance term in $O(n^{-1})$ and a bias term in $O(n^{-2})$. Ideally, such result should also similarly for arbitrary exponential families.
 If we make restrictive assumptions on the log-partition function, we can relate $\bregmanconj$ to a norm or a quadratic.
 
 {\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
@@ -413,15 +422,15 @@ so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 
 \subsection{Locally Quadratic Case}
-All Bregman divergences are locally quadratic.
-Under some assumptions, we can quantify  when this quadratic behavior kicks in.
-For instance {\bf when $\conj$ is self-concordant} \citep[Ch.4.1]{nesterov2003introductory}.
-This is true when $T$ is 1-dimensional and $\logpart$ is self-concordant
--- e.g. exponential distribution,
+\textcolor{red}{Check this! In our case, since we assume $A$ and $A^*$ to be strictly convex,}
+all Bregman divergences are locally quadratic.
+Under some assumptions, like self-concordance \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
+For instance, when $T$ is 1-dimensional, we have that $\logpart$ in the following settings:
+exponential distribution,
 Gaussian with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
-Weibull with known shape $k$
+Weibull with known shape $k$. This also holds when
 -- or when $T$ lives in a compact \citep{bubeck2015entropic}. Then the bound
 \begin{align}
 	 \bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF^*}^2
@@ -435,7 +444,7 @@ Similarly, \citet{kakade2010learning} assumes a bound on all higher order moment
 
 All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
 
-\subsection{Bias-Variance Decomposition}
+\subsection{Bias-Variance Decomposition} % DS: Arrived here
 In both examples (add link), the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, it is possible to write such a decomposition for any Bregman divergence
 Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be the corresponding mean parameter.
 As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes like
