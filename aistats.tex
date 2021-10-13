@@ -459,6 +459,11 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 \end{proposition}
 Proof in the appendix
 \footnote{In case the reader is intrigued, $0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
+To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
+For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
+For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$ (see appendix).
+This means that on average, we need much more samples than the dimension to reach the quadratic regime.
+
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
 This is true for
 exponential distributions,
