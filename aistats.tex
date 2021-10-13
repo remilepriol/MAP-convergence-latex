@@ -386,7 +386,7 @@ This asymptote is also independent of the optimum $\meanp^*$.
 \subsection{Quadratic Case}
 As another reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
 For instance, this is the log-partition of a Gaussian with variance $1$ and unknown mean 
-\[ \cX=\real, \nu(dx) = \exp(\half[-x^2])dx, T(X)=X$).\]
+\[ \cX=\real,\quad \nu(dx) = \exp(\half[-x^2])dx,\quad T(X)=X.\]
 Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances:
 \begin{align}
 	\bregmanconj(\meanp^* ; \meanp) = \half \norm{\meanp^* -  \meanp }_2^2  \; .
@@ -395,6 +395,7 @@ Thanks to the independence of samples, we can break down the MLE into individual
 \begin{align}
 	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}.
 	=\frac{\Var(T)}{2n}
+	=\frac{1}{2n}
 \end{align}
 Adding a reference mean $\m_0$ to get the MAP yields to
 \begin{align}
