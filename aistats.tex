@@ -143,6 +143,7 @@ or variants of principal component analysis \citep{collins2001generalization} am
 Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching
 \begin{align}
 	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} 
+	\label{eq:defMLE}
 \end{align}
 Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP).
 
@@ -284,6 +285,7 @@ reaching its maximum in $\MAPt^\text{MAP}$ such that
 \begin{align}
     \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
+    \label{eq:defMAP}
 \end{align}
 where $T_i=T(X_i)$.
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE).
@@ -657,7 +659,7 @@ Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\
 \newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
 \newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
 \centering
-\caption{Comparison of Analysis of SMD, \\
+\caption{Summary of results for SMD
 under relative smoothness and relative strong convexity assumptions. 
 Barrier tells whether the assumption can hold with barrier objectives.
 $\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size scheduling, and the last column tells whether the rate applies to the last iterate or to some average iterate.
@@ -770,8 +772,11 @@ If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every 
 
 \subsection{Related Work}
 
-\paragraph{Density Estimation}
-While statistics has a plethora of asymptotic results \citep{vdv1998asymptotic}, there is less work in finite sample bounds.
+\paragraph{Parameter Estimation.}
+Statistics has a plethora of asymptotic results \citep{vdv1998asymptotic}.
+In particular for sum of independent variables such as~\eqref{eq:defMLE}, large deviations theory \citep{varadhan1984large} characterizes the decay of the tail.
+
+\paragraph{Density Estimation.}
 Since the KL explode to $\infty$ if the model is unable to give weight to some samples, a lot of this work has been devoted to distances, such as $L^2$ \citep{tsybakov2009introduction}, $L^1$ \citep{devroye2001combinatorial} or more recently Hellinger distance \citep{baraud2017new}.
 Contrary to the KL, these distance are symmetric and behave smoothly.
 
