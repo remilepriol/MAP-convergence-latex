@@ -621,32 +621,32 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
 For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
-This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime where a formula like~\eqref{eq:MAP_quadratic} is valid.
+This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
-We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
-This is true for
+The entropy $\conj$ is self-concordant for a lot of common families.
+For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.\ref{app:self-concordant}),
+as is the case with:
 exponential distributions,
 Gaussians with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
 or Weibull with known shape $k$.
-The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic}.
-This is true for categorical or Dirichlet distributions.
+The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g. categorical and Dirichlet distributions.
 
-With some more work, it is possible to get a wealth of results under this assumption.
-For instance \citet{ostrovskii2021finite} characterizes the number of samples needed to reach this quadratic behavior for arbitrary parametric models, under the assumptions of self-concordance, or pseudo self-concordance \citep{bach2010self}.
-Or in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to quantify when $\logpart$ can be sandwiched between quadratics in $\nat$, but this does not directly translate into quadratics in $\m$.
+There are quite a few pieces of work in this direction. 
+\citet{ostrovskii2021finite} characterizes the number of samples needed to reach the asymptotic quadratic behavior, for any parametric models with a self-concordant log-likelihood.
+\citet{anastasiou2017bounds} obtains a similar flavor of result under other assumptions on the third derivative of $f$.
+More closely, in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to obtain a similar result.
+However these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
 
-All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
+These results partially answer~\eqref{problem}. 
+Partially, because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
+None of them apply to small $n$.
+That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
+A full solution to~\eqref{problem} would address both of these caveats.
+Informed by the properties we have seen so far, let us investigate a bias-variance decomposition to formulate a conjecture.
+%If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
 
-
-\citet{anastasiou2017bounds} and
-\citet{marteauferey2019beyond})
-\fdk{
-We know that if the problem is strongly convex (in $\norm{\cdot}_2$), averaged SGD achieves $O(1/n)$ rate.
-[Robust stochastic approximation approach to stochastic programming]. (The paper uses a bounded stochastic gradient assumption, but can be relaxed to bounded variance instead.) However, strong-convexity in the Euclidean norm is not strictly necessary to find an algorithm with convergence rate of $O(1/n)$, as shown by [Non-strongly-convex smooth stochastic approximation with convergence rate O(1/n)] for linear and logistic regression. Their proof techniques based on self-concordance have been extended to other setting, [Finite-sample analysis of M-estimators using self-concordance, Learning Exponential Families in High-Dimensions: Strong Convexity and Sparsity].
-The same tools are used in statistics, and evething essentially boils down to controlling how different we are from a Gaussian rv, that we're going to get by the CLT, like [Bounds for the normal approximation of the maximum likelihood estimator, Anastasiou].
-}
 
 \subsection{Bias-Variance Decomposition}
 \label{ssec:bias-variance}
