@@ -505,23 +505,21 @@ This correlates well with our numerical observations (cf App.\ref{app:gaussian-v
 
 \subsection{Gaussian}
 \label{ssec:gaussian}
-The ubiquitous Gaussian $\cN(m,\sigma^2)$ actually offers a highly non-trivial example for Problem 1.
-Its log-likelihood reads $p(x) = -\frac{(x-m)^2}{2 \sigma^2} - \half \log(2\pi\sigma^2)$.
+Now that we have solved the case of $\cN(0,\sigma^2)$, let's move on to the ubiquitous Gaussian $\cN(m,\sigma^2)$.
+Gaussians actually offers a highly non-trivial example for Problem 1.
+Their log-likelihood reads $p(x) = -\frac{(x-m)^2}{2 \sigma^2} - \half \log(2\pi\sigma^2)$.
 With sufficient statistic $T(x)=(x, x^2)$, 
 the mean parameters are $\m = \E[T(X)] = (m , m^2 + \sigma^2)$ belonging to the open set $\cM= \{(u,v) \cond u^2 < v\}$,
 and the natural parameters are $\nat= (\frac{m}{\sigma^2} , \frac{-1}{2\sigma^2}) \in \Theta = \real \times \real_-$. 
-$\cM$ and $\Theta$ are delimited in grey in \cref{fig:thales}.
-Given these parameters, log-partition and entropy are
+Examples of MAP and MLE  are represented in \cref{fig:thales} within $\cM$ and $\Theta$ delimited in grey.
+Given these parameters, log-partition and entropy are, up to constants, 
 \alignn{
 	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2)
 }
-up to constants.
 
- Neither its log-partition nor its entropy are smooth, strongly-convex, or self-concordant.
-
-
-Equipped with the knowledge of these 2 examples, we are ready to discuss the general problem, and some ways to solve with direct expansions of the Bregman.
+These functions are neither smooth, nor strongly convex, nor self-concordant (see \cref{app:gaussian}).
+Let us keep this in mind, as we move on to discussing the general problem, and some ways to solve it via direct expansions of the Bregman divergence.
 
 \section{Partial Solutions}
 \label{sec:insights}
@@ -949,6 +947,9 @@ For MAP, we get an upper bound thanks to
 	\label{eq:log_bound}
 	\phi(z) \leq \phi(z) + \phi(\inv{z}) =  \half (z + \inv{z}) - 1 \; .
 \end{align}
+
+\section{PROOFS FOR GAUSSIAN}
+\label{app:gaussian}
 
 \section{ASYMPTOTIC DERIVATION}
 \label{app:asymptote}
