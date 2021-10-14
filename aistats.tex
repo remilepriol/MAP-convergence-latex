@@ -172,22 +172,22 @@ For this purpose, not only is $f$ convex, but it even enjoys a closed form maxim
 \end{align}
 This rule is known as moment matching.
 Given a certain conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP).
+The parameter $\theta$ can also be estimated with online-learning techniques, but they are less efficient than offline methods \citep{azoury2001relative,dasgupta2007online}.
 
 {\bf Metrics.}
-Once we have an estimator $\hat \nat$, we wish to assess its quality:
-how close is it from some optimal $\nat^*$.
+Once we have an estimator $\hat \nat$, we wish to assess its quality, i.e., its closeness to some optimal $\nat^*$.
 This is necessary, for instance to choose between 2 estimators (model selection).
-We distinguish two ways of doing that.
-{\bf 1)} distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation} and a wealth of asymptotic results \citep{vdv1998asymptotic}.
+We distinguish here two ways: \textit{disntance in parameter space} and \textit{distance between distributions}.
+{\bf 1)} Distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation} and a wealth of asymptotic results \citep{vdv1998asymptotic}.
 In particular for sum of independent variables such as~\eqref{eq:defMLE}, large deviations theory \citep{varadhan1984large} characterizes concentration phenomena.
-{\bf 2)} distance between distributions, as studied in \emph{density estimation}.
+{\bf 2)} Distance between distributions, as studied in \emph{density estimation}.
 For this purpose, the Kullback-Leibler (KL) divergence $\KL\paren{p_{\nat^*} || p_{\nat} }$  arises naturally from information theory,
 but its lack of robustness to misspecification\footnote{
 For $p$ and $q$ continuous densities,
 $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \&p(x)>0$. 
 %Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
 }
-has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction} , the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
+has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
 Hence the fundamental problem:
 %\begin{center}
@@ -211,16 +211,15 @@ Hence the fundamental problem:
 \end{equation}
 % RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
-We have asymptotic solutions (\S\ref{ssec:asymptote}),
-or when $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
-or close to quadratic (see \S\ref{ssec:quadratic}),
-but a  general solution for finite $n$ remains elusive.
-In this paper, we review partial solutions, and give some ideas on how to solve it.
+We have already asymptotic solutions (\S\ref{ssec:asymptote}) when $\logpart$ is quadratic (e.g. $X$ is Gaussian with known variance)
+or close to quadratic (\S\ref{ssec:quadratic}).
+However, a  general solution for finite $n$ remains elusive.
+In this paper, we review partial solutions, and give ideas on how to solve it.
 
 {\bf Stochastic optimization} offers an interesting perspective on this question.
 Consider the problem
 \alignn{
-	\min_{\theta\in \Theta} f(\theta)
+	\min_{\theta\in \Theta} f(\theta)\,,
 	\label{eq:optimization_problem}
 }
 solved by $\nat^*\in \Theta$.
@@ -232,11 +231,11 @@ Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal 
 Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
 In particular, with exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
 Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we try using existing optimization convergence rates for SMD to get the upper bound we seek.
-Unfortunately, none of the current analysis apply, which frames another open problem for the analysis of SMD.
+Unfortunately, none of the current analyses apply, which frames another open problem for the analysis of SMD.
 
 {\bf Expected Ouctomes.}
-A solution to~\eqref{problem} would quantify the importance of the prior in MAP, in particular in the few sample regime, for instance for Gaussians $\cN(m,\sigma^2)$. 
-More generally it could enable stochastic optimization to tackle a wide class of barrier objectives\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}.
+A solution to~\eqref{problem} would quantify the importance of the prior in MAP, in particular in the few sample regime.%, for instance for Gaussians $\cN(m,\sigma^2)$. 
+Also, it could enable stochastic optimization to tackle a wide class of barrier objectives\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}.
 A good example would be generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
 It could also help in assessing the impact of alternative forms of regularization (prior) for these models. 
 
@@ -246,14 +245,13 @@ After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with 
 	\itemsep0em
 	\item We provide an upper bound on the KL in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}) .
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
-	\item We leverage a generalized bias-variance decomposition of Bregman divergences\citep{pfau2013generalized}  to formulate a conjecture about~\eqref{problem}(\S\ref{ssec:bias-variance})
-	\item By identifying MAP and stochastic mirror descent (SMD), we show modern analysis of SMD are yet to prove convergence on barrier objectives such as $-\log$ (\S\ref{sec:optimization}).
+	\item We leverage a generalized bias-variance decomposition of Bregman divergences\citep{pfau2013generalized}  to formulate a conjecture about~\eqref{problem}(\S\ref{ssec:bias-variance}).
+	\item By linking MAP and SMD, we show modern analysis of SMD are yet to prove convergence on barrier objectives such as $-\log$ (\S\ref{sec:optimization}).
 \end{itemize}
 
 
 {\bf Notation.}
-$X$ and $T=T(X)$ are random variables, while $x$ is a sample.
-$n$ is the number of samples and $d= \dim(T)$.
+$X$ and $T=T(X)$ are random variables, $x$ is a sample, $n$ is the number of samples and $d= \dim(T)$.
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 
@@ -288,8 +286,8 @@ When explicit, we write the random variable $T = T(X)$.
 {\bf Duality.}
 The log-partition function $\logpart$ verifies the two following identities:
 \begin{align}
-    \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp \\
-    \nabla^2 \logpart(\nat) &= \Cov_{p_\nat}[T(X)] > 0
+    \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp, \\
+    \nabla^2 \logpart(\nat) &= \Cov_{p_\nat}[T(X)] > 0,
 \end{align}
 where $\meanp$ is called the mean (or dual) parameter, which lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
 Given that $\logpart$ is strictly convex, its Hessian is positive definite and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$.
@@ -314,8 +312,7 @@ By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  
 %\end{figure}%
 %
 %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
-{\bf The Bregman Divergence} induced by $\logpart$,
-measures the discrepancy between two parameters $\nat$ and $\nat_0$,
+{\bf The Bregman Divergence} induced by $\logpart$ measures the discrepancy between two parameters $\nat$ and $\nat_0$,
 \begin{align}
     \bregman (\nat ; \nat_0)
     & = \logpart(\nat) - \logpart(\nat_0)
@@ -886,15 +883,14 @@ Overall, this approach seems to answer~\eqref{problem}. Yet it fails to account 
 If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
 
-\section{Related Work}
+%\section{Related Work}
 
-\paragraph{Online Learning}
-Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
-\[
-R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
-\]
-where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} prove the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
-
+%\paragraph{Online Learning}
+%Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
+%\[
+%R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
+%\]
+%where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} prove the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
 
 \section{Conclusion}
 Exponential family MLE and MAP are used everywhere -- everytime someone computes a mean and variance to fit some bell-shaped data.
