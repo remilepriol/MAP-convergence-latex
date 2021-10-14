@@ -152,30 +152,41 @@ Many standard random variables fall into this category: Gaussians, categorical, 
 They are flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 In particular, they are appreciated for their convex log-likelihood
 \alignn{
-f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
+f(\nat) = \E[-\log p_\nat(X)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 \label{eq:defNLL}
 }
-where $\logpart$ is a convex function and $\nat$ is a vector\textcolor{red}{DS: double check this}, called \textit{natural parameter}.
+where $\logpart$ is a convex function and $\nat\in|Theta$ is a vector called \textit{natural parameter}.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} 
-or variants of principal component analysis \citep{collins2001generalization}, among other applications.
-\textcolor{red}{First, i think its better to have a new paragraph here. Then you need to introduce the problematic (like: we need to estimate the parameter theta, and its easy with exponential families becase blabla) }Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching:
+or variants of principal component analysis \citep{collins2001generalization}, among other applications.  
+
+In general, we want to estimate $\nat$ from some data $\mD = (x_1, \dots, x_n)$.
+For this purpose, not only is $f$ convex, but it even enjoys a closed form maximum-likelihood estimate (MLE)
 \begin{align}
-	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} .
+	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} \; .
 	\label{eq:defMLE}
 \end{align}
-Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP). \textcolor{red}{DS: I know that for conciseness we do not write the MAP estimate here, but it's super central and I think its important to write the equation. WDYT?}
+This rule is known as moment matching.
+Given a conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). 
+%\textcolor{red}{DS: I know that for conciseness we do not write the MAP estimate here, but it's super central and I think its important to write the equation. WDYT?}
+% I think it's okay to have it only later, and refernece it here.
 
-\textcolor{red}{This comes a bit from nowhere. Maybe phrase it like (its not sexy wirting here, just the idea of the structure) "The measure of closeness between theta and its estimate hat theta is an active area of research. We distinguish two way to do that: 1) distance in the parameter space and 2) distance between their ascociated distribution. In the first case, the analysis use norms blabla. In the second, we use KL"} How can we assess the quality of the MLE, or any other estimator?
-Let us distinguish two lines of work addressing this question in statistic.
-(1.) \emph{Parameter estimation} has focused on the quality of the resulting parameters, using norms or distances between parameter themselves, and yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
-(2.) \emph{Density estimation} has focused on measuring the discrepancy between the model and the true distribution.
+%\textcolor{red}{This comes a bit from nowhere. Maybe phrase it like (its not sexy wirting here, just the idea of the structure) "The measure of closeness between theta and its estimate hat theta is an active area of research. We distinguish two way to do that: 1) distance in the parameter space and 2) distance between their associated distribution. In the first case, the analysis use norms blabla. In the second, we use KL"} 
+Once we have an estimator $\hat \nat$, we wish to assess its quality:
+how close is it from some optimal $\nat^*$.
+This is necessary, for instance to choose between 2 estimators (model selection).
+We distinguish two ways of doing that.
+{\bf 1)} distance in parameter space. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
+{\bf 2)} distance between distributions, as studied in \emph{density estimation}.
 For this purpose, the Kullback-Leibler (KL) divergence arises naturally from information theory,
-but its lack of robustness to misspecification has led statisticians to study other distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}.
+but its lack of robustness to misspecification\footnote{
+$\KL(p||q) = +\infty$ if the model $q(x)=0$ for some $x$ from the true distribution$p(x)>0$.
+}
+has led statisticians to study other distances, such as the $L^2$ norm \citep[e.g. \S1.2]{tsybakov2009introduction}.
 As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research. 
+Hence the natural question:
 
-
-\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. Hence the natural question:} 
-% In this work, we are addressing the following question.
+%\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. } 
+% RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
 
 \begin{center}
 	\framebox{
@@ -187,24 +198,33 @@ As we will see, with exponential families, the KL divergence is also a Bregman d
 	}
 \end{center}
 
-If $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
-or close to quadratic, there are simple upper bounds. \textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
-But without further assumptions, this problem is difficult.
+We know asymptotic answers. 
+We also know simple upper bounds if $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
+or close to quadratic (see \S\ref{ssec:quadratic}).
+But in general, this problem is difficult. In this paper, we show some partial solutions, and give some idea on how to solve it.
+%\textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
+%RLP poroblem : we don't show it is difficult, neither do we explain why it is difficult. That sounds hard to do. 
 
-\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
+%\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
+%RLP right, not sure about how to fix this. It is hard to decide on the right amount of space for optimization versus statistics.
 
-This question has connections with optimization. \textcolor{red}{I would start with "Consider the problem $\min_{\theta\in \Theta} f(\theta)$ (write the equation in display). Setting $f=...$, we obtain that KL is the measure of suboptimality, i.e., (equation (3)). Moreover, we have that MAP solve a regularized version of f, (write equation) and MLE is the special case where (regularisation = 0)"}
-For one, the MLE is minimizing $f$ (or a regularized version for MAP), and the KL is the sub-optimality
+One lens on this question is stochastic optimization.
+Consider the problem
 \alignn{
-f(\nat) - f(\nat^*) = \KL\paren{p(\cdot \cond \nat^*) || p(\cdot \cond \nat) }
-\label{eq:suboptimalityKL}
+	\min_{\theta\in \Theta} f(\theta)
+	\label{eq:optimization_problem}
 }
-where $\nat^* \in \argmin f(\nat)$.
-For two, in exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
+solved by $\nat^*\in \Theta$.
+Setting $f$ as in~\eqref{eq:defNLL}, the suboptimality is equal to the KL:
+\alignn{
+	f(\nat) - f(\nat^*) = \KL\paren{p_{\nat^*} || p_{\nat} }
+	\label{eq:suboptimalityKL}
+}
+Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
+In particular, with exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
 A convergence rate for this algorithm would translate into the upper bound we seek.
-%similarly to other works on stochastic approximation \citep{bach2013nonstronglyconvex}. %TODO check this
-From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
-In fact we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
+%From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
+Conversely we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
 \paragraph{Contributions}
 After formalizing the problem \textcolor{red}{restate the problem} along with its asymptotic properties, we make the following contributions. \textcolor{red}{Add ref to the main text in the contribution.}
@@ -250,7 +270,6 @@ Then $\logpart$ is a strictly convex function of Legendre type,
 and the set $\Theta = \{ \nat \cond \logpart(\nat) < \infty\}$ is open and convex
 \citep{barndoffnielsen2014information}. 
 Also, when explicit, we write the random variable $T = T(X)$.
-
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
 \paragraph{Duality}
@@ -419,6 +438,7 @@ Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 
 This asymptote is also independent of the optimum $\meanp^*$.
 
 \subsection{Quadratic Case}
+\label{ssec:quadratic}
 As another classical reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
 For instance, this is the log-partition of a Gaussian with variance $I$ and unknown mean 
 \[ 
@@ -616,7 +636,7 @@ For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*
 		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n \ \text{if}\ n\geq 2
 	\end{cases}
 	\label{eq:MAP_rate}\\
-	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
+	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{\max(0,n-2)}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
 \rlp{upper bound and compare the symmetrized bregman instead?}
