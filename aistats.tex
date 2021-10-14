@@ -187,7 +187,7 @@ but its lack of robustness to misspecification\footnote{
 For $p$ and $q$ continuous densities,
 $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \&p(x)>0$. %Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
 }
-has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[e.g. \S1.2]{tsybakov2009introduction} , the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
+has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction} , the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
 Hence the fundamental problem:
 %\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
@@ -213,12 +213,13 @@ Hence the fundamental problem:
 \end{equation}
 % RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
-We know asymptotic answers.
-We also know simple upper bounds if $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
-or close to quadratic (see \S\ref{ssec:quadratic}).
-But in general, this problem is difficult. In this paper, we show some partial solutions, and give some ideas on how to solve it.
+We have asymptotic solutions (\S\ref{ssec:asymptote}),
+or when $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
+or close to quadratic (see \S\ref{ssec:quadratic}),
+but a  general solution for finite $n$ remains elusive.
+In this paper, we review partial solutions, and give some ideas on how to solve it.
 %\textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
-%RLP poroblem : we don't show it is difficult, neither do we explain why it is difficult. That sounds hard to do.
+%RLP problem : we don't show it is difficult, neither do we explain why it is difficult. That sounds hard to do.
 
 %\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
 %RLP right, not sure about how to fix this. It is hard to decide on the right amount of space for optimization versus statistics.
@@ -237,17 +238,14 @@ Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal 
 }
 Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
 In particular, with exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
-A convergence rate for this algorithm would translate into the upper bound we seek.
-%From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
-Conversely we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
+Inspired by recent work~\citep{lepriol2021analysis}, we try using existing optimization convergence rates for SMD to get the upper bound we seek.
+Unfortunately, none of the current analysis apply, which frames another open problem for the analysis of SMD.
 
 {\bf Expected Ouctomes.}
 A solution to~\eqref{problem} would quantify the importance of the prior in MAP, in particular in the few sample regime, for instance for Gaussians $\cN(m,\sigma^2)$. 
 More generally it could enable stochastic optimization to tackle a wide class of barrier objectives\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}.
 A good example would be generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
 It could also help in assessing the impact of alternative forms of regularization (prior) for these models. 
-
-%Or it could help developing accelerated (stochastic?) algorithms for barrier objectives  overcoming the limitations of non-Euclidean geometry \citep{dragomir2021optimal}. \rlp{Fred I need your feedback on that one.}
 
 {\bf Contributions.}
 After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
@@ -256,7 +254,7 @@ After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with 
 	\item We provide an upper bound on the KL in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}) .
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
 	\item We leverage a generalized bias-variance decomposition of Bregman divergences\citep{pfau2013generalized}  to formulate a conjecture about~\eqref{problem}(\S\ref{ssec:bias-variance})
-	\item We use a connection between~\eqref{problem} and optimization to highlight areas for progress in the stochastic optimization of barrier objectives (\S\ref{sec:optimization}).
+	\item By identifying MAP and stochastic mirror descent (SMD), we show modern analysis of SMD are yet to prove convergence on barrier objectives such as $-\log$ (\S\ref{sec:optimization}).
 \end{itemize}
 
 
@@ -374,27 +372,6 @@ where $T_i=T(X_i)$.
 When $n_0=0$ -- we have no samples from the prior -- we recover the MLE~\eqref{eq:defMLE}.
 We write $\MAPt$ for the MAP, and view the MLE as a special case.
 
-\paragraph{Optimization}
-We can rewrite~\eqref{eq:defMAP} as
-\alignn{
-\m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
-\label{eq:mean_update}
-}
-where $\lr_n := \inv{n_0 + n}$.
-Now let $f_X(\nat) = -\log p(X \cond \nat)$ such that $\E[f_X] = f$.
-If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
-\alignn{
-	\nabla\conj(\hat \nat_{n})
-	= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
-}
-which is the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$
-and step-size schedule $\lr_n$, initialized at $\nat_0$.
-\emph{MAP is an instantiation of SMD.}
-Note that this analogy does not hold for the MLE %($n_0=0$)
-as it does not have any initialization to start from.
-\fdk{It does, you just forget the initial condition after the first step with step-size 1?}
-\rlp{to discuss.}
-
 \section{Problem Formulation}
 \label{sec:problem}
 % Assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
@@ -444,6 +421,24 @@ without resorting to Markov inequality but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
+\paragraph{Optimization}
+We can rewrite~\eqref{eq:defMAP} as
+\alignn{
+\m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
+\label{eq:mean_update}
+}
+where $\lr_n := \inv{n_0 + n}$.
+Now let $f_X(\nat) = -\log p(X \cond \nat)$ such that $\E[f_X] = f$.
+If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
+\alignn{
+	\nabla\conj(\hat \nat_{n})
+	= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
+}
+which is the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$
+and step-size schedule $\lr_n$, initialized at $\nat_0$.
+\emph{MAP is an instantiation of SMD.}
+In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.	
+
 
 We start with special examples, with a concrete upper bound, to give insights into what we want to achieve.
 
@@ -486,6 +481,7 @@ illustrated in Figure~\ref{fig:phi}.
 \end{figure}
 
 In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
+Proofs are in \cref{app:gaussian-variance}.
 \begin{theorem}[MLE Tight Bound]
 \label{thm:varianceMLE}
 	The MLE of $\cN(0,\m_*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
@@ -499,7 +495,7 @@ In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bou
 This upper bound is asymptotically tight.
 We illustrate its numerical behavior in Figure~\ref{fig:curves}.
 We get a similar bound for the multivariate generalization :
-the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$ (see appendix).
+the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$ (c.f. App.\ref{app:gaussian-variance}).
 
 For MAP, we get an upper bound thanks to
 \begin{align}
@@ -522,7 +518,7 @@ For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*
 \end{theorem}
 \rlp{upper bound and compare the symmetrized bregman instead?}
 This inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations (see appendix).
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations (cf App.\ref{app:gaussian-variance}).
 Remark that in using~\eqref{eq:log_bound} we lost a factor $2$ and got a rate$\inv{n}$ instead of $\inv{2n}$.
 
 
@@ -572,7 +568,7 @@ Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, o
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
-See proof in the Appendix.
+Detailed derivation is in~\cref{app:asymptote}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
 This asymptote is also independent of the optimum $\meanp^*$.
 
@@ -627,7 +623,9 @@ Note that it is also possible to get (more complex) upper bounds under restricte
 \label{ssec:local-quadratic}
 FromTaylor expansion~~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
-Under some assumptions, like self-concordance of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
+Under some assumptions, such as self-concordance of $\conj$\footnote{
+In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
+} \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in \cref{app:self-concordant}.
 \begin{proposition}
 Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then
 \aligns{
@@ -636,11 +634,10 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
 }
 \end{proposition}
-Proof in the appendix
 \footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
-For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$ (see appendix).
+For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
 This means that on average, we need much more samples than the dimension to reach the quadratic regime.
 
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
@@ -937,26 +934,26 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 
 \newpage
 \bibliographystyle{apalike}
-\bibliography{references} % Removed the .bib as this mess up with the compiler
+\bibliography{references} 
 
 
 \clearpage
-\section{Group Meeting}
+\appendix
+\onecolumn
+
+\section{PROOFS FOR GAUSSIAN VARIANCE}
+\label{app:gaussian-variance}
+
+\section{ASYMPTOTIC DERIVATION}
+\label{app:asymptote}
+
+\section{SELF-CONCORDANCE}
+\label{app:self-concordant}
+
+\section{TODO}
 \begin{enumerate}
-	\item new plots : mirror map, and gaussian trajectories. Add trajectories to paper, with background level set, and new legend : primal/dual expectation
-	\item the MLE is biased according to our definition. See plots. Does this definition of bias make sense ? An unbiased estimator's primal mean would be equal to the optimum, vs the dual mean.  Remark : the MLE is biased for standard parameters.
-	\item exciting pap er\citet{kakade2010learning}
-	\begin{enumerate}
-		\item assumption in the spirit of infinite order self-concordance only at the optimum
-		\item After a burn-in phase, the loss behaves quadratically. No precise description of the burn-in length.
-		\item \TODO{it is worth writing down until the end what we are obtaining with self-concordance.}
-		\item idea 1 : try to express some of their results with the mean parameter instead.
-		\item idea 2 : using their assumption on the mirror map, perform a Newton kind of analysis for SMD. (exploiting the link MAP -> optimization). How do we prove the linear convergence of Newton to the quadratic regime ? That is the problem at stake here.
-	\end{enumerate}
-	\item Intro : positioning between optimization and statistics. Start with stats. Convince the reader that this is an essential problem, with asymptotic rate. but finite is elusive. Inspired by recent work (lepriol2021 , bach2013) we want to use optimization to give a rate. We fail, but we reveal a hole in current analysis.  Finite rate would allow us to quantify the importance of the prior, and also help us understand behavior for small numbers.
-	\item Intro : 1 clear question and sharper contributions, with references to sections, as a memo for the reviewer writing his review. "investigate bias-variance..." "we show all these analysis suffer from this problem."
-	\item Organization : add optim parallel in insigths section, and then sprinkle references until the optim section.
-	\item Optim : find members of the exponential family where the rate of Dragomir et al. holds.
+	\item new plots : add 2d trajectories to paper, with background level set, and new legend : primal/dual expectation, and clear explanation !
+	\item Incorporate related work by Frederik.
 	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle.
 	References: \begin{itemize}
 		\item \href{https://www.jstor.org/stable/4616462?seq=1#metadata_info_tab_contents}{Existence of Maximum Likelihood Estimates for Multi-Dimensional Exponential Families},
@@ -1039,10 +1036,6 @@ The tools developed to make progress on one problem might help make progress on 
 
 
 
-
-
-
-
 \newpage
 \section{Notation convention}
 We use
@@ -1061,28 +1054,7 @@ We use
 	\item $\mu,\sigma^2$ for the parameters of a Gaussian
 	\item $\hat\theta_n$ for estimates
 	\item $\tilde\theta_n$ for $\expect{\hat\theta_n}$, which is biased
-	\item $(L, \mu)$ for strong-convexity and smoothness
+	\item $(\stgcvx , \smooth)$ for strong-convexity and smoothness
 \end{itemize}
-
-\fdk{
-	Do we use $\alpha, \beta$ anywhere?
-	Might use those for smoothness/strong-convexity rather than $\mu, L$.
-}
-
-\fdk{
-	The superscript ${}^*$ denotes the convex conjugate when applied on a function
-	and the optimum when applied to a parameter.
-	How about we use $\theta_n, \theta_*$ for parameter at time $n$ and at the optimum
-	and $f^*$ for the convex conjugate?
-}
-
-\fdk{
-	On $X_i$ for data; I'm more used to seeing $x_i$ for data, which is the realization of the random variable $X_i$.
-	We don't talk about random variables and don't need the distinction?
-}
-
-\fdk{
-	Need to check
-}
 
 \end{document}
