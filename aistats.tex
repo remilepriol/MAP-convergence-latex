@@ -146,8 +146,9 @@ We believe solving this very fundamental problem may bring progress to both the 
 
 
 \section{Motivation}
+\label{sec:motivation}
 
-Exponential families are among the most widely used statistical models.
+{\bf Exponential families} are among the most widely used statistical models.
 Many standard random variables fall into this category: Gaussians, categorical, Gamma or Dirichlet.
 They are flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 In particular, they are appreciated for their convex log-likelihood
@@ -159,6 +160,7 @@ where $\logpart$ is a convex function and $\nat\in|Theta$ is a vector called \te
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized}
 or variants of principal component analysis \citep{collins2001generalization}, among other applications.
 
+{\bf Estimators.}
 In general, we want to estimate $\nat$ from some data $\mD = (x_1, \dots, x_n)$.
 For this purpose, not only is $f$ convex, but it even enjoys a closed form maximum-likelihood estimate (MLE)
 \begin{align}
@@ -171,13 +173,14 @@ Given a conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maxim
 % I think it's okay to have it only later, and refernece it here.
 
 %\textcolor{red}{This comes a bit from nowhere. Maybe phrase it like (its not sexy wirting here, just the idea of the structure) "The measure of closeness between theta and its estimate hat theta is an active area of research. We distinguish two way to do that: 1) distance in the parameter space and 2) distance between their associated distribution. In the first case, the analysis use norms blabla. In the second, we use KL"}
+{\bf Metrics.}
 Once we have an estimator $\hat \nat$, we wish to assess its quality:
 how close is it from some optimal $\nat^*$.
 This is necessary, for instance to choose between 2 estimators (model selection).
 We distinguish two ways of doing that.
-{\bf 1)} distance in parameter space. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
+{\bf 1)} distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
 {\bf 2)} distance between distributions, as studied in \emph{density estimation}.
-For this purpose, the Kullback-Leibler (KL) divergence arises naturally from information theory,
+For this purpose, the Kullback-Leibler (KL) divergence $\KL\paren{p_{\nat^*} || p_{\nat} }$  arises naturally from information theory,
 but its lack of robustness to misspecification\footnote{
 $\KL(p||q) = +\infty$ if the model $q(x)=0$ for some $x$ from the true distribution$p(x)>0$.
 }
@@ -188,15 +191,27 @@ Hence the natural question:
 %\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
 % RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
 
-\begin{center}
-	\framebox{
-		\parbox[c][]{0.9\linewidth}{
-			\begin{center}
-			\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP?}
-		\end{center}
-		}
-	}
-\end{center}
+%\begin{center}
+%	\framebox{
+%		\parbox[c][]{0.9\linewidth}{
+%			\begin{center}
+%			\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP?}
+%		\end{center}
+%		}
+%	}
+%\end{center}
+
+\begin{equation}
+\boxed{
+\begin{aligned}
+	\textit{Can we upper}&\textit{ bound  the expected value of} \\
+	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} })?
+\end{aligned}
+}
+\tag{$\star$}
+\label{problem}
+\end{equation}
+% RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
 We know asymptotic answers.
 We also know simple upper bounds if $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
@@ -208,14 +223,14 @@ But in general, this problem is difficult. In this paper, we show some partial s
 %\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
 %RLP right, not sure about how to fix this. It is hard to decide on the right amount of space for optimization versus statistics.
 
-One lens on this question is stochastic optimization.
+{\bf Stochastic optimization} offers an interesting perspective on this question.
 Consider the problem
 \alignn{
 	\min_{\theta\in \Theta} f(\theta)
 	\label{eq:optimization_problem}
 }
 solved by $\nat^*\in \Theta$.
-Setting $f$ as in~\eqref{eq:defNLL}, the suboptimality is equal to the KL:
+Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal to the KL:
 \alignn{
 	f(\nat) - f(\nat^*) = \KL\paren{p_{\nat^*} || p_{\nat} }
 	\label{eq:suboptimalityKL}
@@ -226,18 +241,19 @@ A convergence rate for this algorithm would translate into the upper bound we se
 %From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
 Conversely we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
-\paragraph{Contributions}
-After formalizing the problem \textcolor{red}{restate the problem} along with its asymptotic properties, we make the following contributions. \textcolor{red}{Add ref to the main text in the contribution.}
-\begin{itemize}
-	\itemsep0em
-	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation is valid. \textcolor{red}{Approx. of what?}
-	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem} \textcolor{red}{Decomposition of what?}
-	\item We provide a full solution \textcolor{red}{full solution of what?} in the case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$.
-	\item We establish a connection \textcolor{red}{Connection between something (you need to precise what) and optimization} with optimization, and use this problem to highlight areas for progress in the stochastic optimization of barrier objectives.
-\end{itemize}
-
 \textcolor{red}{I would emphasize more that you are talking about the impact of the work rather than contribution. Also I think its better to write this before the contribution, to motivate better why we did this work. }A solution to this problem would allow the field of optimization tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression).
 It could also help develop accelerated optimization methods.
+
+\paragraph{Contributions}
+After formalizing the problem of upper bounding the KL of MAP estimators (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
+\begin{itemize}
+	\itemsep0em
+	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
+	\item We investigate a generalized bias-variance decomposition of the KL\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem} (\S\ref{ssec:bias-variance})
+	\item We answer~\eqref{problem} with an upper bound in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}) .
+	\item We establish a connection between~\eqref{problem} and optimization, and use it to highlight areas for progress in the stochastic optimization of barrier objectives (\S\ref{sec:optimization}).
+\end{itemize}
+
 
 \paragraph{Notation}
 $X,\,T(X)$ and $T$ \textcolor{red}{Don't we have T = T(X), but written tuch that it's simpler? I think its better to say it that we write T instead of T(X) for simplicity, rather than saying its a random variable.} are random variables, while $x$ is a sample.
@@ -246,6 +262,7 @@ $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 
 \section{Technical background}
+\label{sec:background}
 In this section, we review the formalism of exponential families, their duality, a conjugate prior and the corresponding MAP.
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more exhaustive introduction.
 
@@ -342,7 +359,7 @@ Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_pr
     \propto \exp(- (n_0+n) \bregman(\nat; \MAPt^\text{MAP}))
     \label{eq:joint_likelihood}
 \end{align}
-which reaches its maximum attempts $\MAPt^\text{MAP}$ such that
+which reaches its maximum at $\MAPt^\text{MAP}$ such that
 \begin{align}
     \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
@@ -373,6 +390,7 @@ as it does not have any initialization to start from.
 \fdk{It does, you just forget the initial condition after the first step with step-size 1?}
 
 \section{Open Problem}
+\label{sec:problem}
 % Assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
 % We further assume that our model is well-specified and there exist $\nat^*\in\Theta$ such that $\cD = p(\cdot \cond \nat)$.
 % As we will see, this is already an interesting setting.
@@ -394,9 +412,9 @@ How does this quantity behave when $\nat$ is the MLE or MAP?
 Can we get upper bounds on the expected KL?
 \begin{align}
 	\label{eq:bregmanMLE}
-	\text{MLE: } &\quad \expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
+	\text{MLE: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
 	\label{eq:bregmanMAP}
-	\text{MAP: } &\quad \expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
+	\text{MAP: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
 \end{align}
 where the expectation is on the data $\mD$.
 More explicitly, is there an upper bound that does not involve this expectation over the dataset?
@@ -424,6 +442,7 @@ for which we may find upper bounds.
 \label{sec:insights}
 
 \subsection{Asymptote}
+\label{ssec:asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
 We now review classical asymptotic results.
 We point the reader towards \citet[\S1.1]{ostrovskii2021finite} for a more comprehensive overview.
@@ -501,6 +520,7 @@ Note that it is also possible to get (more complex) upper bounds under restricte
 \TODO{connection with optim smooth rate.}
 
 \subsection{Locally Quadratic Case}
+\label{ssec:local-quadratic}
 FromTaylor expansion~~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
 Under some assumptions, like self-concordance of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in.
@@ -544,6 +564,7 @@ The same tools are used in statistics, and evething essentially boils down to co
 }
 
 \subsection{Bias-Variance Decomposition}
+\label{ssec:bias-variance}
 In both examples \textcolor{red}{(add link)}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, such a decomposition exists for any Bregman divergence.
 Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its corresponding mean parameter.
 As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes into
@@ -584,7 +605,9 @@ Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:bias-variance-numerical
 \end{figure}
 
 
-\section{Gaussian Variance Example}\label{sec:example}
+\section{Examples}\label{sec:example}
+\subsection{Gaussian Variance}\label{ssec:gaussian-variance}
+
 A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its density reads
 \[
@@ -671,6 +694,9 @@ In the next section, we investigate what this problem is brining to optimization
 	\label{fig:bias-variance-numerical}
 \end{figure*}
 
+\subsection{Gaussian}
+\label{ssec:gaussian}
+The simple Gaussian $\cN(m,\sigma^2)$ is highly non-trivial. Neither its log-partition nor its entropy are smooth, strongly-convex, or self-concordant.
 
 \section{Optimization Perspective}
 \label{sec:optimization}
