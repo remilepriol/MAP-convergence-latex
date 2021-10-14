@@ -401,7 +401,7 @@ or results for special cases such as $\cN(0, \sigma^2)$ (see \S\ref{sec:example}
 But we are yet to find a solution encompassing a broad range of exponential families,
 and applicable to small sample sizes $n \lesssim d$.
 
-{\bf Unboundedness of~\eqref{eq:bregmanMLE}.}
+{\bf Difficulty with MLE.}
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite,
 for instance when estimating the covariance of a Gaussian when $n \leq d + 1$.
 Even worse, with categorical variables, there is a non-zero probability to never sample one of the categories.
@@ -446,7 +446,7 @@ Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\i
 \textcolor{red}{The explanation here is not clear enough, or too concise} Now we can match the log-likelihood with the exponential family template to get the log-partition function, and taking the conjugate to find the entropy
 \begin{align}
 	\logpart (\nat) &= - \half \log(-\nat)  + \half \log(\pi), \\
-	\conj(\m) &= \half\left( -\log(\m) + \log\frac{\pi}{2} - 1 \right) \; .
+	\conj(\m) &= - \half \log(\m) + \half \log\frac{\pi}{2} - \half  \; .
 \end{align}
 Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
 It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative Gamma distribution.
@@ -457,23 +457,9 @@ It also means $\bregman$ and $\bregmanconj$ have the same shape
 	\bregman( \nat_n; \nat_* )
 	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
 \end{align}
-Intuitively, the divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
-\begin{align}
-	\phi(z) := \half (z - 1 - \log(z))
-\end{align}
-illustrated in Figure~\ref{fig:phi}.
-
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=.4\textwidth]{phi.pdf}
-	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics, but it admits another upper-bound (in grey).}
-	\label{fig:phi}
-\end{figure}
-
 In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
-Proofs are in \cref{app:gaussian-variance}.
-\begin{theorem}[MLE Tight Bound]
+All proofs for this section are in \cref{app:gaussian-variance}.
+\begin{theorem}[MLE Bound]
 \label{thm:varianceMLE}
 	The MLE of $\cN(0,\m_*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
 	Its expected suboptimality is infinite when $n\leq 2$, and otherwise upper-bounded as
@@ -483,16 +469,9 @@ Proofs are in \cref{app:gaussian-variance}.
 			\label{eq:MLE_rate}
 	\end{align}
 \end{theorem}
-This upper bound is asymptotically tight.
+This upper bound matches the asymptote~\eqref{eq:asymptote} .
 We illustrate its numerical behavior in Figure~\ref{fig:curves}.
-We get a similar bound for the multivariate generalization :
-the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$ (c.f. App.\ref{app:gaussian-variance}).
-
-For MAP, we get an upper bound thanks to
-\begin{align}
-	\label{eq:log_bound}
-	\phi(z) \leq \phi(z) + \phi(\inv{z}) =  \half (z + \inv{z}) - 1 \; .
-\end{align}
+With the same technique, we obtain a similar bound for the multivariate generalization: the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$.
 
 \begin{theorem}[MAP Bound]
 \label{thm:varianceMAP}
@@ -507,14 +486,12 @@ For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*
 	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{\max(0,n-2)}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
-\rlp{upper bound and compare the symmetrized bregman instead?}
-This inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.  For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$. This correlates well with numerical observations (cf App.\ref{app:gaussian-variance}).
-Remark that in using~\eqref{eq:log_bound} we lost a factor $2$ and got a rate$\inv{n}$ instead of $\inv{2n}$.
+Note that this inequality actually holds for the symmetrized Bregman $\cB(a,b) + \cB(b,a)$, which explains why it loses a factor 2 compared to the asymptote~\eqref{eq:asymptote}, but we leave this to the appendix for clarity.
+Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights a clear variance-bias decomposition.
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth, which correlates well with numerical observations (cf App.\ref{app:gaussian-variance}).
+%For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$.
+%Remark that in using~\eqref{eq:log_bound} we lost a factor $2$ and got a rate$\inv{n}$ instead of $\inv{2n}$.
 
-
-These results are instantiation the bias-variance decomposition and giving us a flavor of what we would like as a general result for exponential families : a finit sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
-In the next section, we investigate what this problem is brining to optimization.
 
 \begin{figure*}[t]
 	\centering
@@ -528,6 +505,7 @@ In the next section, we investigate what this problem is brining to optimization
 The simple Gaussian $\cN(m,\sigma^2)$ is highly non-trivial. Neither its log-partition nor its entropy are smooth, strongly-convex, or self-concordant.
 
 
+Equipped with the knowledge of these 2 examples, we are ready to discuss the general problem, and some ways to solve with direct expansions of the Bregman.
 
 \section{Partial Solutions}
 \label{sec:insights}
@@ -555,7 +533,7 @@ where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF
 }
 Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, one can show that MLE and MAP verify
 \begin{align}
-	\label{eq:MAP_asymptote}
+	\label{eq:asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
@@ -658,7 +636,9 @@ The same tools are used in statistics, and evething essentially boils down to co
 
 \subsection{Bias-Variance Decomposition}
 \label{ssec:bias-variance}
-In both examples \textcolor{red}{(add link)}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, reminding us of the bias-variance decomposition. In fact, such a decomposition exists for any Bregman divergence.
+In both the quadratic~\eqref{eq:MAP_quadratic} and the Gaussiance variance examples~\eqref{eq:MAP_rate}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, 
+giving us a flavor of what we would like as a general result for exponential families : a finite sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
+In fact, such a decomposition exists for any Bregman divergence.
 Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its corresponding mean parameter.
 As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes into
 \begin{equation}
@@ -666,6 +646,7 @@ As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman 
 	+ {\expect{\bregmanconj(\tilde \m_n ; \MAPm)}}
 	\label{eq:primal_pivot}
 \end{equation}
+
 
 \textbf{Remark:} In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero.
 However, this is not true for the the gaussian variance MLE, where the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$.
@@ -934,6 +915,24 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
+
+Intuitively, the divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
+\begin{align}
+	\phi(z) := \half (z - 1 - \log(z))
+\end{align}
+illustrated in Figure~\ref{fig:phi}.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.4\textwidth]{phi.pdf}
+	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics, but it admits another upper-bound (in grey).}
+	\label{fig:phi}
+\end{figure}
+
+For MAP, we get an upper bound thanks to
+\begin{align}
+	\label{eq:log_bound}
+	\phi(z) \leq \phi(z) + \phi(\inv{z}) =  \half (z + \inv{z}) - 1 \; .
+\end{align}
 
 \section{ASYMPTOTIC DERIVATION}
 \label{app:asymptote}
