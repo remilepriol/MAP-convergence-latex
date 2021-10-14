@@ -442,18 +442,16 @@ To address these problems, we start by investigating examples, for which we prov
 \subsection{Gaussian Variance}\label{ssec:gaussian-variance}
 
 A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
-Its density reads
-\[
-	p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}.
-\]
+Its log-likelihood reads $\log p(x) = -\frac{x^2}{2 \sigma^2} - \half\log(2\pi \sigma^2)$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\nat = -\inv{2 \sigma^2} <0$, and mean parameter $\m=\E[T(X)] = \sigma^2 >0$.
 Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\inv{2 \m}$.
 \textcolor{red}{The explanation here is not clear enough, or too concise} 
 Now we can match the log-likelihood with the exponential family template to get the log-partition function, and take the conjugate to find the entropy
-\begin{align}
-	\logpart (\nat) &= - \half \log(-\nat)  + \half \log(\pi), \\
-	\conj(\m) &= - \half \log(\m) + \half \log\frac{\pi}{2} - \half  \; .
-\end{align}
+\aligns{
+	\logpart (\nat) = - \half \log(-\nat) \quad\text{and}\quad
+	\conj(\m) = - \half \log(\m)  \; ,
+}
+up to constants.
 Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
 It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative Gamma distribution.
 It also means $\bregman$ and $\bregmanconj$ have the same shape
@@ -481,7 +479,7 @@ With the same technique, we obtain a similar bound for the multivariate generali
 
 \begin{theorem}[MAP Bound]
 \label{thm:varianceMAP}
-For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is
+The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is
  \begin{align}
 	& \expect{\bregmanconj( \m_*; \hat \m_n^\mathrm{MAP})}
 	\leq \begin{cases}
@@ -494,21 +492,33 @@ For $n\in \naturalnumbers$, the expected suboptimality of the MAP of $\cN(0,\m^*
 \end{theorem}
 Note that this inequality actually holds for the symmetrized Bregman $\cB(a,b) + \cB(b,a)$, which explains why it loses a factor 2 compared to the asymptote~\eqref{eq:asymptote}, but we leave this to the appendix for clarity.
 Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth, which correlates well with numerical observations (cf App.\ref{app:gaussian-variance}).
-%For instance, when $n_0=1$, it encourages us to set $\m_0 = 2 \m^*$.
-%Remark that in using~\eqref{eq:log_bound} we lost a factor $2$ and got a rate$\inv{n}$ instead of $\inv{2n}$.
-
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth
+This correlates well with our numerical observations (cf App.\ref{app:gaussian-variance}).
 
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=3.pdf}
-	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.}
-	\label{fig:bias-variance-numerical}
+	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.
+	}
+	\label{fig:thales}
 \end{figure*}
 
 \subsection{Gaussian}
 \label{ssec:gaussian}
-The simple Gaussian $\cN(m,\sigma^2)$ is highly non-trivial. Neither its log-partition nor its entropy are smooth, strongly-convex, or self-concordant.
+The ubiquitous Gaussian $\cN(m,\sigma^2)$ actually offers a highly non-trivial example for Problem 1.
+Its log-likelihood reads $p(x) = -\frac{(x-m)^2}{2 \sigma^2} - \half \log(2\pi\sigma^2)$.
+With sufficient statistic $T(x)=(x, x^2)$, 
+the mean parameters are $\m = \E[T(X)] = (m , m^2 + \sigma^2)$ belonging to the open set $\cM= \{(u,v) \cond u^2 < v\}$,
+and the natural parameters are $\nat= (\frac{m}{\sigma^2} , \frac{-1}{2\sigma^2}) \in \Theta = \real \times \real_-$. 
+$\cM$ and $\Theta$ are delimited in grey in \cref{fig:thales}.
+Given these parameters, log-partition and entropy are
+\alignn{
+	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\
+	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2)
+}
+up to constants.
+
+ Neither its log-partition nor its entropy are smooth, strongly-convex, or self-concordant.
 
 
 Equipped with the knowledge of these 2 examples, we are ready to discuss the general problem, and some ways to solve with direct expansions of the Bregman.
@@ -662,7 +672,7 @@ A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition t
 
 \paragraph{Illustrations.}
 We plot the bias-variance decompositions for $\cN(0,\sigma^2)$ (Figure~\ref{fig:variance_decomposition}) and  $\cN(\mu, \sigma^2)$ (Figure~\ref{fig:gaussian_decomposition}).
-Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:bias-variance-numerical} plots the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters) . \rlp{Tune figures.}\textcolor{red}{Not super clear, what is the "characters featured in these decompositions?"}
+Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:thales} plots the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters) . \rlp{Tune figures.}\textcolor{red}{Not super clear, what is the "characters featured in these decompositions?"}
 
 
 \begin{figure}[t]
@@ -769,7 +779,7 @@ Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}
 We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
 See \cref{tbl:assumptions} for a summary.
 
-Caveat : all of these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
+\textbf{Caveat :} all of these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging in the primal.
 
 \begin{table}[t]
 \begingroup
