@@ -189,7 +189,7 @@ $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \&p(x)>0$. %Since exponential famili
 }
 has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[e.g. \S1.2]{tsybakov2009introduction} , the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
-Hence the fundamental question:
+Hence the fundamental problem:
 %\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
 % RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
 %\begin{center}
@@ -201,19 +201,16 @@ Hence the fundamental question:
 %		}
 %	}
 %\end{center}
-
-\begin{center}
 \begin{equation}
 \boxed{
 \begin{aligned}
-	\textit{Can we upper}&\textit{ bound  the expected value of } \\
-	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \ ?
+	\textit{Find an upper}&\textit{ bound on the expected value of } \\
+	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \; .
 \end{aligned}
 }
 \tag{$\star$}
 \label{problem}
 \end{equation}
-\end{center}
 % RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
 We know asymptotic answers.
@@ -256,10 +253,10 @@ It could also help in assessing the impact of alternative forms of regularizatio
 After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
 \begin{itemize}
 	\itemsep0em
+	\item We provide an upper bound on the KL in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}) .
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
-	\item We investigate a generalized bias-variance decomposition of the KL\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem} (\S\ref{ssec:bias-variance})
-	\item We answer~\eqref{problem} with an upper bound in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}) .
-	\item We establish a connection between~\eqref{problem} and optimization, and use it to highlight areas for progress in the stochastic optimization of barrier objectives (\S\ref{sec:optimization}).
+	\item We leverage a generalized bias-variance decomposition of Bregman divergences\citep{pfau2013generalized}  to formulate a conjecture about~\eqref{problem}(\S\ref{ssec:bias-variance})
+	\item We use a connection between~\eqref{problem} and optimization to highlight areas for progress in the stochastic optimization of barrier objectives (\S\ref{sec:optimization}).
 \end{itemize}
 
 
