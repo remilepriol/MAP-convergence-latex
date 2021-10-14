@@ -187,10 +187,8 @@ $\KL(p||q) = +\infty$ if the model $q(x)=0$ for some $x$ from the true distribut
 has led statisticians to study other distances, such as the $L^2$ norm \citep[e.g. \S1.2]{tsybakov2009introduction}.
 As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research.
 Hence the natural question:
-
 %\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
 % RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
-
 %\begin{center}
 %	\framebox{
 %		\parbox[c][]{0.9\linewidth}{
@@ -205,7 +203,7 @@ Hence the natural question:
 \boxed{
 \begin{aligned}
 	\textit{Can we upper}&\textit{ bound  the expected value of} \\
-	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} })?
+	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \ ?
 \end{aligned}
 }
 \tag{$\star$}
@@ -216,7 +214,7 @@ Hence the natural question:
 We know asymptotic answers.
 We also know simple upper bounds if $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
 or close to quadratic (see \S\ref{ssec:quadratic}).
-But in general, this problem is difficult. In this paper, we show some partial solutions, and give some idea on how to solve it.
+But in general, this problem is difficult. In this paper, we show some partial solutions, and give some ideas on how to solve it.
 %\textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
 %RLP poroblem : we don't show it is difficult, neither do we explain why it is difficult. That sounds hard to do.
 
@@ -241,11 +239,19 @@ A convergence rate for this algorithm would translate into the upper bound we se
 %From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
 Conversely we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
-\textcolor{red}{I would emphasize more that you are talking about the impact of the work rather than contribution. Also I think its better to write this before the contribution, to motivate better why we did this work. }A solution to this problem would allow the field of optimization tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression).
-It could also help develop accelerated optimization methods.
+{\bf Impact.}
+While a solution to the fundamental problem~\eqref{problem} would be of independent interest -- e.g. assessing the importance of the prior in MAP with few samples-- we believe it would have repercussions to other fields. 
+For instance, it could enable stochastic optimization to tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression) \citep{bach2013nonstronglyconvex}.
+%Or it could help developing accelerated (stochastic?) algorithms for barrier objectives  overcoming the limitations of non-Euclidean geometry \citep{dragomir2021optimal}. \rlp{Fred I need your feeedback on that one.}
 
-\paragraph{Contributions}
-After formalizing the problem of upper bounding the KL of MAP estimators (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
+% outcomes
+% quantifying the importance of the prior, and few sample behavior, for instance in Gaussians
+% stochastic algorithms for barrier objectives
+% such as a lot of GLM
+% accelerated methods ?
+
+{\bf Contributions.}
+After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
 \begin{itemize}
 	\itemsep0em
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
@@ -255,8 +261,8 @@ After formalizing the problem of upper bounding the KL of MAP estimators (\S\ref
 \end{itemize}
 
 
-\paragraph{Notation}
-$X,\,T(X)$ and $T$ \textcolor{red}{Don't we have T = T(X), but written tuch that it's simpler? I think its better to say it that we write T instead of T(X) for simplicity, rather than saying its a random variable.} are random variables, while $x$ is a sample.
+{\bf Notation.}
+$X$ and $T=T(X)$ are random variables, while $x$ is a sample.
 $n$ is the number of samples and $d= \dim(T)$.
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
