@@ -141,8 +141,9 @@ We believe solving this very fundamental problem may bring progress to both the 
 \begin{figure}[t]
 	\centering
 \includegraphics[width=.4\textwidth]{fewsamples.pdf}
-	\caption{Suboptimality of a Gaussian variance MLE against number of samples $n$. Bold curve is average over 100 trials,  dark shaded area is 90\% (dark) confidence interval, light shade is min-max interval.
-		While the expected value is infinite for $n=1$ or $n=2$, it quickly matches the upper bound, and the $1/2n$ asymptote.
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance MLE (\S\ref{ssec:gaussian-variance}) against number of samples $n$. Bold curve is an average over 10000 trials,  dark shaded area is 90\% confidence interval, light shade is min-max interval. 
+		The expected value is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}, while the variance remains large.
+		We wish to find similar upper bounds for a variety of exponential families.
 	}
 	\label{fig:curves}
 \end{figure}
