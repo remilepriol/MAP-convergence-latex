@@ -351,13 +351,13 @@ Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_pr
 which reaches its maximum at $\MAPt^\text{MAP}$ such that
 \begin{align}
     \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
-    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; .
+    = \frac{n_0 \meanp_0 + \sum_{i=1}^n T_i}{n_0+n} \; ,
     \label{eq:defMAP}
 \end{align}
 where $T_i=T(X_i)$.
-When $n_0=0$ -- we have no samples from the prior -- we recover the MLE~\eqref{eq:defMLE}.
+When $n_0=0$ (no samples from the prior), we recover the MLE~\eqref{eq:defMLE}.
 We write $\MAPt$ for the MAP, and view the MLE as a special case.
-We are now ready to formalize the main problem of this paper.
+
 
 \section{PROBLEMS FORMULATION}
 \label{sec:problem}
@@ -366,19 +366,19 @@ We are now ready to formalize the main problem of this paper.
 % As we will see, this is already an interesting setting.
 % We wish to estimate how well the MLE or a MAP model the true distribution.
 
-Assume we observe a dataset $\mD$ drawn i.i.d. from an exponential family distribution
-with parameters $\nat^*$, $p(\cdot \cond\nat^*)$.
+We are now ready to formalize the main problem of this paper. Assume we observe a dataset $\mD$ drawn i.i.d. from $p(\cdot \cond\nat^*)$, an exponential family distribution
+with parameters $\nat^*$.
 We wish to quantify how well the MLE or a MAP models the true distribution.
 
 A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$. % should we define it ?
 In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
-With exponential families, the KL is also a Bregman divergence
+With exponential families, the KL is also a Bregman divergence:
 \alignn{
 	\KL(p_{\nat^*} || p_\nat)
 	 = \bregman(\nat ; \nat^*)
 	 = \bregmanconj(\m^* ; \m) \; .
 }
-where the second equality is a general property of Bregman divergences and convex conjugates. (Be careful about the order of arguments.)
+The second equality is a general property of Bregman divergences and convex conjugates. % (Be careful about the order of arguments.)
 How does this quantity behave when $\nat$ is the MLE or MAP?
  Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators when the loss is the KL divergence? 
 This is our first problem.
@@ -405,8 +405,8 @@ and applicable to small sample sizes $n \lesssim d$.
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite,
 for instance when estimating the covariance of a Gaussian when $n \leq d + 1$.
 Even worse, with categorical variables, there is a non-zero probability to never sample one of the categories.
-In those cases the MLE gives zero weight to this category and $\KL(p_{\nat^*} \,\Vert\, p_\text{MLE} ) = +\infty$,
-and the expected KL~\eqref{eq:bregmanMLE} is infinite for any number of samples.
+In those cases the MLE gives zero weight to this category and $\KL(p_{\nat^*} \,\Vert\, p_\text{MLE} ) = +\infty$.
+Therefore, the expected KL~\eqref{eq:bregmanMLE} is infinite for any number of samples.
 Instead of taking the expectation, one might want to bound the risk in high probability,
 without resorting to Markov inequality but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
@@ -424,14 +424,14 @@ Now define stochastic functions $f_X(\nat) = -\log p(X \cond \nat)$ such that $\
 If we further introduce stochastic gradients $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
 \alignn{
 	\nabla\conj(\hat \nat_{n})
-	= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
+	= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1}),
 }
 which is the update formula for SMD on $f$ with mirror map $\nabla\logpart$
 and step-size schedule $\lr_n$, initialized at $\nat_0$.
 In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.	
 The observation MAP$\in$SMD brings us to our second problem.
 \begin{problem}[Convergence rate for SMD]
-Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(m, \sigma^2)$.
+Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(\meanp, \sigma^2)$.
 \end{problem}
 
 To address these problems, we start by investigating examples, for which we provide solutions to problem 1 and get insights into what is achievable.
