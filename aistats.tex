@@ -181,12 +181,12 @@ We distinguish two ways of doing that.
 {\bf 1)} distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
 {\bf 2)} distance between distributions, as studied in \emph{density estimation}.
 For this purpose, the Kullback-Leibler (KL) divergence $\KL\paren{p_{\nat^*} || p_{\nat} }$  arises naturally from information theory,
-but its lack of robustness to misspecification\footnote{
-$\KL(p||q) = +\infty$ if the model $q(x)=0$ for some $x$ from the true distribution$p(x)>0$.
+but its lack of robustness to misspecification\footnote{For $p$ and $q$ continuous densities of the ground truth and a model,
+$\KL(p||q) = +\infty$ if $q(x)=0$ for some $x$ such that $p(x)>0$.
 }
 has led statisticians to study other distances, such as the $L^2$ norm \citep[e.g. \S1.2]{tsybakov2009introduction}.
 As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research.
-Hence the natural question:
+Hence the fundamental question:
 %\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
 % RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
 %\begin{center}
@@ -239,16 +239,13 @@ A convergence rate for this algorithm would translate into the upper bound we se
 %From an optimization perspective, this problem is interesting, as it is often non-smooth (e.g. not well approximated by quadratics), but benefits from \emph{relative} smoothness properties \citep{birnbaum2011distributed}.
 Conversely we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
-{\bf Impact.}
-While a solution to the fundamental problem~\eqref{problem} would be of independent interest -- e.g. assessing the importance of the prior in MAP with few samples-- we believe it would have repercussions to other fields. 
-For instance, it could enable stochastic optimization to tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression) \citep{bach2013nonstronglyconvex}.
-%Or it could help developing accelerated (stochastic?) algorithms for barrier objectives  overcoming the limitations of non-Euclidean geometry \citep{dragomir2021optimal}. \rlp{Fred I need your feeedback on that one.}
+{\bf Expected Ouctomes.}
+A solution to~\eqref{problem} would quantify the importance of the prior in MAP, in particular in the few sample regime, for instance for Gaussians $\cN(m,\sigma^2)$. 
+More generally it could enable stochastic optimization to tackle a wide class of barrier objectives\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}.
+A good example would be generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
+It could also help in assessing the impact of alternative forms of regularization (prior) for these models. 
 
-% outcomes
-% quantifying the importance of the prior, and few sample behavior, for instance in Gaussians
-% stochastic algorithms for barrier objectives
-% such as a lot of GLM
-% accelerated methods ?
+%Or it could help developing accelerated (stochastic?) algorithms for barrier objectives  overcoming the limitations of non-Euclidean geometry \citep{dragomir2021optimal}. \rlp{Fred I need your feedback on that one.}
 
 {\bf Contributions.}
 After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
@@ -553,6 +550,7 @@ Laplace with known mean,
 Pareto with known minimum value,
 or Weibull with known shape $k$.
 The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic}.
+This is true for categorical or Dirichlet distributions.
 
 With some more work, it is possible to get a wealth of results under this assumption.
 For instance \citet{ostrovskii2021finite} characterizes the number of samples needed to reach this quadratic behavior for arbitrary parametric models, under the assumptions of self-concordance, or pseudo self-concordance \citep{bach2010self}.
