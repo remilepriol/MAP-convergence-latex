@@ -528,11 +528,11 @@ Let us keep this in mind, as we move on to discussing the general problem, and s
 \subsection{Asymptote}
 \label{ssec:asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-We now review classical asymptotic results.
-We point the reader towards \citet[\S1.1]{ostrovskii2021finite} for a more comprehensive overview.
-Asymptotic results typically show that the MLE expressed with natural parameters $\nat$ is asymptotically normal: it reaches the Cramér-Rao lower bound \citep[for instance Ch4.2]{vdv1998asymptotic}.
-With exponential families, the MAP is more simply expressed with mean parameters $\meanp$.
-We get the asymptote by approximating the Bregman divergence using a second order Taylor expansion
+We now detail a classical asymptotic result.
+Proofs are in \cref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
+
+Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
+Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
 \alignn{
     \bregmanconj(\m^* ; \m)
     &= \frac{\norm{\m^* - \m}^2_{\mF}}{2}
@@ -546,15 +546,15 @@ where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
 }
-Plugging~\eqref{eq:defMLE} or~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, one can show that MLE and MAP verify
+Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, one can show  that 
 \begin{align}
 	\label{eq:asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
-Detailed derivation is in~\cref{app:asymptote}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
-This asymptote is also independent of the optimum $\meanp^*$.
+For well-specified models, this asymptote is also independent of the optimum $\meanp^*$. or $\mF$.
+Let us see another example for which it is trivial to get a rate matching~\eqref{eq:asymptote}.
 
 \subsection{Quadratic Case}
 \label{ssec:quadratic}
@@ -571,16 +571,17 @@ Thanks to the independence of samples, we can break down the MLE into individual
 \begin{align}
 	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}
 	=\frac{\Var(T)}{2n}
-	=\frac{1}{2n}
+	=\frac{d}{2n}
 \end{align}
-Adding a reference mean $\m_0$ to get the MAP yields to
+Adding a reference mean $\m_0$ to get the MAP yields
 \begin{align}
 	\expect{\bregmanconj(\meanp^*; \MAPm)}
 	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
-In both cases, we have a variance term in $O(n^{-1})$ and a bias term in $O(n^{-2})$. Ideally, such result should also similarly for arbitrary exponential families.
+So we see a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$.
+Can we generalize these results to other families ?
 If we make restrictive assumptions on the log-partition function, we can relate $\bregmanconj$ to a norm or a quadratic.
 
 {\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
@@ -589,40 +590,38 @@ If we make restrictive assumptions on the log-partition function, we can relate 
     &\leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m} \\
     &\leq 2L \norm{\m^* - \m}
 \end{align}
-so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
-Note that none of the standard exponential families verify this assumption.
-\TODO{connection with optim non-smooth rate.}
+so $\bregmanconj$ is $2L$-Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate.
+However none of the common exponential families verify this assumption.
 
-{\bf If $\conj$ is $L$-smooth}\footnote{e.g. $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
+{\bf If $\conj$ is $L$-smooth}\footnote{$\conj$ is $L$-smooth iff $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     \leq \frac{L}{2} \norm{\m^* - \m}^2
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
-Besides the Gaussian with known variance, no standard exponential family verify this assumption either.
-Note that it is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
-\TODO{connection with optim smooth rate.}
+It is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
+The problem is that, besides the Gaussian with known variance, no standard exponential family has a strongly convex log-partition function.
+So let us focus on a more realistic set of assumptions in the next section.
 
 \subsection{Locally Quadratic Case}
 \label{ssec:local-quadratic}
-FromTaylor expansion~~\eqref{eq:bregmanTaylor},
+From Taylor expansion~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
-Under some assumptions, such as self-concordance of $\conj$\footnote{
+Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
-} \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in \cref{app:self-concordant}.
+} of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in \cref{app:self-concordant}.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
 	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
 }
 \end{proposition}
-\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
 For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
-This means that on average, we need much more samples than the dimension to reach the quadratic regime.
+This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime where a formula like~\eqref{eq:MAP_quadratic} is valid.
 
 We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
 This is true for
