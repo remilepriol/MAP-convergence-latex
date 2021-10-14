@@ -617,32 +617,32 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
 For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
-This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime where a formula like~\eqref{eq:MAP_quadratic} is valid.
+This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
-We know that $\conj$ is self-concordant when $T$ is 1-dimensional and $\logpart$ is self-concordant.
-This is true for
+The entropy $\conj$ is self-concordant for a lot of common families.
+For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.\ref{app:self-concordant}),
+as is the case with:
 exponential distributions,
 Gaussians with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
 or Weibull with known shape $k$.
-The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic}.
-This is true for categorical or Dirichlet distributions.
+The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g. categorical and Dirichlet distributions.
 
-With some more work, it is possible to get a wealth of results under this assumption.
-For instance \citet{ostrovskii2021finite} characterizes the number of samples needed to reach this quadratic behavior for arbitrary parametric models, under the assumptions of self-concordance, or pseudo self-concordance \citep{bach2010self}.
-Or in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to quantify when $\logpart$ can be sandwiched between quadratics in $\nat$, but this does not directly translate into quadratics in $\m$.
+There are quite a few pieces of work in this direction. 
+\citet{ostrovskii2021finite} characterizes the number of samples needed to reach the asymptotic quadratic behavior, for any parametric models with a self-concordant log-likelihood.
+\citet{anastasiou2017bounds} obtains a similar flavor of result under other assumptions on the third derivative of $f$.
+More closely, in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to obtain a similar result.
+However these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
 
-All these works give \textit{large sample} results -- results that hold only for $n\geq N$ for some constant $N$ -- but none of them  apply to small $n$.
+These results partially answer~\eqref{problem}. 
+Partially, because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
+None of them apply to small $n$.
+That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
+A full solution to~\eqref{problem} would address both of these caveats.
+Informed by the properties we have seen so far, let us investigate a bias-variance decomposition to formulate a conjecture.
+%If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
 
-
-\citet{anastasiou2017bounds} and
-\citet{marteauferey2019beyond})
-\fdk{
-We know that if the problem is strongly convex (in $\norm{\cdot}_2$), averaged SGD achieves $O(1/n)$ rate.
-[Robust stochastic approximation approach to stochastic programming]. (The paper uses a bounded stochastic gradient assumption, but can be relaxed to bounded variance instead.) However, strong-convexity in the Euclidean norm is not strictly necessary to find an algorithm with convergence rate of $O(1/n)$, as shown by [Non-strongly-convex smooth stochastic approximation with convergence rate O(1/n)] for linear and logistic regression. Their proof techniques based on self-concordance have been extended to other setting, [Finite-sample analysis of M-estimators using self-concordance, Learning Exponential Families in High-Dimensions: Strong Convexity and Sparsity].
-The same tools are used in statistics, and evething essentially boils down to controlling how different we are from a Gaussian rv, that we're going to get by the CLT, like [Bounds for the normal approximation of the maximum likelihood estimator, Anastasiou].
-}
 
 \subsection{Bias-Variance Decomposition}
 \label{ssec:bias-variance}
@@ -725,6 +725,7 @@ Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:thales} plots the chara
 %Note that this optimization perspective does not hold for the MLE %($n_0=0$)
 %as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
 
+
 As we saw in the technical background, MAP can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
 We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three analyses of SMD with the MAP.
@@ -734,17 +735,16 @@ We first review the assumptions of relative smoothness, useful to deal with non-
 Mirror descent (MD) \citep{nemirovski1983problem,beck2003mirror}, also known as
 Bregman (proximal) gradient, relative gradient descent or NoLips,
 %Nemirovski introduced the algorithm, and Beck established the connection with Bregman divergences, e.g. the argmin form.
-and SMD
-\citep{nemirovski2009robust,ghadimi2012optimal}
+and SMD \citep{nemirovski2009robust,ghadimi2012optimal}
 are typically encountered in non-smooth (online) optimization,
 under bounded (or Lipschitz) gradient assumption on the objective $f$
 and strong convexity assumption on the potential $\logpart$
 \citep[Th.4.2(MD) \& Th.6.3(SMD)]{bubeck2015convex}.
-In our case, none of these assumptions may hold.
+In our case, these assumptions do not hold.
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
-Recent works extend these assumptions to the $\stgcvx$-strong convexity and $\smooth$-smoothness of $f$
-\emph{relative} to $\logpart$,
+Recently, these assumptions have been relaxed to the $\stgcvx$-strong convexity and $\smooth$-smoothness of $f$
+\emph{relative} to a reference function $\logpart$, defined as
 \aligns{
 	\stgcvx \cB_{A}(x, y)
 	\leq
@@ -753,13 +753,13 @@ Recent works extend these assumptions to the $\stgcvx$-strong convexity and $\sm
 	\smooth \cB_A(x,y) \; .
 }
 When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent.
-Those conditions ensure the linear convergence of MD with $A$ as the reference function,
-thus extending the theory to a family of non-smooth functions $f$ and non-strongly convex potential $\logpart$
+Those conditions ensure the linear convergence of MD with mirror map $\nabla A$,
+extending the theory to non-smooth functions $f$ and non-strongly convex potential $\logpart$
 \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}.
 
 For exponential families, the log-likelihood perfectly fit into this framework, as
 \aligns{
-	f(\theta) = A(\theta) - \expect{\lin{X, \theta}}
+	f(\theta) = A(\theta) - \expect{\lin{T(X), \theta}}
 }
 is both $1$-smooth and $1$-strongly convex relative to $A$. 
 So we are left with finding an applicable convergence rate for SMD under relative assumptions.
@@ -773,7 +773,7 @@ Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}
 We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
 See \cref{tbl:assumptions} for a summary.
 
-\textbf{Caveat :} all of these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
+\textbf{Caveat:} these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
 
 \begin{table}[t]
 \begingroup
@@ -818,8 +818,8 @@ Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 \subsubsection{Bounded Variance}
 \citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step: $\forall n \geq 1, \forall \hat \nat_{n-1},$
 \alignn{
-\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C
-\label{eq:hanzely}
+	\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C
+	\label{eq:hanzely}
 }
 for some constant $C$.
 For a Gaussian with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
@@ -837,9 +837,9 @@ to hold.
 %\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
 %}
 %thus showing positivity.
-Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size, by applying polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
-
-In general however, this assumption hardly holds.
+Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate with $O(1/n)$ step-sizes, 
+by applying tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
+But in general, this assumption rarely holds.
 For the MAP, this translates into $\forall n \geq 1,$
 \alignn{
 \expect[T_n]{\lin{T_n - \meanp^* , \MAPt}} \leq \lr_n C
@@ -850,19 +850,25 @@ which fails to hold on the gaussian variance example for instance. Indeed, we ca
 
 \subsubsection{Bounded Variance at the Minimum}
 
-\citet{dragomir2021fast} introduce a much weaker assumption $\forall n \geq 1, \forall \MAPm,$
+\citet{dragomir2021fast} use the weaker assumption 
 \alignn{
 	\expect[\tilde g]{
 		\cB_{A^*}(\MAPm - 2\lr g(\theta_*), \MAPm)
-	} \leq 2 \lr^2 C \; .
+	} \leq 2 \lr^2 C \; ,
+	\quad
+	\forall n \geq 1.
 	\label{eq:dragomir}
 }
 In words, this bounds the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
 % As observed by Frederick, this is really weaker than Hanzely, because it is only the first half of their assumption. There is only a factor 2 that's preventing a direct inequality.
 Under this assumption, they prove convergence up to a variance ball with a constant step-size.
-Their descent lemma \citep[Eq.(12)]{dragomir2021fast} is the exact analog  of a modern analysis of SGD \citep[Th.3.2]{gower2019sgd}, meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
+Their descent lemma \citep[Eq.(12)]{dragomir2021fast} 
+is the analog of a modern analysis of SGD~\citep[Th.3.2]{gower2019sgd}, 
+meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
 
-This seems to be a perfect solution to our problem. Yet it suffers from the exact same qualm as \citet{hanzely2018fastest}. For barrier objectives, \cref{eq:dragomir} cannot hold uniformly on every possible path of iterates, because these paths can get arbitrarily close from boundaries where $\bregmanconj$ becomes infinite.
+This seems to be a solution to our problem, but it suffers from the same issues as \citet{hanzely2018fastest}. 
+For barrier objectives, \cref{eq:dragomir} does not hold uniformly on every path of iterates, 
+because these paths can get arbitrarily close to boundaries where $\bregmanconj$ diverges.
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
