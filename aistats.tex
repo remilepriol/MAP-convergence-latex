@@ -301,18 +301,17 @@ We now introduce the convex conjugate (the Fenchel-Legendre transform) of the lo
 	=  \max_{\nat'\in\Theta}  \langle \m, \nat' \rangle - \logpart(\nat')\; ,
 \end{align}
 which is the common notion of \textit{entropy} in information theory.
-By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  $\nabla\conj=\nabla\logpart^{-1}$
-(see Fig.~\ref{fig:duality}), giving
+By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  $\nabla\conj=\nabla\logpart^{-1}$, giving
 \aligns{
 	\nabla\conj \circ \nabla\logpart(\nat) = \nat, \quad \nabla\logpart\circ \nabla\conj(\meanp) = \meanp.
 }
-\begin{figure}[t]
-	\centering
-	\includegraphics{duality}
-	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\nat, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
-	}
-	\label{fig:duality}
-\end{figure}%
+%\begin{figure}[t]
+%	\centering
+%	\includegraphics{duality}
+%	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between natural and mean parameters $\nat, \meanp$. Figure copied from \citet{kunstner2020homeomorphic}. % TODO make an original one.
+%	}
+%	\label{fig:duality}
+%\end{figure}%
 %
 %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
 {\bf The Bregman Divergence} induced by $\logpart$,
@@ -386,7 +385,7 @@ How does this quantity behave when $\nat$ is the MLE or MAP?
  Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators when the loss is the KL divergence? 
 This is our first problem.
 
-\begin{problem}[Bounding MAP and MLE]
+\begin{problem}[Upper-bounding MAP and MLE]
 Upper bound the following quantities:
 \begin{align}
 	\label{eq:bregmanMLE}
@@ -449,7 +448,8 @@ Its density reads
 \]
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\nat = -\inv{2 \sigma^2} <0$, and mean parameter $\m=\E[T(X)] = \sigma^2 >0$.
 Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\inv{2 \m}$.
-\textcolor{red}{The explanation here is not clear enough, or too concise} Now we can match the log-likelihood with the exponential family template to get the log-partition function, and taking the conjugate to find the entropy
+\textcolor{red}{The explanation here is not clear enough, or too concise} 
+Now we can match the log-likelihood with the exponential family template to get the log-partition function, and take the conjugate to find the entropy
 \begin{align}
 	\logpart (\nat) &= - \half \log(-\nat)  + \half \log(\pi), \\
 	\conj(\m) &= - \half \log(\m) + \half \log\frac{\pi}{2} - \half  \; .
