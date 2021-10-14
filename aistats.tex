@@ -6,6 +6,8 @@
 \WarningFilter{latex}{You have requested package}
 
 
+
+
 \pdfsuppresswarningpagegroup=1 %removes the warning
 % This is a hack, the other way to remove is to convert all pdf into postscript or eps.
 
@@ -14,6 +16,8 @@
 % If your paper is accepted, change the options for the package
 % aistats2022 as follows:
 %\usepackage[accepted]{aistats2022}
+
+\setlength{\footskip}{3.31pt}
 
 % If you set papersize explicitly, activate the following three lines:
 %\special{papersize = 8.5in, 11in}
@@ -145,38 +149,51 @@ We believe solving this very fundamental problem may bring progress to both the 
 
 Exponential families are among the most widely used statistical models.
 Many standard random variables fall into this category: Gaussians, categorical, Gamma or Dirichlet.
-They are both flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
+They are flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 In particular, they are appreciated for their convex log-likelihood
 \alignn{
-f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat}
+f(\nat) = \E[-\log p(X \cond \nat)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 \label{eq:defNLL}
 }
-where $\logpart$ is a convex function and $\nat$ is a parameter vector.
+where $\logpart$ is a convex function and $\nat$ is a vector\textcolor{red}{DS: double check this}, called \textit{natural parameter}.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} 
-or variants of principal component analysis \citep{collins2001generalization} among other applications.
-Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching
+or variants of principal component analysis \citep{collins2001generalization}, among other applications.
+\textcolor{red}{First, i think its better to have a new paragraph here. Then you need to introduce the problematic (like: we need to estimate the parameter theta, and its easy with exponential families becase blabla) }Another interest of exponential families is their closed form maximum-likelihood estimate (MLE) obtained via moment matching:
 \begin{align}
-	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} 
+	\nabla \logpart(\hat \nat_n^\text{MLE}) = \frac{\sum_{i=1}^n T(x_i)}{n} .
 	\label{eq:defMLE}
 \end{align}
-Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP).
+Given a conjugate prior, a similar formula holds for the maximum a posteriori (MAP). \textcolor{red}{DS: I know that for conciseness we do not write the MAP estimate here, but it's super central and I think its important to write the equation. WDYT?}
 
-How can we assess the quality of the MLE, or any other estimator?
+\textcolor{red}{This comes a bit from nowhere. Maybe phrase it like (its not sexy wirting here, just the idea of the structure) "The measure of closeness between theta and its estimate hat theta is an active area of research. We distinguish two way to do that: 1) distance in the parameter space and 2) distance between their ascociated distribution. In the first case, the analysis use norms blabla. In the second, we use KL"} How can we assess the quality of the MLE, or any other estimator?
 Let us distinguish two lines of work addressing this question in statistic.
 (1.) \emph{Parameter estimation} has focused on the quality of the resulting parameters, using norms or distances between parameter themselves, and yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation}.
 (2.) \emph{Density estimation} has focused on measuring the discrepancy between the model and the true distribution.
 For this purpose, the Kullback-Leibler (KL) divergence arises naturally from information theory,
 but its lack of robustness to misspecification has led statisticians to study other distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}.
 As we will see, with exponential families, the KL divergence is also a Bregman divergence between parameters, thus drawing a connection between these two lines of research. 
-In this work, we are addressing the following question.
 
-\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP ?}
+
+\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. Hence the natural question:} 
+% In this work, we are addressing the following question.
+
+\begin{center}
+	\framebox{
+		\parbox[c][]{0.9\linewidth}{
+			\begin{center}
+			\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP?}
+		\end{center}
+		}
+	}
+\end{center}
 
 If $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
-or close to quadratic, there are simple upper bounds. 
+or close to quadratic, there are simple upper bounds. \textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
 But without further assumptions, this problem is difficult.
 
-This question has connections with optimization.
+\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
+
+This question has connections with optimization. \textcolor{red}{I would start with "Consider the problem $\min_{\theta\in \Theta} f(\theta)$ (write the equation in display). Setting $f=...$, we obtain that KL is the measure of suboptimality, i.e., (equation (3)). Moreover, we have that MAP solve a regularized version of f, (write equation) and MLE is the special case where (regularisation = 0)"}
 For one, the MLE is minimizing $f$ (or a regularized version for MAP), and the KL is the sub-optimality
 \alignn{
 f(\nat) - f(\nat^*) = \KL\paren{p(\cdot \cond \nat^*) || p(\cdot \cond \nat) }
@@ -190,20 +207,20 @@ From an optimization perspective, this problem is interesting, as it is often no
 In fact we can see this problem as a very special case to study SMD, revealing the limits of current analysis.
 
 \paragraph{Contributions}
-After formalizing the problem along with its asymptotic properties, we make the following contributions
+After formalizing the problem \textcolor{red}{restate the problem} along with its asymptotic properties, we make the following contributions. \textcolor{red}{Add ref to the main text in the contribution.}
 \begin{itemize}
 	\itemsep0em 
-	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation is valid.
-	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem}
-	\item We provide a full solution in the case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$.
-	\item We establish a connection with optimization, and use this problem to highlight areas for progress in the stochastic optimization of barrier objectives.
+	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation is valid. \textcolor{red}{Approx. of what?}
+	\item We investigate a generalized bias-variance decomposition~\citep{pfau2013generalized}. \TODO{revealing what ? the ideal shape of a rate and a sub-problem} \textcolor{red}{Decomposition of what?}
+	\item We provide a full solution \textcolor{red}{full solution of what?} in the case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$.
+	\item We establish a connection \textcolor{red}{Connection between something (you need to precise what) and optimization} with optimization, and use this problem to highlight areas for progress in the stochastic optimization of barrier objectives.
 \end{itemize}
 
-A solution to this problem would allow the field of optimization tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression).
+\textcolor{red}{I would emphasize more that you are talking about the impact of the work rather than contribution. Also I think its better to write this before the contribution, to motivate better why we did this work. }A solution to this problem would allow the field of optimization tackle a wider class of generalized linear models than fixed variance gaussians (linear regression) and Bernoulli (logistic regression).
 It could also help develop accelerated optimization methods.
 
 \paragraph{Notation}
-$X, T(X)$ and $T$ are random variables, while $x$ is a sample. 
+$X,\,T(X)$ and $T$ \textcolor{red}{Don't we have T = T(X), but written tuch that it's simpler? I think its better to say it that we write T instead of T(X) for simplicity, rather than saying its a random variable.} are random variables, while $x$ is a sample. 
 $n$ is the number of samples and $d= \dim(T)$. 
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
@@ -404,7 +421,9 @@ This asymptote is also independent of the optimum $\meanp^*$.
 \subsection{Quadratic Case}
 As another classical reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
 For instance, this is the log-partition of a Gaussian with variance $I$ and unknown mean 
-\[ \cX=\real^d,\quad \nu(dx) = \exp(\half[-\|x\|^2])dx,\quad T(x)=x.\]
+\[ 
+	\cX=\real^d,\quad \nu(dx) = \exp({\textstyle \half[-\|x\|^2]})dx,\quad T(x)=x.
+\]
 Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances:
 \begin{align}
 	\bregmanconj(\meanp^* ; \meanp) = \half \norm{\meanp^* -  \meanp }_2^2  \; .
@@ -529,7 +548,7 @@ Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:bias-variance-numerical
 \end{figure}
 
 
-\section{Gaussian Variance Example}
+\section{Gaussian Variance Example}\label{sec:example}
 A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its density reads 
 \[
