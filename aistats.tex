@@ -95,7 +95,8 @@
 \newcommand{\MAPt}{\hat \nat_n}
 \DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
 
-
+\newcommand{\stgcvx}{\alpha} % strong convexity
+\newcommand{\smooth}{\beta} % smoothness
 
 \begin{document}
 
@@ -168,7 +169,7 @@ For this purpose, not only is $f$ convex, but it even enjoys a closed form maxim
 	\label{eq:defMLE}
 \end{align}
 This rule is known as moment matching.
-Given a conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP).
+Given a certain conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP).
 %\textcolor{red}{DS: I know that for conciseness we do not write the MAP estimate here, but it's super central and I think its important to write the equation. WDYT?}
 % I think it's okay to have it only later, and refernece it here.
 
@@ -391,6 +392,7 @@ and step-size schedule $\lr_n$, initialized at $\nat_0$.
 Note that this analogy does not hold for the MLE %($n_0=0$)
 as it does not have any initialization to start from.
 \fdk{It does, you just forget the initial condition after the first step with step-size 1?}
+\rlp{to discuss.}
 
 \section{Open Problem}
 \label{sec:problem}
@@ -512,7 +514,7 @@ so $\bregmanconj$ is $2L$-Lipschitz, and we get a $O(\inv{\sqrt{n}})$ rate.
 Note that none of the standard exponential families verify this assumption.
 \TODO{connection with optim non-smooth rate.}
 
-{\bf If $\conj$ is $L$-smooth} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
+{\bf If $\conj$ is $L$-smooth}\footnote{e.g. $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     \leq \frac{L}{2} \norm{\m^* - \m}^2
@@ -536,7 +538,7 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 }
 \end{proposition}
 Proof in the appendix
-\footnote{In case the reader is intrigued, $0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
+\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
 For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$ (see appendix).
@@ -753,25 +755,27 @@ and strong convexity assumption on the potential $\logpart$
 In our case, none of these assumptions may hold.
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
-Recently, these assumptions have been relaxed to the $\mu$-strong convexity and $L$-smoothness of $f$
+Recently, these assumptions have been relaxed to the $\stgcvx$-strong convexity and $\smooth$-smoothness of $f$
 \emph{relative} to $\logpart$, defined as
 \aligns{
-	\mu \cB_{A}(x, y)
+	\stgcvx \cB_{A}(x, y)
 	\leq
 	\cB_f(x,y)
 	\leq
-	L \cB_A(x,y) \; .
+	\smooth \cB_A(x,y) \; .
 }
-This extends the theory to a family of non-smooth functions $f$ and non-strongly convex potential $\logpart$, first in the deterministic setting
-\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}, then in the stochastic setting \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}. When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent.
-Those conditions ensure the linear convergence rate of MD with $A$ as the reference function.
+When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent.
+Those conditions ensure the linear convergence of MD with $A$ as the reference function,
+thus extending the theory to a family of non-smooth functions $f$ and non-strongly convex potential $\logpart$
+\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}.
 
-
-\textcolor{red}{Sure of this formulation?} Exponential families log-likelihood perfectly fit into this framework, as
+For exponential families, the log-likelihood perfectly fit into this framework, as
 \aligns{
 	f(\theta) = A(\theta) - \expect{\lin{X, \theta}}
 }
-is $1$-smooth and $1$-strongly convex relative to $A$. However, the (relative) smoothness is not biggest issue in our convergence analysis, but the bound on the variance, as explained in the next section.
+is both $1$-smooth and $1$-strongly convex relative to $A$. 
+So we are left with finding an applicable convergence rate for SMD under relative assumptions.
+As we investigate in the next section, several pieces of work have addressed this question, under various assumptions on the stochasticity \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}.
 
 \subsection{Bounding the Randomness}
 To analyze stochastic algorithms, one also need to quantify the randomness.
@@ -833,17 +837,17 @@ this definition recovers the variance of the stochastic gradient
 \[
 	\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C.
 \]
-More generally, if $A$ is $\mu$-strongly convex w.r.t. $\norm{\cdot}$,
+More generally, if $A$ is $\stgcvx$-strongly convex w.r.t. $\norm{\cdot}$,
 the LHS of \cref{eq:hanzely} is bounded by
-$\expecti{\frac{1}{\mu}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$,
-and a bound on the variance of the stochastic gradient is a sufficient condition for \cref{eq:hanzely}
+$\expecti{\frac{1}{\stgcvx}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$.
+Then a bound on the variance of stochastic gradients is sufficient for \cref{eq:hanzely}
 to hold.
-\textcolor{red}{check formulation} Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
-\aligns{
-\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
-}
-thus showing positivity.
-Under this assumption, \textcolor{red}{who is they?}they prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size \citep[Lem.4.8]{hanzely2018fastest}, by applying a polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
+%Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
+%\aligns{
+%\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
+%}
+%thus showing positivity.
+Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate with a $O(1/n)$ step-size, by applying polynomial tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
 In general however, this assumption hardly holds.
 For the MAP, this translates into $\forall n \geq 1,$
@@ -866,7 +870,7 @@ In words, this bounds the variance of the gradients at the minimum, but with a m
 Under this assumption, they prove convergence up to a variance ball with a constant step-size.
 Their descent lemma \citep[Eq.(12)]{dragomir2021fast} is the exact analog  of a modern analysis of SGD \citep[Th.3.2]{gower2019sgd}, meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
 
-\textcolor{red}{Too informal, plz rephrase} Seems like a perfect fit then ? Well not really, this variance assumption does not hold for exactly the same reason as the one of \textcolor{red}{use cite command} Hanzely. Having something valid for every possible iterates is way too strong.
+This seems to be a perfect solution to our problem. Yet it suffers from the exact same qualm as \citet{hanzely2018fastest}. For barrier objectives, \cref{eq:dragomir} cannot hold uniformly on every possible path of iterates, because these paths can get arbitrarily close from boundaries where $\bregmanconj$ becomes infinite.
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
@@ -879,14 +883,13 @@ In words, this lower bounds the expectation of the minimum of the stochastic est
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
 This holds for instance for discrete distributions because the probability mass is upper bounded by $1$,
 but it rules out  many families.
-In the case of normal distributions, setting $\mu=x$ and $\sigma^2 \rightarrow 0$ gets $p(x\cond \nat) \rightarrow +\infty$. \textcolor{red}{Check this, I changed the formulation but i am not sure if this remains correct or not.} We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
- Other examples include inverse Gaussians, log-normal, gamma, inverse gamma.
+In the case of normal distributions$\cN(m, \sigma^2)$, setting $\mu=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
+ Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
 
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
 For instance, a multivariate normals of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
 
-In conclusion, it seems these approaches can yield to interesting convergence rates for the MAP, and they do prove linear convergence of the last iterate up a to a variance ball with constant step-size, but the size of this ball $\frac{C}{\alpha}$ \rlp{strong convexity notation} is independent of the step-size. \textcolor{red}{Who is their?} Their descent lemma does not lead to convergence with a decreasing $O(1/t)$ step-size.
-
+Overall, this approach seems to answer~\eqref{problem}. Yet it fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step-size $\lr \leq \inv{\smooth}$.
 
 \subsection{Issues with current analyses}
 
