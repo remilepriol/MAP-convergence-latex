@@ -229,7 +229,7 @@ Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal 
 }
 Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
 In particular, with exponential families, MAP is an instantiation of stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
-Inspired by recent work~\citep{lepriol2021analysis}, we try using existing optimization convergence rates for SMD to get the upper bound we seek.
+Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we try using existing optimization convergence rates for SMD to get the upper bound we seek.
 Unfortunately, none of the current analysis apply, which frames another open problem for the analysis of SMD.
 
 {\bf Expected Ouctomes.}
@@ -276,15 +276,14 @@ The log-partition function $\logpart$ acts as a normalization term, since
 \end{align}
 This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
 
-For convenience, we focus on steep, regular exponential families with minimal statistic $T$.
+For convenience, we focus on steep, regular exponential families with minimal statistic $T$ \citep{barndoffnielsen2014information}.
 Then $\logpart$ is a strictly convex function of Legendre type,
-and the set $\Theta = \{ \nat \cond \logpart(\nat) < \infty\}$ is open and convex
-\citep{barndoffnielsen2014information}.
+and the set $\Theta = \{ \nat \cond \logpart(\nat) < \infty\}$ is open and convex.
 When explicit, we write the random variable $T = T(X)$.
 
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
-\paragraph{Duality}
+{\bf Duality.}
 The log-partition function $\logpart$ verifies the two following identities:
 \begin{align}
     \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp \\
@@ -313,10 +312,8 @@ By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  
 	\label{fig:duality}
 \end{figure}%
 %
-%\paragraph{Bregman Divergences} %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
-% We now introduce the Bregman divergence induced by $\logpart$,
-% that measures the discrepancy between two parameters $\nat$ and $\nat_0$,
-The Bregman divergence induced by $\logpart$,
+%Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
+{\bf The Bregman Divergence} induced by $\logpart$,
 measures the discrepancy between two parameters $\nat$ and $\nat_0$,
 \begin{align}
     \bregman (\nat ; \nat_0)
@@ -326,26 +323,25 @@ measures the discrepancy between two parameters $\nat$ and $\nat_0$,
 \end{align}
 with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\nat_0$.
 In general, Bregman divergences are not symmetric, i.e., $\bregman (\nat ; \nat_0)\neq \bregman (\nat_0 ; \nat)$.
-Finally, it is equal to the divergence of its convex conjugate with switched arguments,
-\begin{align}
-	\bregman (\nat ; \nat_0)
-    = \bregmanconj ( \meanp_0 ; \meanp) \; .
-    \label{eq:bregman_switch}
-\end{align}
+%Finally, it is equal to the divergence of its convex conjugate with switched arguments,
+%\begin{align}
+%	\bregman (\nat ; \nat_0)
+%    = \bregmanconj ( \meanp_0 ; \meanp) \; .
+%    \label{eq:bregman_switch}
+%\end{align}
 
-\paragraph{Conjugate Prior}
-One conjugate prior \citep{agarwal2010geometric} for $p(X|\nat)$ is
+{\bf A Conjugate Prior} for $p(X|\nat)$ is
 \begin{align}
     p(\nat)
     &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
     &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat)),
     \label{eq:def_prior}
 \end{align}
-where $n_0$ and $\nat_0$ are (hyper)parameters of the prior.
+where $n_0$ and $\nat_0$ are (hyper)parameters of the prior  \citep{agarwal2010geometric}.
 This is an exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and natural parameter $(n_0 \m_0, -n_0)$.
 Intuitively, $n_0$ is the number of fictive data points observed from a distribution with natural parameter $\nat_0$.
 
-\paragraph{Maximum A Posteriori (MAP).}
+{\bf Maximum A Posteriori (MAP)}
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD_n|\nat)p(\nat)$.
 Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
 \begin{align}
@@ -376,12 +372,13 @@ We wish to quantify how well the MLE or a MAP models the true distribution.
 
 A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$. % should we define it ?
 In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
-Using~\eqref{eq:defNLL} and~\eqref{eq:bregman_switch}, we can also write the KL with Bregman divergences
+With exponential families, the KL is also a Bregman divergence
 \alignn{
 	\KL(p_{\nat^*} || p_\nat)
 	 = \bregman(\nat ; \nat^*)
 	 = \bregmanconj(\m^* ; \m) \; .
 }
+where the second equality is a general property of Bregman divergences and convex conjugates. (Be careful about the 
 How does this quantity behave when $\nat$ is the MLE or MAP?
 Can we get upper bounds on the expected KL?
 \begin{align}
@@ -401,7 +398,7 @@ or results for special cases such as $\cN(0, \sigma^2)$ (see \S\ref{sec:example}
 But we are yet to find a solution encompassing a broad range of exponential families,
 and applicable to small sample sizes $n \lesssim d$.
 
-{\bf Difficulty with MLE.}
+{\bf A Difficulty with the MLE.}
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite,
 for instance when estimating the covariance of a Gaussian when $n \leq d + 1$.
 Even worse, with categorical variables, there is a non-zero probability to never sample one of the categories.
