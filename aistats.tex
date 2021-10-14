@@ -75,6 +75,8 @@
 \usepackage{math_commands}
 % some custom math commands
 \newtheorem{proposition}{Proposition}
+\newtheorem{problem}{Open Problem}
+
 \newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
 \newcommand*{\expecti}[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }} % expectation operator
 
@@ -358,8 +360,9 @@ which reaches its maximum at $\MAPt^\text{MAP}$ such that
 where $T_i=T(X_i)$.
 When $n_0=0$ -- we have no samples from the prior -- we recover the MLE~\eqref{eq:defMLE}.
 We write $\MAPt$ for the MAP, and view the MLE as a special case.
+We are now ready to formalize the main problem of this paper.
 
-\section{Problem Formulation}
+\section{PROBLEMS FORMULATION}
 \label{sec:problem}
 % Assume we observe a dataset $\mD$ drawn i.i.d. from a distribution $\cD$.
 % We further assume that our model is well-specified and there exist $\nat^*\in\Theta$ such that $\cD = p(\cdot \cond \nat)$.
@@ -378,24 +381,27 @@ With exponential families, the KL is also a Bregman divergence
 	 = \bregman(\nat ; \nat^*)
 	 = \bregmanconj(\m^* ; \m) \; .
 }
-where the second equality is a general property of Bregman divergences and convex conjugates. (Be careful about the 
+where the second equality is a general property of Bregman divergences and convex conjugates. (Be careful about the order of arguments.)
 How does this quantity behave when $\nat$ is the MLE or MAP?
-Can we get upper bounds on the expected KL?
+ Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators when the loss is the KL divergence? 
+This is our first problem.
+
+\begin{problem}[Bounding MAP and MLE]
+Upper bound the following quantities:
 \begin{align}
 	\label{eq:bregmanMLE}
 	\text{MLE: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
 	\label{eq:bregmanMAP}
 	\text{MAP: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
 \end{align}
-where the expectation is on the data $\mD$.
-More explicitly, is there an upper bound that does not involve this expectation over the dataset?
-Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators
-when the loss is the KL divergence?
+where the expectation is on the data $\mD = (T_1, \dots, T_n)$.
+\end{problem}
 
+More explicitly, we want an upper bound that does not involve this expectation over the dataset.
 Surprisingly, we found no general solution to this seemingly simple problem, whether in the literature or by our own means.
-There is a large body of work about asymptotic or large sample results, which we partially review in \S\ref{sec:insights},
-or results for special cases such as $\cN(0, \sigma^2)$ (see \S\ref{sec:example}).
-But we are yet to find a solution encompassing a broad range of exponential families,
+In \S\ref{sec:example}, we provide results for special cases such as $\cN(0, \sigma^2)$,
+while in \S\ref{sec:insights} we provide realistic conditions to obtain bounds that are valid after seeing a large number of samples.
+But we are yet to find a solution encompassing both a broad range of exponential families,
 and applicable to small sample sizes $n \lesssim d$.
 
 {\bf A Difficulty with the MLE.}
@@ -410,25 +416,28 @@ These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
 \paragraph{Optimization}
-We can rewrite~\eqref{eq:defMAP} as
+With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD).}
+More precisely, let us re-write~\eqref{eq:defMAP} as
 \alignn{
 \m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
 \label{eq:mean_update}
 }
 where $\lr_n := \inv{n_0 + n}$.
-Now let $f_X(\nat) = -\log p(X \cond \nat)$ such that $\E[f_X] = f$.
-If we further introduce $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
+Now define stochastic functions $f_X(\nat) = -\log p(X \cond \nat)$ such that $\E[f_X] = f$.
+If we further introduce stochastic gradients $g_n(\nat) := \nabla\logpart(\nat) - T_n = \nabla f_{X_n}(\nat)$, then~\eqref{eq:mean_update} becomes
 \alignn{
 	\nabla\conj(\hat \nat_{n})
 	= \nabla\conj(\hat \nat_{n-1}) - \lr_n g_n(\hat \nat_{n-1})
 }
-which is the update formula for stochastic mirror descent (SMD) on $f$ with mirror map $\nabla\logpart$
+which is the update formula for SMD on $f$ with mirror map $\nabla\logpart$
 and step-size schedule $\lr_n$, initialized at $\nat_0$.
-\emph{MAP is an instantiation of SMD.}
 In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.	
+The observation MAP$\in$SMD brings us to our second problem.
+\begin{problem}[Convergence rate for SMD]
+Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(m, \sigma^2)$.
+\end{problem}
 
-
-We start with special examples, with a concrete upper bound, to give insights into what we want to achieve.
+To address these problems, we start by investigating examples, for which we provide solutions to problem 1 and get insights into what is achievable.
 
 \section{Examples}\label{sec:example}
 \subsection{Gaussian Variance}\label{ssec:gaussian-variance}
