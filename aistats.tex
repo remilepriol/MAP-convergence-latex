@@ -170,10 +170,7 @@ For this purpose, not only is $f$ convex, but it even enjoys a closed form maxim
 \end{align}
 This rule is known as moment matching.
 Given a certain conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP).
-%\textcolor{red}{DS: I know that for conciseness we do not write the MAP estimate here, but it's super central and I think its important to write the equation. WDYT?}
-% I think it's okay to have it only later, and refernece it here.
 
-%\textcolor{red}{This comes a bit from nowhere. Maybe phrase it like (its not sexy wirting here, just the idea of the structure) "The measure of closeness between theta and its estimate hat theta is an active area of research. We distinguish two way to do that: 1) distance in the parameter space and 2) distance between their associated distribution. In the first case, the analysis use norms blabla. In the second, we use KL"}
 {\bf Metrics.}
 Once we have an estimator $\hat \nat$, we wish to assess its quality:
 how close is it from some optimal $\nat^*$.
@@ -185,13 +182,12 @@ In particular for sum of independent variables such as~\eqref{eq:defMLE}, large 
 For this purpose, the Kullback-Leibler (KL) divergence $\KL\paren{p_{\nat^*} || p_{\nat} }$  arises naturally from information theory,
 but its lack of robustness to misspecification\footnote{
 For $p$ and $q$ continuous densities,
-$\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \&p(x)>0$. %Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
+$\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \&p(x)>0$. 
+%Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
 }
 has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction} , the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
 Hence the fundamental problem:
-%\textcolor{red}{The sample complexity of the quality of the estimator is well known when we use norms between parameters, in opposition to the case where we measure the distance between distribution. }
-% RLP : that is not so true. the citation tsybakov does gie bound for non-parametric estimation with kernels in L^2 distance.
 %\begin{center}
 %	\framebox{
 %		\parbox[c][]{0.9\linewidth}{
@@ -218,11 +214,6 @@ or when $\logpart$ is quadratic -- e.g. $X$ is Gaussian with known variance --
 or close to quadratic (see \S\ref{ssec:quadratic}),
 but a  general solution for finite $n$ remains elusive.
 In this paper, we review partial solutions, and give some ideas on how to solve it.
-%\textcolor{red}{Maybe say that "in this paper, we show that this problem is difficult and we give the reason why and some idea on how to solve it"}
-%RLP problem : we don't show it is difficult, neither do we explain why it is difficult. That sounds hard to do.
-
-%\textcolor{red}{My main problem with the following paragraph here is that its at the same time too detailed for the intro, but also not enough detailed to understand it.}
-%RLP right, not sure about how to fix this. It is hard to decide on the right amount of space for optimization versus statistics.
 
 {\bf Stochastic optimization} offers an interesting perspective on this question.
 Consider the problem
