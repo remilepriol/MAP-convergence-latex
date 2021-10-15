@@ -531,8 +531,8 @@ Proofs are in App.\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} o
 Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
 Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
 \alignn{
-    \bregmanconj(\m^* ; \m)
-    &= \frac{\norm{\m^* - \m}^2_{\mF}}{2}
+    \textstyle \bregmanconj(\m^* ; \m)
+    &\textstyle = \frac{1}{2}\norm{\m^* - \m}^2_{\mF}
     + O(\norm{\m - \m^*}^3),
     \label{eq:bregmanTaylor}
 }
@@ -543,32 +543,32 @@ where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
 }
-Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, one can show  that 
+Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, we have
 \begin{align}
 	\label{eq:asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
-Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible compared to the data for large $n$.
-For well-specified models, this asymptote is also independent of the optimum $\meanp^*$. or $\mF$.
-Let us see another example for which it is trivial to get a rate matching~\eqref{eq:asymptote}.
+Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible for large $n$.
+For well-specified models, this asymptote is also independent of the optimum $\meanp^*$ or $\mF$.
+Let us see another example for which we get a rate matching~\eqref{eq:asymptote}.
 
 \subsection{Quadratic Case}
 \label{ssec:quadratic}
-As another classical reference point, let us consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
+As another classical reference point, we consider the case $\logpart(\nat) = \half \norm{\nat}_2^2$.
 For instance, this is the log-partition of a Gaussian with known variance $I$,
 \[
 	\cX=\real^d,\quad \nu(dx) = \exp\paren{\textstyle \half[-\|x\|^2]} dx,\quad T(x)=x.
 \]
-Then $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances:
+In this case, $\conj(\meanp) = \half \norm{\meanp}_2^2$ as well, and both Bregman divergences are squared $\ell^2$ distances since
 \begin{align}
 	\bregmanconj(\meanp^* ; \meanp) = \half \norm{\meanp^* -  \meanp }_2^2  \; .
 \end{align}
-Thanks to the independence of samples, we can break down the MLE into individual point's contributions
+Thanks to the independence of samples, we can break down the MLE into individual point's contributions:
 \begin{align}
 	\expect{\half \norm{\m^* -  \inv{n}  \smallsum_i T_i}_2^2}
 	=\frac{\Var(T)}{2n}
-	=\frac{d}{2n}
+	=\frac{d}{2n}.
 \end{align}
 Adding a reference mean $\m_0$ to get the MAP yields
 \begin{align}
@@ -577,15 +577,14 @@ Adding a reference mean $\m_0$ to get the MAP yields
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
-So we see a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$.
-Can we generalize these results to other families ?
-If we make restrictive assumptions on the log-partition function, we can relate $\bregmanconj$ to a norm or a quadratic.
+We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$. However, this result does not generalize well to other families, unless we make restrictive assumptions on $\conj$. % we can relate $\bregmanconj$ to a norm or a quadratic.
+% Can we generalize these results to other families?
 
 {\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     &\leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m} \\
-    &\leq 2L \norm{\m^* - \m}
+    &\leq 2L \norm{\m^* - \m},
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate.
 However none of the common exponential families verify this assumption.
@@ -593,12 +592,12 @@ However none of the common exponential families verify this assumption.
 {\bf If $\conj$ is $L$-smooth}\footnote{$\conj$ is $L$-smooth iff $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
-    \leq \frac{L}{2} \norm{\m^* - \m}^2
+    \leq \frac{L}{2} \norm{\m^* - \m}^2,
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 It is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
-The problem is that, besides the Gaussian with known variance, no standard exponential family has a strongly convex log-partition function.
-So let us focus on a more realistic set of assumptions in the next section.
+The problem is that, besides the Gaussian with known variance, no standard exponential family has a \textit{global} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
+% So let us focus on a more realistic set of assumptions in the next section.
 
 \subsection{Locally Quadratic Case}
 \label{ssec:local-quadratic}
@@ -608,11 +607,11 @@ Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
 } of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.\ref{app:self-concordant}.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
-	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2
+	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2.
 }
 \end{proposition}
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
@@ -648,10 +647,17 @@ Informed by the properties we have seen so far, let us formulate a conjecture.
 \subsection{Bias-Variance Decomposition}
 \label{ssec:bias-variance}
 In both the quadratic~\eqref{eq:MAP_quadratic} and the Gaussiance variance examples~\eqref{eq:MAP_rate}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, 
+<<<<<<< HEAD
 giving us a flavor of what we would like as a general result for exponential families : a finite sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
 In fact, such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2013generalized}.
 \begin{theorem}[Bregman Bias-Variance Decomposition]
 	Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its dual representation. The  expected Bregman decomposes into
+=======
+giving us a flavor of what we would like as a general result for exponential families: a finite sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
+In fact, such a decomposition exists for any Bregman divergence.
+Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its corresponding mean parameter.
+As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes into
+>>>>>>> 89d83e46481ef79c18ab46621d672c9e0478ea07
 \begin{equation}
 	\expect{\bregmanconj(\m^* ; \hat \m_n)} = {\bregmanconj(\m^* ; \tilde \m_n)}
 	+ {\expect{\bregmanconj(\tilde \m_n ; \MAPm)}}
@@ -663,8 +669,14 @@ In fact, such a decomposition exists for any Bregman divergence \citep[Theorem 0
 An estimator will be unbiased if $\tilde \nat_n = \nat^*$.
 This is not true for the MLE, which is unbiased w.r.t. the dual parameter $\expecti{\hat \m_n}=\m^*$.
 
+<<<<<<< HEAD
 We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MAP, and
  ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for quadratics.
+=======
+\textbf{Remark:} In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero.
+However, this is not true for the the gaussian variance MLE, where the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$.
+A contrario, the MLE is unbiased w.r.t. the dual parameter, but the decomposition there is not clean.
+>>>>>>> 89d83e46481ef79c18ab46621d672c9e0478ea07
 
 \textbf{Conjecture:} the bias decreases like $O(1/n^2)$.
 
@@ -727,11 +739,10 @@ Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:thales} plots the chara
 %Note that this optimization perspective does not hold for the MLE %($n_0=0$)
 %as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
 
-As introduced in the technical background, MAP can be interpreted as stochastic mirror descent (SMD).
-This means that we may obtain a convergence rate for MAP from an optimization analysis, 
-and any insights gained from the MAP may inform further design and analysis of SMD.
-We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, 
-before investigating 3 analysis of SMD with the MAP.
+
+As we saw in the technical background, MAP can be interpreted as stochastic mirror descent (SMD).
+This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
+We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three analyses of SMD with the MAP.
 \rlp{mention that examples have so far been lacking for relative SMD.}
 
 \subsection{Relative Smoothness}
@@ -776,7 +787,7 @@ Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}
 We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
 See \cref{tbl:assumptions} for a summary.
 
-\textbf{Caveat:} these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging in the primal.
+\textbf{Caveat:} these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
 
 \begin{table}[t]
 \begingroup
@@ -845,9 +856,11 @@ by applying tail averaging \citep{lacostejulien2012simpler} in primal space $\Th
 But in general, this assumption rarely holds.
 For the MAP, this translates into $\forall n \geq 1,$
 \alignn{
-\expect[T_n]{\lin{T_n - \mu^* , \MAPt}} \leq \lr_n C
+\expect[T_n]{\lin{T_n - \meanp^* , \MAPt}} \leq \lr_n C
 }
-which fails to hold on the gaussian variance example for instance. \TODO{ DAMIEN short proof or formalize.}
+which fails to hold on the gaussian variance example for instance. Indeed, we cannot control the samples $x_i$, therefore there is a non-zero probability they make $\nabla\conj(\MAPt) = \hat\meanp_t$ arbitrarily close to zero. Since the conjugate of the log partition is $\conj=-0.5\log$, this makes $\MAPt$ unbounded.
+
+%  \TODO{ DAMIEN short proof or formalize.}
 
 \subsubsection{Bounded Variance at the Minimum}
 
