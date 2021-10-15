@@ -861,7 +861,9 @@ where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\n
 In other words, this lower bounds the expectation of the minimum of the stochastic estimates.
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
 This holds, for instance, for discrete distributions because the probability mass is upper bounded by $1$; however, it rules out many families.
-In the case of normal distributions $\cN(m, \sigma^2)$, setting $m=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
+In the case of normal distributions $\cN(m, \sigma^2)$, setting $m=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$,.
+%A similar behavior holds for Gamma, Beta, inverse Gaussians, log-normal, Gamma or inverse Gamma distributions.
+We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
 Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
 
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
