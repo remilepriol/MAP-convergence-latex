@@ -520,7 +520,9 @@ Given these parameters, log-partition and entropy are, up to constants,
 	\textstyle \conj(\m) &= \textstyle - \half \log (\mu_2 - \mu_1^2)
 }
 
-These functions are neither smooth, nor strongly convex, nor self-concordant (see App.~\ref{app:gaussian}).
+These functions are neither smooth, nor strongly convex, and $\conj$ is self-concordant
+\citep[p.177]{nesterov2003introductory}
+, but $\logpart$ is not (see App.~\ref{app:gaussian}).
 We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
 \section{Partial Solutions}
@@ -528,9 +530,8 @@ We now discuss the general problem and some ways to solve it via direct expansio
 
 \subsection{Asymptotic Rate}
 \label{ssec:asymptote}
-As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
-We now detail a classical asymptotic result.
-Proofs are in App.~\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
+As a reference point for any finite convergence rate, it is interesting to briefly review the classical asymptotic behavior of these quantities as $n \rightarrow +\infty$.
+Proofs are in App.~\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a more comprehensive review.
 
 Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
 Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
@@ -599,8 +600,7 @@ so $\bregmanconj$ is Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\s
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 It is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
-Besides the Gaussian with known variance, the problem is that no standard exponential family has a \textit{global} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
-% So let us focus on a more realistic set of assumptions in the next section.
+Besides the Gaussian with known variance, the problem is that no standard exponential family has a \textit{globally} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
 
 \subsection{Locally Quadratic Case}
 \label{ssec:local-quadratic}
@@ -624,10 +624,9 @@ For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition 
 This means that on average, we need $25$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
 The entropy $\conj$ is self-concordant for several common families.
-For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.~\ref{app:self-concordant}),
+For instance Gaussians (\S\ref{ssec:gaussian}), or when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.~\ref{app:self-concordant}),
 as is the case with:
 exponential distributions,
-Gaussians with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
 or Weibull with known shape $k$.
@@ -636,7 +635,7 @@ Precisely, categorical variables illustrate that Proposition~\ref{prop:selfConco
 The expected KL of the categorical MLE is always infinite, as previously mentioned in \S\ref{sec:problem}.
 
 Overcoming this limitation,
-\citet{ostrovskii2021finite} characterize the number of samples needed to be upper bounded by a quadratic \emph{with high-probability}, for any parametric models with a self-concordant log-likelihood.
+\citet{ostrovskii2021finite} characterize the number of samples needed to be upper bounded by a quadratic \emph{with high-probability}, for any parametric models with a self-concordant log-likelihood $f$.
 \citet{anastasiou2017bounds} obtains a similar flavor of result under other assumptions on the third derivative of $f$.
 More closely, in the world of exponential families, \citet{kakade2010learning} prove a result similar to Proposition~\ref{prop:selfConcordant} from a local bound on all higher-order moments of $\logpart$ in $\nat^*$.
 However, these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
@@ -644,7 +643,7 @@ However, these results are expressed with quadratics in $\nat$, not $\m$, and th
 More generally, these results answer~\eqref{problem} only \emph{partially} for the following reasons.
 First, the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$. 
 None of them apply to small $n$.
-Second, they do not apply to some standard exponential families like the full Gaussian example that we saw in \S\ref{ssec:gaussian} which is \emph{not} self-concordant. 
+Second, they do not apply to some standard exponential families like the full Gaussian example that we saw in \S\ref{ssec:gaussian}  for which $f$ is \emph{not} self-concordant. 
 A full solution to~\eqref{problem} would address these caveats.
 Informed by the properties that we have seen so far, we next investigate a general decomposition of the Bregman that could guide us towards a solution.
 
@@ -818,10 +817,11 @@ Let us introduce the symmetrized Bregman induced by $\conj$, written $\cS_\conj(
 	\label{eq:hanzely}
 }
 for all possible iterates $\MAPt$, relevant step-sizes $\lr$ and for some constant $C$.
-When $A(\theta) = \frac{1}{2}\norm{\theta}^2$ or when $A$ is $\stgcvx$-strongly convex,
+When $A(\theta) = \frac{1}{2}\norm{\theta}^2$,
+%or when $A$ is $\stgcvx$-strongly convex,
 this definition recovers the variance of the stochastic gradient
 \[
-\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
+\expect[g\!\!]{\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
 \]
 Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate on function values with $O(1/n)$ step-sizes and tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
@@ -832,9 +832,11 @@ Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ conv
 	} \leq 2 \lr^2 C \; .
 	\label{eq:dragomir}
 }
-When $\logpart$ is $\stgcvx$-strongly-convex, we recover the variance of the gradients at the optimum
+When $A(\theta) = \frac{1}{2}\norm{\theta}^2$,
+% or when $\logpart$ is $\stgcvx$-strongly-convex,
+we recover the variance of the gradients at the optimum
 \[
-\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla g(\theta^*)}^2}\leq C.
+\expect[g\!\!]{\norm{\nabla g(\theta^*)}^2}\leq C.
 \]
 Using their descent lemma \citep[Eq. (12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th. 3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
 
