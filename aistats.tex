@@ -753,7 +753,7 @@ Our goal is then to find an applicable convergence rate for SMD under relative s
 
 \subsection{Bounding the Randomness}
 
-To analyze stochastic algorithms, one also need to quantify the randomness.
+To analyze stochastic algorithms, one also need to quantify the randomness of stochastic gradients $g(\nat)$ .
 While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}, only a few have been adapted to SMD with relative smoothness \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}, but they have so far been lacking concrete examples.
 We review these analyses in the light of the MAP and provide a summary in \cref{tbl:assumptions}.
 
@@ -854,7 +854,7 @@ where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\n
 In other words, this lower bounds the expectation of the minimum of the stochastic estimates.
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
 This holds, for instance, for discrete distributions because the probability mass is upper bounded by $1$; however, it rules out  many families.
-In the case of normal distributions$\cN(m, \sigma^2)$, setting $\mu=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
+In the case of normal distributions $\cN(m, \sigma^2)$, setting $m=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
  Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
 
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
@@ -862,9 +862,7 @@ For instance, a multivariate normal of dimension $d$ cannot attribute infinite d
 
 Overall, this approach seems to answer~\eqref{problem}, but fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step size.%  $\lr \leq \inv{\smooth}$.
 
-
-If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let us assume they hold on average. Does the proof remain valid? Yes, I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem? Yes.
-\TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
+%\rlp{Add discussion here.}
 
 \section{Conclusion}
 Exponential family MLE and MAP are used everywhere -- every time someone computes a mean and variance to fit some bell-shaped data.
