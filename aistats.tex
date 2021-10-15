@@ -442,9 +442,8 @@ To address these problems, we start by investigating examples, for which we prov
 A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its log-likelihood reads $\log p(x) = -\frac{x^2}{2 \sigma^2} - \half\log(2\pi \sigma^2)$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\nat = -\inv{2 \sigma^2} <0$, and mean parameter $\m=\E[T(X)] = \sigma^2 >0$.
-Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\inv{2 \m}$.
-\textcolor{red}{The explanation here is not clear enough, or too concise} 
-Now we can match the log-likelihood with the exponential family template to get the log-partition function, and take the conjugate to find the entropy
+Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\inv{2 \m}$. 
+Now we match the log-likelihood with the exponential family template to get the log-partition function, and take the conjugate to find the entropy
 \aligns{
 	\logpart (\nat) = - \half \log(-\nat) \quad\text{and}\quad
 	\conj(\m) = - \half \log(\m)  \; ,
@@ -455,12 +454,12 @@ It means the conjugate prior is the exponential family with sufficient statistic
 It also means $\bregman$ and $\bregmanconj$ have the same shape
 \begin{align}
 	\bregmanconj( \m_*; \m_n)
-	&= \half \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right), \\
-	\bregman( \nat_n; \nat_* )
-	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
+	&= \half \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right) \; .
+%	\bregman( \nat_n; \nat_* )
+%	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
 \end{align}
 In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
-All proofs for this section are in \cref{app:gaussian-variance}.
+All proofs for this section are in App.\ref{app:gaussian-variance}.
 \begin{theorem}[MLE Bound]
 \label{thm:varianceMLE}
 	The MLE of $\cN(0,\m_*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
@@ -488,7 +487,8 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{\max(0,n-2)}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
-Note that this inequality actually holds for the symmetrized Bregman $\cB(a,b) + \cB(b,a)$, which explains why it loses a factor 2 compared to the asymptote~\eqref{eq:asymptote}, but we leave this to the appendix for clarity.
+Note that this inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
+This explains the loss of a factor 2 compared to the asymptote~\eqref{eq:asymptote}. 
 Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights a clear variance-bias decomposition.
 In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth
 This correlates well with our numerical observations (cf App.\ref{app:gaussian-variance}).
@@ -516,7 +516,7 @@ Given these parameters, log-partition and entropy are, up to constants,
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2)
 }
 
-These functions are neither smooth, nor strongly convex, nor self-concordant (see \cref{app:gaussian}).
+These functions are neither smooth, nor strongly convex, nor self-concordant (see App.\ref{app:gaussian}).
 Let us keep this in mind, as we move on to discussing the general problem, and some ways to solve it via direct expansions of the Bregman divergence.
 
 \section{Partial Solutions}
@@ -526,7 +526,7 @@ Let us keep this in mind, as we move on to discussing the general problem, and s
 \label{ssec:asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
 We now detail a classical asymptotic result.
-Proofs are in \cref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
+Proofs are in App.\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
 
 Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
 Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
@@ -606,7 +606,7 @@ From Taylor expansion~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
 Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
-} of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in \cref{app:self-concordant}.
+} of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.\ref{app:self-concordant}.
 \begin{proposition}
 Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}.
 \aligns{
@@ -641,7 +641,7 @@ Partially, because the present proposition and these related works all give \tex
 None of them apply to small $n$.
 That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
 A full solution to~\eqref{problem} would address both of these caveats.
-Informed by the properties we have seen so far, let us investigate a bias-variance decomposition to formulate a conjecture.
+Informed by the properties we have seen so far, let us formulate a conjecture.
 %If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
 
 
@@ -649,45 +649,46 @@ Informed by the properties we have seen so far, let us investigate a bias-varian
 \label{ssec:bias-variance}
 In both the quadratic~\eqref{eq:MAP_quadratic} and the Gaussiance variance examples~\eqref{eq:MAP_rate}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$, 
 giving us a flavor of what we would like as a general result for exponential families : a finite sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
-In fact, such a decomposition exists for any Bregman divergence.
-Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its corresponding mean parameter.
-As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman decomposes into
+In fact, such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2013generalized}.
+\begin{theorem}[Bregman Bias-Variance Decomposition]
+	Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its dual representation. The  expected Bregman decomposes into
 \begin{equation}
 	\expect{\bregmanconj(\m^* ; \hat \m_n)} = {\bregmanconj(\m^* ; \tilde \m_n)}
 	+ {\expect{\bregmanconj(\tilde \m_n ; \MAPm)}}
 	\label{eq:primal_pivot}
 \end{equation}
+\end{theorem}
 
+\textbf{Remark:} In this decomposition, the primal expectation $\expecti{\hat \theta_n}$ is the reference point. 
+An estimator will be unbiased if $\tilde \nat_n = \nat^*$.
+This is not true for the MLE, which is unbiased w.r.t. the dual parameter $\expecti{\hat \m_n}=\m^*$.
 
-\textbf{Remark:} In this decomposition, the primal expectation $\expect{\hat \theta_n}$ is taking the role of pivot / reference point. An estimator will be unbiased if its primal expectation is non-zero.
-However, this is not true for the the gaussian variance MLE, where the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$.
-A contrario, the MLE is unbiased wrt the dual parameter, but the decomposition there is not clean.
+We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MAP, and
+ ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for quadratics.
 
 \textbf{Conjecture:} the bias decreases like $O(1/n^2)$.
 
 \paragraph{Illustrations.}
-We plot the bias-variance decompositions for $\cN(0,\sigma^2)$ (Figure~\ref{fig:variance_decomposition}) and  $\cN(\mu, \sigma^2)$ (Figure~\ref{fig:gaussian_decomposition}).
+We plot the bias-variance decompositions  $\cN(\mu, \sigma^2)$ (Figure~\ref{fig:gaussian_decomposition}).
 Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:thales} plots the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters) . \rlp{Tune figures.}\textcolor{red}{Not super clear, what is the "characters featured in these decompositions?"}
 
-
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=.4\textwidth]{figs/gaussian_variance.pdf}
-	\caption{
-	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound.
-	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
-	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
-	}
-	\label{fig:variance_decomposition}
-\end{figure}
+%\begin{figure}[t]
+%	\centering
+%	\includegraphics[width=.4\textwidth]{figs/gaussian_variance.pdf}
+%	\caption{
+%	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound.
+%	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
+%	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
+%	}
+%	\label{fig:variance_decomposition}
+%\end{figure}
 
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=.4\textwidth]{figs/gaussians/new_linear_n0=1.pdf}
 	\caption{
-	\textbf{Full gaussian} $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. \textbf{Left:} training curves (5,95) percentiles, average and asymptote.
-	\textbf{Right:} bias-variance decomposition.
-	}
+	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$.
+	} %TODO this figure has no labels.t
 	\label{fig:gaussian_decomposition}
 \end{figure}
 
@@ -959,6 +960,9 @@ For MAP, we get an upper bound thanks to
 
 \section{SELF-CONCORDANCE}
 \label{app:self-concordant}
+
+\section{BIAS-VARIANCE}
+\label{app:bias-variance}
 
 \section{TODO}
 \begin{enumerate}
