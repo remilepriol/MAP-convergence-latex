@@ -675,7 +675,7 @@ These observations are hinting towards a general $O(1/n^2)$ upper bound for the 
 	\centering
 	\includegraphics[width=.4\textwidth]{figs/gaussians/new_linear_n0=1.pdf}
 	\caption{
-	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$.
+	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. The asymptote is $\frac{1}{n}$.
 	} 
 	\label{fig:gaussian_decomposition}
 \end{figure}
@@ -718,10 +718,9 @@ Is it possible to solve this problem through an optimization approach ?
 %as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
 
 
-As we saw in the technical background, MAP can be interpreted as stochastic mirror descent (SMD).
+As we saw in \S\ref{sec:problem}, MAP can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
-We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three analyses of SMD with the MAP.
-\rlp{mention that examples have so far been lacking for relative SMD.}
+We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
 
 \subsection{Relative Smoothness}
 Mirror descent (MD) \citep{nemirovski1983problem,beck2003mirror}, also known as
@@ -745,43 +744,43 @@ Recently, these assumptions have been relaxed to the $\stgcvx$-strong convexity 
 	\smooth \cB_A(x,y) \; .
 }
 When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent.
-Those conditions ensure the linear convergence of MD with mirror map $\nabla A$,
-extending the theory to non-smooth functions $f$ and non-strongly convex potential $\logpart$
-\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively}.
+These relative conditions ensure the linear convergence of MD with mirror map $\nabla A$
+\citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively},
+even when $f$ is not smooth and $\logpart$ is not strongly convex.
 
-For exponential families, the log-likelihood perfectly fit into this framework, as
+For exponential families, MAP perfectly fits into this framework, as
 \aligns{
 	f(\theta) = A(\theta) - \expect{\lin{T(X), \theta}}
 }
 is both $1$-smooth and $1$-strongly convex relative to $A$.
-So we are left with finding an applicable convergence rate for SMD under relative assumptions.
-As we investigate in the next section, several pieces of work have addressed this question, under various assumptions on the stochasticity \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}.
+Our goal is then to find an applicable convergence rate for SMD under relative smoothness.
+Several pieces of work have addressed this question, under various assumptions on the stochasticity \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}, 
+but they have so far been lacking concrete examples.
+In the next section, we challenge their hypothesis thanks with the MAP.
 
 \subsection{Bounding the Randomness}
-\TODO{compress this section}
 
 To analyze stochastic algorithms, one also need to quantify the randomness.
-Many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}.
-We now review attempts at analyzing SMD under relative smoothness assumption, in the light of  the MAP example.
-See \cref{tbl:assumptions} for a summary.
-
-\textbf{Caveat:} these rates apply to the Bregman in the other direction, e.g. $\bregman(\nat^*, \MAPt)$, and sometimes not on the last iterate, but with tail averaging.
+While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}, only a few have been adapted to SMD with relative smoothness.
+We review these in the light of  the MAP and provide a summary in \cref{tbl:assumptions}.
 
 \begin{table}[t]
-\begingroup
-%\renewcommand*{\arraystretch}{1.25}%
 \newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
 \newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
-\centering
 \caption{Summary of results for SMD
 under relative smoothness and relative strong convexity assumptions.
-Barrier tells whether the assumption can hold with barrier objectives.
-$\lr_n \sim \inv{n}$ says whether the convergence rate hold with this step-size scheduling, and the last column tells whether the rate applies to the last iterate or to some average iterate.
+Each row correspond to one analysis, and each columns answers one question.
+($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
+($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
+($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$? 
+ ($\hat\nat_n$) is it for the last iterate or an average ?
+None of these analysis check all the boxes needed to address~\eqref{problem}.
 }
-\begin{tabular}{lccc}
+\begin{center}
+\begin{tabular}{lcccc}
 %{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
 \toprule
-Boundedness & Barriers &  $\lr_n \sim \inv{n}$ & Last iterate \\
+Boundedness & $-\log$ &  $\lr_n \sim \inv{n}$ & $f$ & $\hat\nat_n$ \\
 \midrule
 %Strongly convex and bounded variance\newline
 %\citep[e.g.,][]{??}
@@ -793,18 +792,18 @@ Boundedness & Barriers &  $\lr_n \sim \inv{n}$ & Last iterate \\
 %$
 %\\
 Var. on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
-& \redxmark & \greencmark  & \redxmark
+& \redxmark & \greencmark & \greencmark  & \redxmark
 \\
 Var. at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
-& \redxmark & \greencmark  & \greencmark
+& \redxmark & \greencmark & \redxmark  & \greencmark
 \\
 Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
-& \greencmark & \redxmark & \greencmark
+& \greencmark & \redxmark & \redxmark & \greencmark
 \\
 \bottomrule
 \end{tabular}
+\end{center}
 \label{tbl:assumptions}
-\endgroup
 \end{table}
 
 \subsubsection{Bounded Variance}
