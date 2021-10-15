@@ -860,9 +860,9 @@ In the case of normal distributions $\cN(m, \sigma^2)$, setting $m=x$ and $\sigm
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
 For instance, a multivariate normal of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
 
-Overall, this approach seems to answer~\eqref{problem}, but fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step size.%  $\lr \leq \inv{\smooth}$.
-
-%\rlp{Add discussion here.}
+Overall, \eqref{eq:dorazio} can partially handle barrier objectives, but it fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step-size.
+This is in contrast with~\citet{dragomir2021fast} which can handle decreasing step-sizes but not barrier objectives.
+Proving convergence of stochastic mirror descent on barrier loss remains an open problem.
 
 \section{Conclusion}
 Exponential family MLE and MAP are used everywhere -- every time someone computes a mean and variance to fit some bell-shaped data.
