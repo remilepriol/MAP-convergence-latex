@@ -753,15 +753,12 @@ For exponential families, MAP perfectly fits into this framework, as
 }
 is both $1$-smooth and $1$-strongly convex relative to $A$.
 Our goal is then to find an applicable convergence rate for SMD under relative smoothness.
-Several pieces of work have addressed this question, under various assumptions on the stochasticity \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}, 
-but they have so far been lacking concrete examples.
-In the next section, we challenge their hypothesis thanks with the MAP.
 
 \subsection{Bounding the Randomness}
 
 To analyze stochastic algorithms, one also need to quantify the randomness.
-While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}, only a few have been adapted to SMD with relative smoothness.
-We review these in the light of  the MAP and provide a summary in \cref{tbl:assumptions}.
+While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}, only a few have been adapted to SMD with relative smoothness \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}, but they have so far been lacking concrete examples.
+We review these analyses in the light of the MAP and provide a summary in \cref{tbl:assumptions}.
 
 \begin{table}[t]
 \newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
@@ -805,60 +802,43 @@ Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 \label{tbl:assumptions}
 \end{table}
 
-\subsubsection{Bounded Variance}
-\citet{hanzely2018fastest} assume the covariance between negative gradient and next iterate is upper bounded at every time step: $\forall n \geq 1, \forall \hat \nat_{n-1},$
+
+%Before we proceed, let $f_X$ be a stochastic estimate of $f = \expecti{f_X}$, with stochastic gradients $g_X(\nat) =\nabla f_X(\nat)$. In our case $f_X(\nat) = - \log p(X\cond \nat)$ and $g_X(\nat) = \m - T(X)$.
+
+\subsubsection{Analogs of the Variance}
+let us introduce $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ th symmetrized Bregman induced by $\conj$.
+\citet{hanzely2018fastest} assume that the expectation of $\cS$ between stochastic and deterministic updates verifies
 \alignn{
-	\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) \leq \lr_n C
-	\label{eq:hanzely}
+\expect[g]{\cS_\conj \paren{
+	\hat\m_{n} - \lr g(\hat \nat_{n}), 
+	\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
+}} \leq \lr^2 C
+\label{eq:hanzely}
 }
-for some constant $C$.
-For a Gaussian with known variance ($A(\theta) = \frac{1}{2}\norm{\theta}^2$),
+for all possible iterates $\MAPt$, relevant step-sizes $\lr$ and for some constant $C$.
+When $A(\theta) = \frac{1}{2}\norm{\theta}^2$ or when $A$ is $\stgcvx$-strongly convex,
 this definition recovers the variance of the stochastic gradient
 \[
-	\expect[\tilde g_t\!\!]{\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2}\leq C.
+	\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
 \]
-More generally, if $A$ is $\stgcvx$-strongly convex w.r.t. $\norm{\cdot}$,
-the LHS of \cref{eq:hanzely} is bounded by
-$\expecti{\frac{1}{\stgcvx}\norm{\nabla f(\theta) - \tilde g(\theta)}{}^2_*}$.
-Then a bound on the variance of stochastic gradients is sufficient for \cref{eq:hanzely}
-to hold.
-%Another perspective on this covariance is as the expectation of the symmetrized Bregman $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ between stochastic and deterministic updates
-%\aligns{
-%\Cov(-g_n(\hat \nat_{n-1}) , \MAPt) = \E[\cS(\MAPm - \lr g_n  )]
-%}
-%thus showing positivity.
-Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate with $O(1/n)$ step-sizes,
-by applying tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
-But in general, this assumption rarely holds.
-For the MAP, this translates into $\forall n \geq 1,$
-\alignn{
-\expect[T_n]{\lin{T_n - \meanp^* , \MAPt}} \leq \lr_n C
-}
-which fails to hold on the gaussian variance example for instance. Indeed, we cannot control the samples $x_i$, therefore there is a non-zero probability they make $\nabla\conj(\MAPt) = \hat\meanp_t$ arbitrarily close to zero. Since the conjugate of the log partition is $\conj=-0.5\log$, this makes $\MAPt$ unbounded.
+Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate on function values with $O(1/n)$ step-sizes and tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
-%  \TODO{ DAMIEN short proof or formalize.}
-
-\subsubsection{Bounded Variance at the Minimum}
-
-\citet{dragomir2021fast} use the weaker assumption
+\citet{dragomir2021fast} define the weaker assumption
 \alignn{
 	\expect[\tilde g]{
 		\cB_{A^*}(\MAPm - 2\lr g(\theta_*), \MAPm)
-	} \leq 2 \lr^2 C \; ,
-	\quad
-	\forall n \geq 1.
+	} \leq 2 \lr^2 C \; .
 	\label{eq:dragomir}
 }
-In words, this bounds the variance of the gradients at the minimum, but with a metric that depends on the iterate $\MAPm$, and this bound should hold for every iterate we may encounter on the stochastic trajectory.
-% As observed by Frederick, this is really weaker than Hanzely, because it is only the first half of their assumption. There is only a factor 2 that's preventing a direct inequality.
-Under this assumption, they prove convergence up to a variance ball with a constant step-size.
-Their descent lemma \citep[Eq.(12)]{dragomir2021fast}
-is the analog of a modern analysis of SGD~\citep[Th.3.2]{gower2019sgd},
-meaning we can plug in a $O(1/n)$ decreasing step-size and obtain a $O(1/n)$ convergence rate.
+When $\logpart$ is $\stgcvx$-strongly-convex, we recover the variance of the gradients at the optimum
+\[
+	\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla g(\theta^*)}^2}\leq C.
+\]
+Using their descent lemma \citep[Eq.(12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th.3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
 
-This seems to be a solution to our problem, but it suffers from the same issues as \citet{hanzely2018fastest}.
-For barrier objectives, \cref{eq:dragomir} does not hold uniformly on every path of iterates,
-because these paths can get arbitrarily close to boundaries where $\bregmanconj$ diverges.
+These two analyses seem promising for~\eqref{problem}, but none of these assumptions hold in front of barrier objectives such as the $-\log$ from \S\ref{ssec:gaussian-variance}.
+Indeed, we cannot control the samples $x_i$, therefore there is a non-zero probability they make $\nabla\conj(\MAPt) = \hat\meanp_t$ arbitrarily close to zero. Since the conjugate of the log partition is $\conj=-0.5\log$, this makes $\MAPt$ unbounded.
+
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
@@ -879,23 +859,9 @@ For instance, a multivariate normals of dimension $d$ cannot attribute infinite 
 
 Overall, this approach seems to answer~\eqref{problem}. Yet it fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step-size $\lr \leq \inv{\smooth}$.
 
-\subsection{Issues with current analyses}
-
-\fdk{They don't hold for problems we care about}
-
-\fdk{Existing techniques only deal with fixed step-sizes and show convergence to a ball}
 
 If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
-
-%\section{Related Work}
-
-%\paragraph{Online Learning}
-%Other works focus instead on the online estimation of $\theta$ and minimize the \textit{regret}
-%\[
-%R_T=\sum_{t=1}^T f_t(\hat{\theta}_t)-\min_{\theta\in\Theta}\sum_{t=1}^Tf_t(\theta),
-%\]
-%where $f_t(\theta)\triangleq-\log p(x_t|\theta)$, and the estimator $\hat{\theta}_t$ is computed using only the $t-1$ samples $\{x_i\}$. Usually, the \textit{follow-the-leader} strategy works best, i.e., moving the current estimate towards $x_i$ with a certain step size schedule. Unfortunately however, their rate are worse than the offline MAP or MLE algorithms. For instance, in the specific case where we estimate the mean parameter of a Bernoulli or Gaussian distribution, \citet{azoury2001relative} show that $R_T\leq log(T)$. From this bound, we can deduce the rate  to the real mean parameter, being $f(\hat{\theta}_T)-f^*\leq \frac{log(T)}{T}$. Also, \citet{dasgupta2007online} prove the asymptotic rate $\lim\sup_{T>1}\frac{R_T}{T}\leq 0$ when we estimate the mean and variance of a Gaussian, under the (strong) assumption that the data are finite, i.e., $\|x_t\|<C$. This means the estimator converges asymptotically, but with an unknown rate of convergence, therefore highlighting the difficulty of that setting.
 
 \section{Conclusion}
 Exponential family MLE and MAP are used everywhere -- everytime someone computes a mean and variance to fit some bell-shaped data.
