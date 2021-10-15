@@ -840,10 +840,10 @@ Yet $\cN(0,\sigma^2)$ has a positive mass around $0$.
 This means that $\hat \m_n$ can get arbitrarily close from $0$, where the $-\log$ is unbounded, along with the associated  Bregman divergences~\eqref{eq:hanzely} and~\eqref{eq:dragomir}.
 In general, this uniform bound over $\hat \m_n$ cannot hold for \emph{barrier} objectives -- functions exploding to infinity in some finite point of space.
 
-However, both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
+Both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
 However, this is not helpful, as verifying the assumption becomes as hard as the initial problem.
-For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper bound on the variance term of~\eqref{eq:primal_pivot}.
-Confronted with this difficulty, we investigate an alternative definition of variance. 
+For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper bound on the variance term of~\eqref{eq:primal_pivot} (cf App.~\ref{app:bias-variance}).
+Confronted with this difficulty, we investigate an alternative definition of variance.
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
@@ -866,7 +866,7 @@ This is in contrast with~\citet{dragomir2021fast} which can handle decreasing st
 Proving convergence of stochastic mirror descent on barrier loss remains an open problem.
 
 \section{Conclusion}
-Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions. 
+Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions.
 Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
