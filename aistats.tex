@@ -412,7 +412,7 @@ These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
 \paragraph{Optimization.}
-With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD)}, reviewed in App.~\ref{app:SMD}.
+With exponential families, MAP can be linked to \emph{stochastic mirror descent (SMD)}, see App.~\ref{app:SMD}.
 More precisely, let us re-write~\eqref{eq:defMAP} as
 \alignn{
 \m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
@@ -448,7 +448,7 @@ Now we match the log-likelihood with the exponential family template to get the 
 	\conj(\m) = - \half \log(\m)  \; ,
 }
 up to constants.
-Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
+Both $A$ and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
 It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative gamma distribution.
 It also means $\bregman$ and $\bregmanconj$ have the same shape
 \begin{align}
