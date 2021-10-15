@@ -128,9 +128,8 @@
 
 \begin{abstract}
 We consider the problem of upper bounding the expected log-likelihood sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family, in a non-asymptotic way.
-Surprisingly, we found no general solution to this problem in the literature. In particular, current theories do not hold for a Gaussian, or in the very interesting few samples regime.
-After exhibiting various facets of the problem, we show the MAP can be interpreted as running stochastic mirror descent (SMD) on the log-likelihood,
-yet modern convergence results do not apply for standard examples of exponential family, highlighting holes in the convergence literature.
+Surprisingly, we found no general solution to this problem in the literature. In particular, current theories do not hold for a Gaussian or in the interesting few samples regime.
+After exhibiting various facets of the problem, we show we can interpret the MAP as running stochastic mirror descent (SMD) on the log-likelihood. However, modern convergence results do not apply for standard examples of the exponential family, highlighting holes in the convergence literature.
 We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
 
@@ -141,7 +140,7 @@ We believe solving this very fundamental problem may bring progress to both the 
 \begin{figure}[t]
 	\centering
 \includegraphics[width=.4\textwidth]{fewsamples.pdf}
-	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance MLE (\S\ref{ssec:gaussian-variance}) against number of samples $n$. Bold curve is an average over 10000 trials,  dark shaded area is 90\% confidence interval, light shade is min-max interval.
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance MLE (\S\ref{ssec:gaussian-variance}) against number of samples $n$. The bold curve plots the average over 10000 trials,  dark shaded area is 90\% confidence interval, and light shade is a min-max interval.
 		The expected value is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}, while the variance remains large.
 		We wish to find similar upper bounds for a variety of exponential families.
 	}
@@ -153,16 +152,15 @@ We believe solving this very fundamental problem may bring progress to both the 
 \label{sec:motivation}
 
 {\bf Exponential families} are among the most widely used simple parametric models of data, yet, we will highlight some open problems about them in this paper.
-Many standard random variables are exponential families: Gaussians, categorical, gamma or Dirichlet for example.
-They are flexible enough to model a variety of data sources $X$, and easy to describe with some sufficient statistics $T(X) \in \real^d$.
+Many standard random variables are exponential families: Gaussians, categorical, gamma, or Dirichlet, for example.
+They are flexible enough to model a variety of data sources $X$ and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 They are particularly appreciated for their convex log-likelihood
 \alignn{
 f(\nat) := \E[-\log p_\nat(X)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 \label{eq:defNLL}
 }
 where $\logpart$ is the convex log-partition function and $\nat\in\Theta$ is the \textit{natural parameter}.
-This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized}
-or variants of principal component analysis \citep{collins2001generalization}, among other applications.
+This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} or variants of principal component analysis \citep{collins2001generalization}, among other applications.
 
 {\bf Estimators.}
 In this paper, we consider the problem of estimating $\nat$ from a dataset $\mD = (X_1, \dots, X_n)$ of iid observations from $p_\theta$ in an exponential family.
@@ -172,7 +170,7 @@ In this case, not only is $f$ convex, but it yields a simple condition for the m
 	\label{eq:defMLE}
 \end{align}
 This rule is also known as moment matching.
-Given a certain conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). In this paper, we will focus on analyzing MLE and MAP estimators.\footnote{A related analysis is present in the online-learning literature, but for different online estimators which are less efficient than offline methods \citep{azoury2001relative,dasgupta2007online}.}
+Given a specific conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). In this paper, we will focus on analyzing MLE and MAP estimators.\footnote{A related analysis is present in the online-learning literature, but for different online estimators, which are less efficient than offline methods \citep{azoury2001relative,dasgupta2007online}.}
 
 {\bf Statistical decision theory.}
 To assess the quality of an estimator $\hat \nat$ (and compare them), we need to define some notion of closeness to the correct parameter $\nat^*$.
@@ -210,10 +208,10 @@ We thus consider the fundamental problem:
 \end{equation}
 % RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
-There are already general asymptotic results (\S\ref{ssec:asymptote}), and a finite $n$ result when $\logpart$ is quadratic (e.g. $X$ is Gaussian with known variance)
+There are already general asymptotic results (\S\ref{ssec:asymptote}), and a finite $n$ result when $\logpart$ is quadratic (e.g., $X$ is Gaussian with known variance)
 or close to quadratic (\S\ref{ssec:quadratic}).
 However, a  general solution for finite $n$ remains elusive.
-In this paper, we review partial solutions, and give ideas on how to solve it.
+In this paper, we review partial solutions and give ideas on how to solve the problem.
 
 {\bf Stochastic optimization} offers an interesting perspective on this question.
 Consider the problem
@@ -228,25 +226,25 @@ Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal 
 	\label{eq:suboptimalityKL}
 }
 Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
-In particular, with exponential families, MAP is an instantiation of the so-called stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
-Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we consider using existing optimization convergence rates for SMD to get the upper bound we seek.
+In particular, with exponential families, MAP is equivalent to stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
+Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we consider using existing convergence rates for SMD to get the upper bound we seek.
 Unfortunately, none of the current analyses apply, highlighting open problems for the analysis of SMD.
 
 {\bf Expected Outcomes.}
 A solution to~\eqref{problem} can clarify the importance of the prior in MAP, in particular in the few sample regime. %, for instance for Gaussians $\cN(m,\sigma^2)$.
-Also, it could enable stochastic optimization to tackle a wide class of barrier objectives.\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}
-A good example would be generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
-It could also help in assessing the impact of alternative forms of regularization (prior) for these models.
+Also, it could enable stochastic optimization to tackle a broad class of barrier objectives.\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}
+A good example is the generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
+It could also help assess the impact of alternative forms of regularization (prior) for these models.
 
 {\bf Contributions.}
 After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
 \begin{itemize}
 	\itemsep0em
-	\item We provide an upper bound on the KL in the special case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}), illustrating that tight rates are possible even though the current theory does not cover them.
+	\item We provide an upper bound on the KL in the particular case of a Gaussian with known mean but unknown variance $\cN(0,\sigma^2)$ (\S\ref{ssec:gaussian-variance}), illustrating that tight rates are possible even though the current theory does not cover them.
 	\item We highlight sufficient conditions to characterize when a (local) quadratic approximation of the KL is valid, offering a partial answer to~\eqref{problem} (\S\ref{ssec:quadratic}-\ref{ssec:local-quadratic}).
 	%SLJ REMOVED per Slack discussion
 	%\item We leverage a generalized bias-variance decomposition of Bregman divergences\citep{pfau2013generalized}  to formulate a conjecture about~\eqref{problem}(\S\ref{ssec:bias-variance}).
-	\item By linking MAP and SMD, we show modern analysis of SMD are yet to prove convergence on barrier objectives such as $-\log$ (\S\ref{sec:optimization}).
+	\item By linking MAP and SMD, we show that modern analysis of SMD is yet to prove convergence on barrier objectives such as $-\log$ (\S\ref{sec:optimization}).
 \end{itemize}
 
 
@@ -257,8 +255,8 @@ $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 \section{Technical background}
 \label{sec:background}
-In this section, we review the formalism of exponential families, their duality, a conjugate prior and the corresponding MAP.
-We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more exhaustive introduction.
+This section reviews the formalism of exponential families, their duality, a conjugate prior, and the corresponding MAP.
+We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more detailed introduction.
 
 
 The density of an exponential family for a sample $x$ is
@@ -290,8 +288,8 @@ The log-partition function $\logpart$ verifies the two following identities:
     \nabla^2 \logpart(\nat) &= \Cov_{p_\nat}[T(X)] > 0,
 \end{align}
 where $\meanp$ is called the mean (or dual) parameter, which lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
-Given that $\logpart$ is strictly convex, its Hessian is positive definite and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$.
-We will write interchangeably $\m$ or  $\nat$ depending on the context, being aware that both are linked and represent the same distribution.
+Given that $\logpart$ is strictly convex, its Hessian is positive definite, and its gradient $\nabla \logpart$ is a \textit{bijection} between natural parameters $\nat$ and mean parameters $\m$.
+We will write $\m$ or $\nat$ interchangeably depending on the context, being aware that both are linked and represent the same distribution.
 
 We now introduce the convex conjugate (the Fenchel-Legendre transform) of the log-partition function
 \begin{align}
@@ -355,7 +353,7 @@ which reaches its maximum at $\MAPt^\text{MAP}$ such that
 \end{align}
 where $T_i=T(X_i)$.
 When $n_0=0$ (no samples from the prior), we recover the MLE~\eqref{eq:defMLE}.
-We write $\MAPt$ for the MAP, and view the MLE as a special case.
+We write $\MAPt$ for the MAP and view the MLE as a particular case.
 
 
 \section{PROBLEMS FORMULATION}
@@ -394,25 +392,25 @@ where the expectation is on the data $\mD_n = (T_1, \dots, T_n)$.
 \end{problem}
 
 More explicitly, we want an upper bound that does not involve this expectation over the dataset.
-Surprisingly, we found no general solution to this seemingly simple problem, whether in the literature or by our own means.
+Surprisingly, we found no general solution to this seemingly simple problem, whether in the literature or by our means.
 In \S\ref{sec:example}, we provide results for special cases such as $\cN(0, \sigma^2)$,
-while in \S\ref{sec:insights} we provide realistic conditions to obtain bounds that are valid after seeing a large number of samples.
-But we are yet to find a solution encompassing both a broad range of exponential families,
+while in \S,\ref{sec:insights} we provide realistic conditions to obtain valid bounds after seeing a large number of samples.
+However, we have yet to find a solution encompassing both a broad range of exponential families
 and applicable to small sample sizes $n \lesssim d$.
 
 {\bf A Difficulty with the MLE.}
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite,
 for instance when estimating the covariance of a Gaussian when $n \leq d + 1$.
-Even worse, with categorical variables, there is a non-zero probability to never sample one of the categories.
+Even worse, there is a non-zero probability never to sample one of the categories with categorical variables.
 In those cases the MLE gives zero weight to this category and $\KL(p_{\nat^*} \,\Vert\, p_\text{MLE} ) = +\infty$.
 Therefore, the expected KL~\eqref{eq:bregmanMLE} is infinite for any number of samples.
-Instead of taking the expectation, one might want to bound the risk in high probability,
-without resorting to Markov inequality but this is a difficult endeavor.
+Instead of taking the expectation, one might want to bound the risk in high probability
+without resorting to Markov inequality, but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
 \paragraph{Optimization.}
-With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD)}, reviewed in App.~\ref{app:SMD}.
+With exponential families, MAP can be linked to \emph{stochastic mirror descent (SMD)}, see App.~\ref{app:SMD}.
 More precisely, let us re-write~\eqref{eq:defMAP} as
 \alignn{
 \m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
@@ -427,18 +425,18 @@ If we further introduce stochastic gradients $g_n(\nat) := \nabla\logpart(\nat) 
 }
 which is the update formula for SMD on $f$ with mirror map $\nabla\logpart$
 and step-size schedule $\lr_n$, initialized at $\nat_0$.
-In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.
+In this view, MLE forgets its (arbitrary) initialization after the first step with step size 1.
 The observation MAP $\in$ SMD brings us to our second problem.
 \begin{problem}[Convergence rate for SMD]
 Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(\meanp, \sigma^2)$.
 \end{problem}
 
-To address these problems, we start by investigating simple examples for which we can provide solutions to Problem 1, getting insights into what is achievable.
+To address these problems, we start by investigating simple examples to provide solutions to Problem 1, getting insights into what is achievable.
 
 \section{Illustrating Examples}\label{sec:example}
 \subsection{Gaussian with Unknown Variance}\label{ssec:gaussian-variance}
 
-A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
+A non-trivial yet straightforward example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its log-likelihood reads $\log p(x) = -\frac{x^2}{2 \sigma^2} - \half\log(2\pi \sigma^2)$.
 Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\nat = -\inv{2 \sigma^2} <0$, and mean parameter $\m=\E[T(X)] = \sigma^2 >0$.
 Mean and natural parameters are roughly inverse of each other, i.e., $\nat = -\inv{2 \m}$.
@@ -448,7 +446,7 @@ Now we match the log-likelihood with the exponential family template to get the 
 	\conj(\m) = - \half \log(\m)  \; ,
 }
 up to constants.
-Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
+Both $A$ and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
 It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative gamma distribution.
 It also means $\bregman$ and $\bregmanconj$ have the same shape
 \begin{align}
@@ -486,20 +484,20 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{\max(0,n-2)}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
-Note that this inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
+This inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
 This explains the loss of a factor 2 compared to the asymptote~\eqref{eq:asymptote}.
-Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth. 
+Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights an explicit variance-bias decomposition.
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.
 This correlates well with our numerical observations (cf App.~\ref{app:gaussian-variance}).
 
 \begin{figure*}[t]
 	\centering
 	\includegraphics[width=.8\textwidth]{figs/thales/numerical_schema_n=3.pdf}
 	\caption{
-	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) as detailed in \S\ref{ssec:gaussian} with $n=3$ . 
+	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) (\S\ref{ssec:gaussian} with $n=3$).
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
-	But in primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition.
-	The hyperparameter of the prior $\nat_0$ is controlling the location of the brown point, while varying $n_0$ spans the Thales triangle and the red-curve.
+	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition.
+	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the Thales triangle and the red curve.
 	Large blurry circles in the background are other instances of MAP and MLE revealing the distribution of these estimators.
 	}
 	\label{fig:thales}
@@ -507,7 +505,7 @@ This correlates well with our numerical observations (cf App.~\ref{app:gaussian-
 
 \subsection{Full Gaussian (Non-Trivial)}
 \label{ssec:gaussian}
-Now that we have solved the case of $\cN(0,\sigma^2)$, let us consider the full Gaussian $\cN(m,\sigma^2)$ which actually offers a highly non-trivial example for Problem 1.
+Now that we have solved the case of $\cN(0,\sigma^2)$, consider the full Gaussian $\cN(m,\sigma^2)$, which offers a highly non-trivial example for Problem 1.
 Their log-likelihood reads $p(x) = -\frac{(x-m)^2}{2 \sigma^2} - \half \log(2\pi\sigma^2)$.
 With sufficient statistic $T(x)=(x, x^2)$,
 the mean parameters are $\m = \E[T(X)] = (m , m^2 + \sigma^2)$ belonging to the open set $\cM= \{(u,v) \cond u^2 < v\}$,
@@ -515,21 +513,21 @@ and the natural parameters are $\nat= (\frac{m}{\sigma^2} , \frac{-1}{2\sigma^2}
 Examples of MAP and MLE  are represented in \cref{fig:thales} within $\cM$ and $\Theta$ delimited in grey.
 Given these parameters, log-partition and entropy are, up to constants,
 \alignn{
-	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\
-	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2)
+	\textstyle \logpart(\nat) &= \textstyle \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\
+	\textstyle \conj(\m) &= \textstyle - \half \log (\mu_2 - \mu_1^2)
 }
 
 These functions are neither smooth, nor strongly convex, nor self-concordant (see App.~\ref{app:gaussian}).
-Let us keep this in mind, as we move on to discussing the general problem, and some ways to solve it via direct expansions of the Bregman divergence.
+We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
 \section{Partial Solutions}
 \label{sec:insights}
 
-\subsection{Asymptote}
+\subsection{Asymptotic Rate}
 \label{ssec:asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
 We now detail a classical asymptotic result.
-Proofs are in App.\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
+Proofs are in App.~\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
 
 Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
 Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
@@ -539,7 +537,7 @@ Bregman divergences are locally quadratic, as seen via a second order Taylor exp
     + O(\norm{\m - \m^*}^3),
     \label{eq:bregmanTaylor}
 }
-where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
+where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the Hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
 \aligns{
     \mF
     :=\nabla^2\conj(\m^*)
@@ -553,8 +551,8 @@ Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregm
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}}) \; .
 \end{align}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible for large $n$.
-For well-specified models, this asymptote is also independent of the optimum $\meanp^*$ or $\mF$.
-Let us see another example for which we get a rate matching~\eqref{eq:asymptote}.
+This asymptote is independent of the optimum $\meanp^*$ or $\mF$ for well-specified models.
+Next, we give another example for which we get a rate matching~\eqref{eq:asymptote}.
 
 \subsection{Quadratic Case}
 \label{ssec:quadratic}
@@ -575,12 +573,12 @@ Thanks to the independence of samples, we can break down the MLE into individual
 \end{align}
 Adding a reference mean $\m_0$ to get the MAP yields
 \begin{align}
-	\expect{\bregmanconj(\meanp^*; \MAPm)}
-	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.
+		\!\!\!\!\! \expect{\half \norm{\m^* -   \MAPm^\text{MAP}}_2^2} \!
+	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.\!
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
-We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$. However, this result does not generalize well to other families, unless we make restrictive assumptions on $\conj$. % we can relate $\bregmanconj$ to a norm or a quadratic.
+We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$. However, this result does not generalize well to other families unless we make restrictive assumptions on $\conj$. % we can relate $\bregmanconj$ to a norm or a quadratic.
 % Can we generalize these results to other families?
 
 {\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
@@ -589,8 +587,7 @@ We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias ter
     &\leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m} \\
     &\leq 2L \norm{\m^* - \m},
 \end{align}
-so $\bregmanconj$ is $2L$-Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate.
-However none of the common exponential families verify this assumption.
+so $\bregmanconj$ is Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate, but no common exponential families verify the assumption.
 
 {\bf If $\conj$ is $L$-smooth}\footnote{$\conj$ is $L$-smooth iff $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
@@ -599,7 +596,7 @@ However none of the common exponential families verify this assumption.
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 It is also possible to get (more complex) upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
-The problem is that, besides the Gaussian with known variance, no standard exponential family has a \textit{global} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
+Besides the Gaussian with known variance, the problem is that no standard exponential family has a \textit{global} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
 % So let us focus on a more realistic set of assumptions in the next section.
 
 \subsection{Locally Quadratic Case}
@@ -608,9 +605,9 @@ From Taylor expansion~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
 Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
-} of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.\ref{app:self-concordant}.
+} of $\conj$ \citep[Ch.~4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.~\ref{app:self-concordant}.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$.}
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
@@ -618,30 +615,30 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 }
 \end{proposition}
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
-For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
-For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
-This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
+For the MLE, the proof of~\eqref{eq:asymptote} from~\eqref{eq:bregmanTaylor} yields $\expecti{\norm{\m^*-\hat \m_n}^2_{\mF}} = \frac{d}{n}$ in general, so a sufficient condition is $n \geq 25 d$.
+For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition \TODO{FIX THIS!} $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
+This means that on average, we need $25$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
-The entropy $\conj$ is self-concordant for a lot of common families.
-For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.\ref{app:self-concordant}),
+The entropy $\conj$ is self-concordant for several common families.
+For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.~\ref{app:self-concordant}),
 as is the case with:
 exponential distributions,
 Gaussians with known mean,
 Laplace with known mean,
 Pareto with known minimum value,
 or Weibull with known shape $k$.
-The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g. categorical and Dirichlet distributions.
+The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g., categorical and Dirichlet distributions.
 
 There are quite a few pieces of work in this direction.
-\citet{ostrovskii2021finite} characterizes the number of samples needed to reach the asymptotic quadratic behavior, for any parametric models with a self-concordant log-likelihood.
+\citet{ostrovskii2021finite} characterizes the number of samples needed to reach the asymptotic quadratic behavior for any parametric models with a self-concordant log-likelihood.
 \citet{anastasiou2017bounds} obtains a similar flavor of result under other assumptions on the third derivative of $f$.
-More closely, in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher order moments of $\logpart$ in $\nat^*$, to obtain a similar result.
-However these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
+More closely, in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher-order moments of $\logpart$ in $\nat^*$, to obtain a similar result.
+However, these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
 
 These results partially answer~\eqref{problem}.
-Partially, because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
+Partially because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
 None of them apply to small $n$.
-That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
+That is one caveat. Another one is the Gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
 A full solution to~\eqref{problem} would address both of these caveats.
 Informed by the properties we have seen so far, let us investigate a general decomposition of the Bregman that could guide us towards a solution.
 %If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
@@ -649,9 +646,9 @@ Informed by the properties we have seen so far, let us investigate a general dec
 
 \subsection{Bias-Variance Decomposition}
 \label{ssec:bias-variance}
-In both the quadratic~\eqref{eq:MAP_quadratic} and the Gaussiance variance examples~\eqref{eq:MAP_rate}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$,
-giving us a flavor of what we would like as a general result for exponential families : a finite sample convergence rate, with a variance and a bias terms that reflect the important constants of the problem.
-In fact, such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2013generalized}.
+In both the quadratic~\eqref{eq:MAP_quadratic} and the Gaussian variance examples~\eqref{eq:MAP_rate}, the upper bound takes the form $O(\inv{n}) + O(\frac{\text{bias}}{n^2})$,
+giving us a flavor of what we would like as a general result for exponential families: a finite sample convergence rate, with variance and bias terms that reflect the important constants of the problem.
+Such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2013generalized}.
 \begin{theorem}[Bregman Bias-Variance Decomposition]
 	Let $\tilde \theta_n := \expecti{\hat \theta_n}$ be the expectation of the MAP in primal space, and $\tilde \m_n = \nabla \logpart(\tilde \theta_n )$ be its dual representation. The  expected Bregman decomposes into
 \begin{equation}
@@ -668,20 +665,20 @@ This is not true for the MLE, which is unbiased w.r.t. the dual parameter $\expe
 
 We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MLE, and
  ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for a quadratic MAP.
-These observations are hinting towards a general $O(1/n^2)$ upper bound for the bias, while the variance may be less dependent on the initialization $\nat_0$. 
+These observations hint towards a general $O(1/n^2)$ upper bound for the bias, while the variance may be less dependent on the initialization $\nat_0$.
 
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=.4\textwidth]{figs/gaussians/new_linear_n0=1.pdf}
 	\caption{
 	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$. The asymptote is $\frac{1}{n}$.
-	} 
+	}
 	\label{fig:gaussian_decomposition}
 \end{figure}
 
 In this section, we considered direct expansions of~\eqref{eq:bregmanMAP}.
-None of them could really solve~\eqref{problem}. 
-Is it possible to solve this problem through an optimization approach ?
+None of them could really solve~\eqref{problem}.
+Is it possible to solve this problem through an optimization approach?
 
 
 \section{AN OPTIMIZATION PROBLEM}
@@ -719,7 +716,7 @@ Is it possible to solve this problem through an optimization approach ?
 
 As we saw in \S\ref{sec:problem}, MAP can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
-We first review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
+We first review the assumptions of relative smoothness, helpful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
 
 \subsection{Relative Smoothness}
 Mirror descent (MD) \citep{nemirovski1983problem,beck2003mirror}, also known as
@@ -742,16 +739,16 @@ Recently, these assumptions have been relaxed to the $\stgcvx$-strong convexity 
 	\leq
 	\smooth \cB_A(x,y) \; .
 }
-When $\logpart = \norm{\cdot}^2$, we recover standard (Euclidean) smoothness, and gradient descent.
-These relative conditions ensure the linear convergence of MD with mirror map $\nabla A$
+When $\logpart = \norm{\cdot}^2$, we recover the standard smoothness and gradient descent.
+These conditions ensure the linear convergence of MD with mirror map $\nabla A$
 \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively},
-even when $f$ is not smooth and $\logpart$ is not strongly convex.
+even when $f$ is not smooth, and $\logpart$ not strongly convex.
 
 For exponential families, MAP perfectly fits into this framework, as
 \aligns{
 	f(\theta) = A(\theta) - \expect{\lin{T(X), \theta}}
 }
-is both $1$-smooth and $1$-strongly convex relative to $A$.
+is $1$-smooth and $1$-strongly convex relative to $A$.
 Our goal is then to find an applicable convergence rate for SMD under relative smoothness.
 
 \subsection{Bounding the Randomness}
@@ -768,7 +765,7 @@ under relative smoothness and relative strong convexity assumptions.
 Each row correspond to one analysis, and each columns answers one question.
 ($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
 ($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
-($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$? 
+($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$?
  ($\hat\nat_n$) is it for the last iterate or an average ?
 None of these analysis check all the boxes needed to address~\eqref{problem}.
 }
@@ -810,7 +807,7 @@ let us introduce $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmancon
 \citet{hanzely2018fastest} assume that the expectation of $\cS$ between stochastic and deterministic updates verifies
 \alignn{
 \expect[g]{\cS_\conj \paren{
-	\hat\m_{n} - \lr g(\hat \nat_{n}), 
+	\hat\m_{n} - \lr g(\hat \nat_{n}),
 	\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
 }} \leq \lr^2 C
 \label{eq:hanzely}
@@ -847,32 +844,31 @@ Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore 
 \label{eq:dorazio}
 }
 where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
-In words, this lower bounds the expectation of the minimum of the stochastic estimates.
+In other words, this lower bounds the expectation of the minimum of the stochastic estimates.
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
-This holds for instance for discrete distributions because the probability mass is upper bounded by $1$,
-but it rules out  many families.
+This holds, for instance, for discrete distributions because the probability mass is upper bounded by $1$; however, it rules out  many families.
 In the case of normal distributions$\cN(m, \sigma^2)$, setting $\mu=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
  Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
 
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
-For instance, a multivariate normals of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
+For instance, a multivariate normal of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
 
-Overall, this approach seems to answer~\eqref{problem}. Yet it fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step-size $\lr \leq \inv{\smooth}$.
+Overall, this approach seems to answer~\eqref{problem}, but fails to account for the step-size $\lr_n = \inv{n_0+n}$, as \citet[Thm.1]{dorazio2021stochastic} only proves linear convergence to a variance ball of size $\frac{C}{\stgcvx}$ under constant step size.%  $\lr \leq \inv{\smooth}$.
 
 
-If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let's assume they hold on average. Does the proof remain valid ? Yes I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem ? Yes.
+If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every iterate, then let us assume they hold on average. Does the proof remain valid? Yes, I think so \TODO{check this}. Does it become impossible to prove / as hard as the initial problem? Yes.
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
 
 \section{Conclusion}
-Exponential family MLE and MAP are used everywhere -- everytime someone computes a mean and variance to fit some bell-shaped data.
+Exponential family MLE and MAP are used everywhere -- every time someone computes a mean and variance to fit some bell-shaped data.
 MLE and MAP are both maximizing the (regularized) likelihood of the data, whose suboptimality is the Kullback-Leibler (KL) divergence.
-The KL is a very natural measure of discrepancy between a model and the true disribution.
-Yet we do not have convergence rates on the expected KL, even in the well-specified setting.
-Such a rate could inform us on how many samples we may need, or on the influence of the prior.
-There are many results close from such a rate, in particular large sample results \citep{kakade2010learning, ostrovskii2021finite}, which describe how many samples are needed to ensure a locally quadratic regime.
+The KL is a very natural measure of discrepancy between a model and the true distribution.
+However, we do not have convergence rates on the expected KL, even in the well-specified setting.
+Such a rate could inform us on how many samples we may need or on the influence of the prior.
+There are many results close to such a rate, particularly large sample results \citep{kakade2010learning, ostrovskii2021finite}, which describe how many samples are needed to ensure a locally quadratic regime.
 Another approach to obtain rates is stochastic optimization \citep{bach2013nonstronglyconvex}.
 Here we observed that MAP perfectly fits the framework of stochastic mirror descent with relative smoothness assumptions.
-Yet none of the current analysis of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing area for progress in non-Euclidean optimization.
+Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
 
@@ -897,7 +893,7 @@ illustrated in Figure~\ref{fig:phi}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=.4\textwidth]{phi.pdf}
-	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it is poorly approximated by quadratics, but it admits another upper-bound (in grey).}
+	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it admits another upper bound (in grey) despite being poorly approximated by quadratics.}
 	\label{fig:phi}
 \end{figure}
 
@@ -924,13 +920,13 @@ For MAP, we get an upper bound thanks to
 
 \section{TODO}
 \begin{enumerate}
-	\item new plots : add 2d trajectories to paper, with background level set, and new legend : primal/dual expectation, and clear explanation !
+	\item new plots: add 2d trajectories to paper, with background level set, and new legend: primal/dual expectation, and clear explanation!
 	\item Incorporate related work by Frederik.
-	\item Technical Background : be precise and add reference for the steep exponential family of Legendre type which guarantees that our sets are open, and have a solution in the middle.
+	\item Technical Background: be precise and add a reference for the steep exponential family of Legendre type, which guarantees that our sets are open and have a solution in the middle.
 	References: \begin{itemize}
 		\item \href{https://www.jstor.org/stable/4616462?seq=1#metadata_info_tab_contents}{Existence of Maximum Likelihood Estimates for Multi-Dimensional Exponential Families},
 		\item The singly truncated normal distribution: A non-steep exponential family,
-		\item Statistical exponential families: A digest with flash cards,
+		\item Statistical exponential families: A digest with flashcards,
 		\item Information and Exponential Families In Statistical Theory,
 		\item Fundamentals of Statistical Exponential Families with Applications in Statistical Decision Theory.
 	\end{itemize}
@@ -946,7 +942,7 @@ For MAP, we get an upper bound thanks to
 \subsection{SGD blurb}
 \fdk{
 %
-There is a long line work bounding the convergence rate of stochastic gradient descent.
+There is a long line of work bounding the convergence rate of stochastic gradient descent.
 Beyond the results of \citet{robbins1951stochastic},
 we now have proofs on smooth, strongly convex problems and bounded variance
 (as well as other assumptions on the noise, reviewed later)
@@ -956,10 +952,10 @@ which matches the asymptotic rate of unbiased estimation,
 through clever averaging schemes \citep{rakhlin2012making,lacostejulien2012simpler}
 \\
 Those papers assume the stochastic gradients are bounded,
-but small modifications also work for bounded variance instead.
+but minor modifications also work for bounded variance instead.
 \\
 We do have extensions to other notions of bounded variance,
-for example assuming that the stochastic gradients are gradients of a perturbed smooth function $f_i$
+for example, assuming that the stochastic gradients are gradients of a perturbed smooth function $f_i$
 and that the minimum of $f$ and the minima of the $f_i$
 are bounded, $\expect{\min_x f(x) - \min_x f_i(x)} \leq \sigma^2$,
 or that the gradient noise is bounded only at the minimum.
@@ -968,7 +964,7 @@ For a review, see \citet{gower2019sgd}.
 However, for some problems, combining decreasing step-sizes and averaging is not necessary,
 even when the function is not strongly convex.
 This is the case for maximum likelihood estimation and matches the asymptotic rates,
-but holds more generally, for example for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
+but holds more generally, for example, for linear and logistic regressions \citep{bach2013nonstronglyconvex,moulines2011non}.
 }
 
 
@@ -986,7 +982,7 @@ although it satisfies generalized notions of self-concordance as $A'''(\theta) =
 \subsection{``simple'' open problem?}
 \fdk{
 A ``simple open problem'';
-assume we have a deterministic problem, so that we know where the minimum is.
+assume we have a deterministic problem so that we know where the minimum is.
 Can we figure out a (deterministic) path from $\theta_0$ to $\theta_*$
 that has optimality decreasing as $1/n^2$,
 to mirror the bias term of gradient descent?
@@ -995,8 +991,8 @@ to mirror the bias term of gradient descent?
 \subsection{Connection with acceleration?}
 \fdk{
 The problems on how to deal with Bregman divergences abound in optimization, beyond stochasticity.
-For example, we haven't yet figured out the analog of Nesterov-type acceleration
-on relatively smooth and strongly convex problems,
+For example, we have not yet figured out the analog of Nesterov-type acceleration
+on relatively smooth and strongly convex problems
 to bring the convergence rate from linear in $(1-\kappa)$ to $(1-\sqrt{\kappa})$,
 or just from $1/T$ to $1/T^2$ in the (non-strongly) convex case.
 \citet{dragomir2021optimal}  shows that naïve application of Bregman updates can not achieve acceleration.
@@ -1029,4 +1025,4 @@ We use
 	\item $(\stgcvx , \smooth)$ for strong-convexity and smoothness
 \end{itemize}
 
-\end{document}
+ \end{document}
