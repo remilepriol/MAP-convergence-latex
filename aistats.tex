@@ -274,7 +274,7 @@ The log-partition function $\logpart$ acts as a normalization term, since
 \begin{align}
     \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \;.
 \end{align}
-This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding and multivariate normal distributions $\cX=\real^d, \nu$ Lebesgue and $T(X)=(X, X X^\top)$.
 
 For convenience, we focus on steep, regular exponential families with minimal statistic $T$ \citep{barndoffnielsen2014information}.
 Then $\logpart$ is a strictly convex function of Legendre type,
@@ -339,7 +339,7 @@ where $n_0$ and $\nat_0$ are (hyper)parameters of the prior  \citep{agarwal2010g
 This is an exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and natural parameter $(n_0 \m_0, -n_0)$.
 Intuitively, $n_0$ is the number of fictive data points observed from a distribution with natural parameter $\nat_0$.
 
-{\bf Maximum A Posteriori (MAP)}
+{\bf Maximum A Posteriori (MAP).}
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD_n|\nat)p(\nat)$.
 Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
 \begin{align}
@@ -365,12 +365,12 @@ We write $\MAPt$ for the MAP, and view the MLE as a special case.
 % As we will see, this is already an interesting setting.
 % We wish to estimate how well the MLE or a MAP model the true distribution.
 
-We are now ready to formalize the main problem of this paper. Assume we observe a dataset $\mD$ drawn i.i.d. from $p(\cdot \cond\nat^*)$, an exponential family distribution
+We are now ready to formalize the main problem of this paper. Assume we observe a dataset $\mD_n$ drawn i.i.d. from $p(\cdot \cond\nat^*)$, an exponential family distribution
 with parameters $\nat^*$.
-We wish to quantify how well the MLE or a MAP models the true distribution.
+We wish to quantify how well the MLE or a MAP approximates the true distribution.
 
 A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$. % should we define it ?
-In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
+In the well-specified setting, it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
 With exponential families, the KL is also a Bregman divergence:
 \alignn{
 	\KL(p_{\nat^*} || p_\nat)
@@ -378,7 +378,7 @@ With exponential families, the KL is also a Bregman divergence:
 	 = \bregmanconj(\m^* ; \m) \; .
 }
 The second equality is a general property of Bregman divergences and convex conjugates. % (Be careful about the order of arguments.)
-How does this quantity behave when $\nat$ is the MLE or MAP?
+How does this quantity behave when $\hat \nat$ is the MLE or MAP?
  Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators when the loss is the KL divergence?
 This is our first problem.
 
@@ -386,11 +386,11 @@ This is our first problem.
 Upper bound the following quantities:
 \begin{align}
 	\label{eq:bregmanMLE}
-	\text{MLE: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
+	\text{MLE: } \quad &\expect[\mD_n]{\bregmanconj \left (\E_{\nat^*} [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
 	\label{eq:bregmanMAP}
-	\text{MAP: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
+	\text{MAP: } \quad &\expect[\mD_n]{\bregmanconj \left (\E_{\nat^*} [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
 \end{align}
-where the expectation is on the data $\mD = (T_1, \dots, T_n)$.
+where the expectation is on the data $\mD_n = (T_1, \dots, T_n)$.
 \end{problem}
 
 More explicitly, we want an upper bound that does not involve this expectation over the dataset.
@@ -411,8 +411,8 @@ without resorting to Markov inequality but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
-\paragraph{Optimization}
-With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD).}
+\paragraph{Optimization.}
+With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD)}, reviewed in App.~\ref{app:SMD}.
 More precisely, let us re-write~\eqref{eq:defMAP} as
 \alignn{
 \m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
@@ -428,15 +428,15 @@ If we further introduce stochastic gradients $g_n(\nat) := \nabla\logpart(\nat) 
 which is the update formula for SMD on $f$ with mirror map $\nabla\logpart$
 and step-size schedule $\lr_n$, initialized at $\nat_0$.
 In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.
-The observation MAP$\in$SMD brings us to our second problem.
+The observation MAP $\in$ SMD brings us to our second problem.
 \begin{problem}[Convergence rate for SMD]
 Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(\meanp, \sigma^2)$.
 \end{problem}
 
-To address these problems, we start by investigating examples, for which we provide solutions to problem 1 and get insights into what is achievable.
+To address these problems, we start by investigating simple examples for which we can provide solutions to Problem 1, getting insights into what is achievable.
 
-\section{Examples}\label{sec:example}
-\subsection{Gaussian Variance}\label{ssec:gaussian-variance}
+\section{Illustrating Examples}\label{sec:example}
+\subsection{Gaussian with Unknown Variance}\label{ssec:gaussian-variance}
 
 A simple yet non-trivial example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
 Its log-likelihood reads $\log p(x) = -\frac{x^2}{2 \sigma^2} - \half\log(2\pi \sigma^2)$.
@@ -449,27 +449,27 @@ Now we match the log-likelihood with the exponential family template to get the 
 }
 up to constants.
 Both the log-partition and  the entropy are roughly negative logarithm $z\mapsto - \log(z)$.
-It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative Gamma distribution.
+It means the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, e.g., a negative gamma distribution.
 It also means $\bregman$ and $\bregmanconj$ have the same shape
 \begin{align}
-	\bregmanconj( \m_*; \m_n)
-	&= \half \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right) \; .
+	\bregmanconj( \m^*; \m_n)
+	&= \half \left ( \frac{\m^*}{ \m_n} - 1 - \log  \frac{\m^*}{ \m_n} \right) \; .
 %	\bregman( \nat_n; \nat_* )
 %	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
 \end{align}
-In theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
-All proofs for this section are in App.\ref{app:gaussian-variance}.
+In Theorems~\ref{thm:varianceMLE} and~\ref{thm:varianceMAP}, we report upper bounds on the expected value of this divergence for the MLE and the MAP.
+All proofs for this section are in App.~\ref{app:gaussian-variance}.
 \begin{theorem}[MLE Bound]
 \label{thm:varianceMLE}
-	The MLE of $\cN(0,\m_*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
+	The MLE of $\cN(0,\m^*)$ is $\hat \m_n^\text{MLE} = \inv{n} \sum_i X_i^2 $.
 	Its expected suboptimality is infinite when $n\leq 2$, and otherwise upper-bounded as
 	\begin{align}
-		 \expect{\bregmanconj( \m_*; \hat \m_n^\text{MLE}) }
+		 \expect{\bregmanconj( \m^*; \hat \m_n^\text{MLE}) }
 			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
 			\label{eq:MLE_rate}
 	\end{align}
 \end{theorem}
-This upper bound matches the asymptote~\eqref{eq:asymptote} .
+This upper bound matches the asymptotic result~\eqref{eq:asymptote} that we derive in \S\ref{ssec:asymptote}.
 We illustrate its numerical behavior in Figure~\ref{fig:curves}.
 With the same technique, we obtain a similar bound for the multivariate generalization: the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$.
 
@@ -477,7 +477,7 @@ With the same technique, we obtain a similar bound for the multivariate generali
 \label{thm:varianceMAP}
 The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is
  \begin{align}
-	& \expect{\bregmanconj( \m_*; \hat \m_n^\mathrm{MAP})}
+	& \expect{\bregmanconj( \m^*; \hat \m_n^\mathrm{MAP})}
 	\leq \begin{cases}
 		\inv{2(n_0+1)}  +  b_1 \ \text{if}\ n=1,\\
 		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n \ \text{if}\ n\geq 2
@@ -489,8 +489,8 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 Note that this inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
 This explains the loss of a factor 2 compared to the asymptote~\eqref{eq:asymptote}.
 Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights a clear variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth
-This correlates well with our numerical observations (cf App.\ref{app:gaussian-variance}).
+In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth. 
+This correlates well with our numerical observations (cf App.~\ref{app:gaussian-variance}).
 
 \begin{figure*}[t]
 	\centering
@@ -505,10 +505,9 @@ This correlates well with our numerical observations (cf App.\ref{app:gaussian-v
 	\label{fig:thales}
 \end{figure*}
 
-\subsection{Gaussian}
+\subsection{Full Gaussian (Non-Trivial)}
 \label{ssec:gaussian}
-Now that we have solved the case of $\cN(0,\sigma^2)$, let's move on to the ubiquitous Gaussian $\cN(m,\sigma^2)$.
-Gaussians actually offers a highly non-trivial example for Problem 1.
+Now that we have solved the case of $\cN(0,\sigma^2)$, let us consider the full Gaussian $\cN(m,\sigma^2)$ which actually offers a highly non-trivial example for Problem 1.
 Their log-likelihood reads $p(x) = -\frac{(x-m)^2}{2 \sigma^2} - \half \log(2\pi\sigma^2)$.
 With sufficient statistic $T(x)=(x, x^2)$,
 the mean parameters are $\m = \E[T(X)] = (m , m^2 + \sigma^2)$ belonging to the open set $\cM= \{(u,v) \cond u^2 < v\}$,
@@ -520,7 +519,7 @@ Given these parameters, log-partition and entropy are, up to constants,
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2)
 }
 
-These functions are neither smooth, nor strongly convex, nor self-concordant (see App.\ref{app:gaussian}).
+These functions are neither smooth, nor strongly convex, nor self-concordant (see App.~\ref{app:gaussian}).
 Let us keep this in mind, as we move on to discussing the general problem, and some ways to solve it via direct expansions of the Bregman divergence.
 
 \section{Partial Solutions}
@@ -953,6 +952,9 @@ For MAP, we get an upper bound thanks to
 
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
+
+\section{REVIEW OF SMD}
+\label{app:SMD}
 
 \section{TODO}
 \begin{enumerate}
