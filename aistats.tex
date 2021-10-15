@@ -715,7 +715,7 @@ Next, we investigate whether an optimization approach could solve it.
 
 
 As we saw in \S\ref{sec:problem}, MAP can be interpreted as stochastic mirror descent (SMD).
-This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform further design and analysis of SMD.
+This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform other designs and analyses of SMD.
 We first review the assumptions of relative smoothness, helpful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
 
 \subsection{Relative Smoothness}
@@ -753,70 +753,70 @@ Our goal is then to find an applicable convergence rate for SMD under relative s
 
 \subsection{Bounding the Randomness}
 
-To analyze stochastic algorithms, one also need to quantify the randomness of stochastic gradients $g(\nat)$ .
+To analyze stochastic algorithms, one also needs to quantify the randomness of stochastic gradients $g(\nat)$.
 While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020better}, only a few have been adapted to SMD with relative smoothness \citep{hanzely2018fastest, dragomir2021fast, dorazio2021stochastic}, but they have so far been lacking concrete examples.
 We review these analyses in the light of the MAP and provide a summary in \cref{tbl:assumptions}.
 
 \begin{table}[t]
-\newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
-\newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
-\caption{Summary of results for SMD
-under relative smoothness and relative strong convexity assumptions.
-Each row correspond to one analysis, and each columns answers one question.
-($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
-($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
-($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$?
- ($\hat\nat_n$) is it for the last iterate or an average ?
-None of these analysis check all the boxes needed to address~\eqref{problem}.
-}
-\begin{center}
-\begin{tabular}{lcccc}
-%{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
-\toprule
-Boundedness & $-\log$ &  $\lr_n \sim \inv{n}$ & $f$ & $\hat\nat_n$ \\
-\midrule
-%Strongly convex and bounded variance\newline
-%\citep[e.g.,][]{??}
-%&
-%$
-%\cB_A(\theta,\theta') \geq \frac{1}{2}\norm{\theta-\theta'}^2,
-%\quad
-%\expect[x]{\norm{\m - x}}^2\leq\sigma^2
-%$
-%\\
-Var. on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
-& \redxmark & \greencmark & \greencmark  & \redxmark
-\\
-Var. at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
-& \redxmark & \greencmark & \redxmark  & \greencmark
-\\
-Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
-& \greencmark & \redxmark & \redxmark & \greencmark
-\\
-\bottomrule
-\end{tabular}
-\end{center}
-\label{tbl:assumptions}
+	\newcommand*{\greencmark}{\textcolor{Green}{\cmark}}
+	\newcommand*{\redxmark}{\textcolor{Red}{\xmark}}
+	\caption{Summary of results for SMD
+		under relative smoothness and relative strong convexity assumptions.
+		Each row correspond to one analysis, and each columns answers one question.
+		($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
+		($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
+		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$?
+		($\hat\nat_n$) is it for the last iterate or an average ?
+		None of these analysis check all the boxes needed to address~\eqref{problem}.
+	}
+	\begin{center}
+		\begin{tabular}{lcccc}
+			%{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
+			\toprule
+			Boundedness & $-\log$ &  $\lr_n \sim \inv{n}$ & $f$ & $\hat\nat_n$ \\
+			\midrule
+			%Strongly convex and bounded variance\newline
+			%\citep[e.g.,][]{??}
+			%&
+			%$
+			%\cB_A(\theta,\theta') \geq \frac{1}{2}\norm{\theta-\theta'}^2,
+			%\quad
+			%\expect[x]{\norm{\m - x}}^2\leq\sigma^2
+			%$
+			%\\
+			Var. on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
+			& \redxmark & \greencmark & \greencmark  & \redxmark
+			\\
+			Var. at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
+			& \redxmark & \greencmark & \redxmark  & \greencmark
+			\\
+			Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
+			& \greencmark & \redxmark & \redxmark & \greencmark
+			\\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+	\label{tbl:assumptions}
 \end{table}
 
 
 %Before we proceed, let $f_X$ be a stochastic estimate of $f = \expecti{f_X}$, with stochastic gradients $g_X(\nat) =\nabla f_X(\nat)$. In our case $f_X(\nat) = - \log p(X\cond \nat)$ and $g_X(\nat) = \m - T(X)$.
 
 \subsubsection{Analogs of the Variance}
-let us introduce $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$ th symmetrized Bregman induced by $\conj$.
+Let us introduce the symmetrized Bregman induced by $\conj$, written $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$.
 \citet{hanzely2018fastest} assume that the expectation of $\cS$ between stochastic and deterministic updates verifies
 \alignn{
-\expect[g]{\cS_\conj \paren{
-	\hat\m_{n} - \lr g(\hat \nat_{n}),
-	\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
-}} \leq \lr^2 C
-\label{eq:hanzely}
+	\expect[g]{\cS_\conj \paren{
+			\hat\m_{n} - \lr g(\hat \nat_{n}),
+			\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
+	}} \leq \lr^2 C
+	\label{eq:hanzely}
 }
 for all possible iterates $\MAPt$, relevant step-sizes $\lr$ and for some constant $C$.
 When $A(\theta) = \frac{1}{2}\norm{\theta}^2$ or when $A$ is $\stgcvx$-strongly convex,
 this definition recovers the variance of the stochastic gradient
 \[
-	\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
+\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
 \]
 Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate on function values with $O(1/n)$ step-sizes and tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
@@ -829,33 +829,33 @@ Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ conv
 }
 When $\logpart$ is $\stgcvx$-strongly-convex, we recover the variance of the gradients at the optimum
 \[
-	\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla g(\theta^*)}^2}\leq C.
+\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla g(\theta^*)}^2}\leq C.
 \]
 Using their descent lemma \citep[Eq. (12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th. 3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
 
 These two analyses seem promising for~\eqref{problem}, but none of these assumptions hold in front of barrier objectives such as the $-\log$ from \S\ref{ssec:gaussian-variance}.
-Indeed, they  both assume their bound holds uniformly for every possible iterate $\hat \nat_n$.
+Indeed, they both assume their bound holds uniformly for every possible iterate $\hat \nat_n$.
 Yet $\cN(0,\sigma^2)$ has a positive mass around $0$.
 This means that $\hat \m_n$ can get arbitrarily close from $0$, where the $-\log$ is unbounded, along with the associated  Bregman divergences~\eqref{eq:hanzely} and~\eqref{eq:dragomir}.
-In general, this uniform bound over $\hat \m_n$ cannot hold for \emph{barrier} objectives -- functions  exploding to infinity in some finite point of space.
+In general, this uniform bound over $\hat \m_n$ cannot hold for \emph{barrier} objectives -- functions exploding to infinity in some finite point of space.
 
-However, both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
-But this is not helpful for us, as verifying the assumption become as hard as the initial problem.
-For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper-bound on the variance term of~\eqref{eq:primal_pivot} (cf App.~\ref{app:bias-variance}).
-Confronted to this difficulty, let us move on to an alternative definition of variance. 
+Both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
+However, this is not helpful, as verifying the assumption becomes as hard as the initial problem.
+For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper bound on the variance term of~\eqref{eq:primal_pivot} (cf App.~\ref{app:bias-variance}).
+Confronted with this difficulty, we investigate an alternative definition of variance.
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
 \alignn{
-\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C,
-\label{eq:dorazio}
+	\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C,
+	\label{eq:dorazio}
 }
 where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
 In other words, this lower bounds the expectation of the minimum of the stochastic estimates.
 For probabilistic models, such a bound is finite as soon as the model cannot give infinite density to any data point $x$.
-This holds, for instance, for discrete distributions because the probability mass is upper bounded by $1$; however, it rules out  many families.
+This holds, for instance, for discrete distributions because the probability mass is upper bounded by $1$; however, it rules out many families.
 In the case of normal distributions $\cN(m, \sigma^2)$, setting $m=x$ and $\sigma^2 \rightarrow 0$ gets $p_\nat (x) \rightarrow +\infty$. We have a similar behavior for gamma distribution with $\alpha = \beta x$ and $\beta \rightarrow +\infty$, or with the beta distribution with $\alpha=\beta \frac{x}{1-x}$ and $\beta \rightarrow +\infty$.
- Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
+Other counter-examples include inverse Gaussians, log-normal, gamma, inverse gamma.
 
 It is possible to overcome this limitation by treating batches of samples as single samples by averaging sufficient statistics, e.g.,. $Y = \{X_1, \dots, X_k\}$ and $T(Y) = \inv{k}\sum_i T(X_i)$.
 For instance, a multivariate normal of dimension $d$ cannot attribute infinite density to $d+1$ samples that are not in an affine subspace.
@@ -865,7 +865,7 @@ This is in contrast with~\citet{dragomir2021fast} which can handle decreasing st
 Proving convergence of stochastic mirror descent on barrier loss remains an open problem.
 
 \section{Conclusion}
-Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions. 
+Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions.
 Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
