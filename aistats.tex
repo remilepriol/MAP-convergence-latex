@@ -616,7 +616,7 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 \end{proposition}
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
 For the MLE, the proof of~\eqref{eq:asymptote} from~\eqref{eq:bregmanTaylor} yields $\expecti{\norm{\m^*-\hat \m_n}^2_{\mF}} = \frac{d}{n}$ in general, so a sufficient condition is $n \geq 25 d$.
-For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition \TODO{FIX THIS!} $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
+For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 25d + 5 \norm{\m^* -  \m_0} - n_0$.
 This means that on average, we need $25$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
 The entropy $\conj$ is self-concordant for several common families.
@@ -865,14 +865,7 @@ This is in contrast with~\citet{dragomir2021fast} which can handle decreasing st
 Proving convergence of stochastic mirror descent on barrier loss remains an open problem.
 
 \section{Conclusion}
-Exponential family MLE and MAP are used everywhere -- every time someone computes a mean and variance to fit some bell-shaped data.
-MLE and MAP are both maximizing the (regularized) likelihood of the data, whose suboptimality is the Kullback-Leibler (KL) divergence.
-The KL is a very natural measure of discrepancy between a model and the true distribution.
-However, we do not have convergence rates on the expected KL, even in the well-specified setting.
-Such a rate could inform us on how many samples we may need or on the influence of the prior.
-There are many results close to such a rate, particularly large sample results \citep{kakade2010learning, ostrovskii2021finite}, which describe how many samples are needed to ensure a locally quadratic regime.
-Another approach to obtain rates is stochastic optimization \citep{bach2013nonstronglyconvex}.
-Here we observed that MAP perfectly fits the framework of stochastic mirror descent with relative smoothness assumptions.
+Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions. 
 Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
