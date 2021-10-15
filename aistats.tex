@@ -274,7 +274,7 @@ The log-partition function $\logpart$ acts as a normalization term, since
 \begin{align}
     \logpart(\nat) = \log \int e^{\langle \nat, T(x) \rangle} \nu(dx) \;.
 \end{align}
-This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding, and multivariate normal distributions $\cX=\real, \nu$ Lebesgues and $T(X)=(X, X^2)$.
+This simple model encompasses both categorical distributions : $\cX = \{1, \dots, k\}$, $\nu$ uniform and $T(X)$  the one-hot encoding and multivariate normal distributions $\cX=\real^d, \nu$ Lebesgue and $T(X)=(X, X X^\top)$.
 
 For convenience, we focus on steep, regular exponential families with minimal statistic $T$ \citep{barndoffnielsen2014information}.
 Then $\logpart$ is a strictly convex function of Legendre type,
@@ -339,7 +339,7 @@ where $n_0$ and $\nat_0$ are (hyper)parameters of the prior  \citep{agarwal2010g
 This is an exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and natural parameter $(n_0 \m_0, -n_0)$.
 Intuitively, $n_0$ is the number of fictive data points observed from a distribution with natural parameter $\nat_0$.
 
-{\bf Maximum A Posteriori (MAP)}
+{\bf Maximum A Posteriori (MAP).}
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD_n|\nat)p(\nat)$.
 Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
 \begin{align}
@@ -365,12 +365,12 @@ We write $\MAPt$ for the MAP, and view the MLE as a special case.
 % As we will see, this is already an interesting setting.
 % We wish to estimate how well the MLE or a MAP model the true distribution.
 
-We are now ready to formalize the main problem of this paper. Assume we observe a dataset $\mD$ drawn i.i.d. from $p(\cdot \cond\nat^*)$, an exponential family distribution
+We are now ready to formalize the main problem of this paper. Assume we observe a dataset $\mD_n$ drawn i.i.d. from $p(\cdot \cond\nat^*)$, an exponential family distribution
 with parameters $\nat^*$.
-We wish to quantify how well the MLE or a MAP models the true distribution.
+We wish to quantify how well the MLE or a MAP approximates the true distribution.
 
 A natural way to quantify this is the Kullback-Leibler divergence (KL) $\KL(p_{\nat^*} || p_\nat)$. % should we define it ?
-In the well-specified setting it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
+In the well-specified setting, it corresponds to the log-likelihood sub-optimality~\eqref{eq:suboptimalityKL}.
 With exponential families, the KL is also a Bregman divergence:
 \alignn{
 	\KL(p_{\nat^*} || p_\nat)
@@ -378,7 +378,7 @@ With exponential families, the KL is also a Bregman divergence:
 	 = \bregmanconj(\m^* ; \m) \; .
 }
 The second equality is a general property of Bregman divergences and convex conjugates. % (Be careful about the order of arguments.)
-How does this quantity behave when $\nat$ is the MLE or MAP?
+How does this quantity behave when $\hat \nat$ is the MLE or MAP?
  Or in the words of statistical decision theory, what is the \emph{frequentist risk} of these estimators when the loss is the KL divergence?
 This is our first problem.
 
@@ -386,11 +386,11 @@ This is our first problem.
 Upper bound the following quantities:
 \begin{align}
 	\label{eq:bregmanMLE}
-	\text{MLE: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
+	\text{MLE: } \quad &\expect[\mD_n]{\bregmanconj \left (\E_{\nat^*} [T] ;  \inv{n}  \smallsum_i T_i \right )}, \\
 	\label{eq:bregmanMAP}
-	\text{MAP: } \quad &\expect[\mD]{\bregmanconj \left (\E [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
+	\text{MAP: } \quad &\expect[\mD_n]{\bregmanconj \left (\E_{\nat^*} [T] ; \frac{n_0 \m_0 + \smallsum_i T_i}{n_0+n} \right )},
 \end{align}
-where the expectation is on the data $\mD = (T_1, \dots, T_n)$.
+where the expectation is on the data $\mD_n = (T_1, \dots, T_n)$.
 \end{problem}
 
 More explicitly, we want an upper bound that does not involve this expectation over the dataset.
@@ -411,8 +411,8 @@ without resorting to Markov inequality but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
-\paragraph{Optimization}
-With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD).}
+\paragraph{Optimization.}
+With exponential families, MAP can be seen as \emph{an instantiation of stochastic mirror descent (SMD)}, reviewed in App.~\ref{app:SMD}.
 More precisely, let us re-write~\eqref{eq:defMAP} as
 \alignn{
 \m_n = \m_{n-1}- \lr_n (\m_{n-1} - T_n)
@@ -428,7 +428,7 @@ If we further introduce stochastic gradients $g_n(\nat) := \nabla\logpart(\nat) 
 which is the update formula for SMD on $f$ with mirror map $\nabla\logpart$
 and step-size schedule $\lr_n$, initialized at $\nat_0$.
 In this view, MLE forgets its (arbitrary) initialization after the first step with step-size 1.
-The observation MAP$\in$SMD brings us to our second problem.
+The observation MAP $\in$ SMD brings us to our second problem.
 \begin{problem}[Convergence rate for SMD]
 Find a convergence rate for stochastic mirror descent that applies to conjugate MAP of exponential families such as Gaussians $\cN(\meanp, \sigma^2)$.
 \end{problem}
@@ -949,6 +949,9 @@ For MAP, we get an upper bound thanks to
 
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
+
+\section{REVIEW OF SMD}
+\label{app:SMD}
 
 \section{TODO}
 \begin{enumerate}
