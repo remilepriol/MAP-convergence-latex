@@ -867,14 +867,7 @@ If assumptions~\eqref{eq:hanzely} and~\eqref{eq:dragomir} do not hold for every 
 \TODO{Does it match exactly the variance from the bias-(mixed)-variance decomposition ?}
 
 \section{Conclusion}
-Exponential family MLE and MAP are used everywhere -- every time someone computes a mean and variance to fit some bell-shaped data.
-MLE and MAP are both maximizing the (regularized) likelihood of the data, whose suboptimality is the Kullback-Leibler (KL) divergence.
-The KL is a very natural measure of discrepancy between a model and the true distribution.
-However, we do not have convergence rates on the expected KL, even in the well-specified setting.
-Such a rate could inform us on how many samples we may need or on the influence of the prior.
-There are many results close to such a rate, particularly large sample results \citep{kakade2010learning, ostrovskii2021finite}, which describe how many samples are needed to ensure a locally quadratic regime.
-Another approach to obtain rates is stochastic optimization \citep{bach2013nonstronglyconvex}.
-Here we observed that MAP perfectly fits the framework of stochastic mirror descent with relative smoothness assumptions.
+Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions. 
 Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
