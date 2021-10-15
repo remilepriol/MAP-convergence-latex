@@ -496,9 +496,9 @@ This correlates well with our numerical observations (cf App.~\ref{app:gaussian-
 	\caption{
 	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) (\S\ref{ssec:gaussian} with $n=3$). 
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
-	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition.
+	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:primal_pivot} from~\S\ref{ssec:bias-variance}.
 	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the Thales triangle and the red curve.
-	Large blurry circles in the background are other instances of MAP and MLE revealing the distribution of these estimators.
+	Large blurry circles in the background are other instances of MAP and MLE revealing their distribution.
 	}
 	\label{fig:thales}
 \end{figure*}
@@ -657,13 +657,13 @@ Such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2
 	\label{eq:primal_pivot}
 \end{equation}
 \end{theorem}
-We plot this decomposition for $\cN(\mu, \sigma^2)$ in Fig.\ref{fig:gaussian_decomposition} , and we illustrate the primal mean $\tilde \nat_n$ in  Fig.\ref{fig:thales}.
+We plot this decomposition for $\cN(\mu, \sigma^2)$ in Fig.~\ref{fig:gaussian_decomposition} , and we illustrate the primal mean $\tilde \nat_n$ in  Fig.~\ref{fig:thales}.
 
 \textbf{Remark:} In this decomposition, the primal expectation $\expecti{\hat \theta_n}$ is the reference point.
 An estimator will be unbiased if $\tilde \nat_n = \nat^*$.
 This is not true for the MLE, which is unbiased w.r.t. the dual parameter $\expecti{\hat \m_n}=\m^*$.
 
-We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MLE, and
+We show in App.~\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MLE, and
  ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for a quadratic MAP.
 These observations hint towards a general $O(1/n^2)$ upper bound for the bias, while the variance may be less dependent on the initialization $\nat_0$. 
 
@@ -677,8 +677,8 @@ These observations hint towards a general $O(1/n^2)$ upper bound for the bias, w
 \end{figure}
 
 In this section, we considered direct expansions of~\eqref{eq:bregmanMAP}.
-None of them could really solve~\eqref{problem}. 
-Is it possible to solve this problem through an optimization approach?
+None of them could fully solve~\eqref{problem}.
+Next, we investigate whether an optimization approach could solve it.
 
 
 \section{AN OPTIMIZATION PROBLEM}
