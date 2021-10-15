@@ -294,10 +294,10 @@ Given that $\logpart$ is strictly convex, its Hessian is positive definite, and 
 We will write $\m$ or $\nat$ interchangeably depending on the context, being aware that both are linked and represent the same distribution.
 
 We now introduce the convex conjugate (the Fenchel-Legendre transform) of the log-partition function
-\begin{align}
+\aligns{
 	\conj(\m) =  \langle \m, \nat \rangle - \logpart(\nat)
 	=  \max_{\nat'\in\Theta}  \langle \m, \nat' \rangle - \logpart(\nat')\; ,
-\end{align}
+}
 which is the common notion of \textit{entropy} in information theory.
 By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  $\nabla\conj=\nabla\logpart^{-1}$, giving
 \aligns{
@@ -331,7 +331,7 @@ In general, Bregman divergences are not symmetric, i.e., $\bregman (\nat ; \nat_
 {\bf A Conjugate Prior} for $p(X|\nat)$ is
 \begin{align}
     p(\nat)
-    &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \\
+    &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \nonumber \\
     &\propto \exp(n_0 \langle \m_0, \nat \rangle - n_0 \logpart(\nat)),
     \label{eq:def_prior}
 \end{align}
@@ -342,11 +342,11 @@ Intuitively, $n_0$ is the number of fictive data points observed from a distribu
 {\bf Maximum A Posteriori (MAP).}
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD_n|\nat)p(\nat)$.
 Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
-\begin{align}
+\aligns{
 	p(\nat \cond \mD_n)
     \propto \exp(- (n_0+n) \bregman(\nat; \MAPt^\text{MAP}))
-    \label{eq:joint_likelihood}
-\end{align}
+%    \label{eq:joint_likelihood}
+}
 which reaches its maximum at $\MAPt^\text{MAP}$ such that
 \begin{align}
     \nabla \logpart(\MAPt^\text{MAP}) = \MAPm^\text{MAP}
@@ -407,7 +407,8 @@ Even worse, there is a non-zero probability never to sample one of the categorie
 In those cases the MLE gives zero weight to this category and $\KL(p_{\nat^*} \,\Vert\, p_\text{MLE} ) = +\infty$.
 Therefore, the expected KL~\eqref{eq:bregmanMLE} is infinite for any number of samples.
 Instead of taking the expectation, one might want to bound the risk in high probability
-without resorting to Markov inequality, but this is a difficult endeavor.
+without resorting to Markov inequality, as achieved by~\citep{ostrovskii2021finite},
+ but this is a difficult endeavor.
 These examples make a case for regularized estimators such as MAP,
 for which we may find upper bounds.
 
@@ -471,7 +472,7 @@ All proofs for this section are in App.~\ref{app:gaussian-variance}.
 \end{theorem}
 This upper bound matches the asymptotic result~\eqref{eq:asymptote} that we derive in \S\ref{ssec:asymptote}.
 We illustrate its numerical behavior in Figure~\ref{fig:curves}.
-With the same technique, we obtain a similar bound for the multivariate generalization: the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O(\frac{d^2}{n} + \frac{d^3}{n(n-d-1)} )$.
+With the same technique, we obtain a similar bound for the multivariate generalization: the expected value is infinite whenever $n \leq d+1$ where $d$ is the dimension, and is otherwise bounded by $O\paren{\frac{d^2}{n} + \frac{d^3}{n(n-d-1)}}$.
 
 \begin{theorem}[MAP Bound]
 \label{thm:varianceMAP}
@@ -486,10 +487,10 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{\max(0,n-2)}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
 \end{align}
 \end{theorem}
+Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights an explicit $O(\frac{v}{n} + \frac{b}{n^2})$ variance-bias decomposition.
 This inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
-This explains the loss of a factor 2 compared to the asymptote~\eqref{eq:asymptote}.
-Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights an explicit variance-bias decomposition.
-In particular, there is no bias term when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.
+This explains why the variance term is twice larger than the asymptote~\eqref{eq:asymptote}.
+Regarding the bias, it vanishes when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.
 This correlates well with our numerical observations (cf App.~\ref{app:gaussian-variance}).
 
 \begin{figure*}[t]
@@ -499,7 +500,7 @@ This correlates well with our numerical observations (cf App.~\ref{app:gaussian-
 	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) (\S\ref{ssec:gaussian} with $n=3$).
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
 	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:primal_pivot} from~\S\ref{ssec:bias-variance}.
-	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the Thales triangle and the red curve.
+	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the long edges of the triangle and the red curve.
 	Large blurry circles in the background are other instances of MAP and MLE revealing their distribution.
 	}
 	\label{fig:thales}
