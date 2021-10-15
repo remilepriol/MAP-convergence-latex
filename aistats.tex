@@ -525,11 +525,11 @@ Let us keep this in mind, as we move on to discussing the general problem, and s
 \section{Partial Solutions}
 \label{sec:insights}
 
-\subsection{Asymptote}
+\subsection{Asymptotic Rate}
 \label{ssec:asymptote}
 As a reference point for any finite convergence rate, it is interesting to know the asymptotic behavior of these quantities as $n \rightarrow +\infty$.
 We now detail a classical asymptotic result.
-Proofs are in App.\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
+Proofs are in App.~\ref{app:asymptote}, and \citet[\S1.1]{ostrovskii2021finite} offers a great review.
 
 Statistics typically give results on $\nat$, but the MAP~\eqref{eq:defMAP} is more simply expressed with $\meanp$, so let us focus on $\bregmanconj$.
 Bregman divergences are locally quadratic, as seen via a second order Taylor expansion
@@ -539,7 +539,7 @@ Bregman divergences are locally quadratic, as seen via a second order Taylor exp
     + O(\norm{\m - \m^*}^3),
     \label{eq:bregmanTaylor}
 }
-where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
+where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF  := \nabla^2\conj(\m^*)$, the Hessian of the entropy at the optimum. It happens that  $\mF$ is also the inverse \textit{Fisher information matrix} at $\nat^*$, since
 \aligns{
     \mF
     :=\nabla^2\conj(\m^*)
@@ -554,7 +554,7 @@ Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregm
 \end{align}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible for large $n$.
 For well-specified models, this asymptote is also independent of the optimum $\meanp^*$ or $\mF$.
-Let us see another example for which we get a rate matching~\eqref{eq:asymptote}.
+Next, we give another example for which we get a rate matching~\eqref{eq:asymptote}.
 
 \subsection{Quadratic Case}
 \label{ssec:quadratic}
@@ -575,8 +575,8 @@ Thanks to the independence of samples, we can break down the MLE into individual
 \end{align}
 Adding a reference mean $\m_0$ to get the MAP yields
 \begin{align}
-	\expect{\bregmanconj(\meanp^*; \MAPm)}
-	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.
+		\!\!\!\!\! \expect{\half \norm{\m^* -   \MAPm^\text{MAP}}_2^2} \!
+	&= \frac{n \Var(T) +  n_0^2 \norm{\m^* -  \m_0}^2}{2(n+n_0)^2}.\!
 	%\\ &= O\left(\frac{\Var(T)}{n} \right) + O\left(\frac{\norm{\m^* -  \m_0}^2}{n^2} \right)
 	\label{eq:MAP_quadratic}
 \end{align}
@@ -608,9 +608,9 @@ From Taylor expansion~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
 Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
-} of $\conj$ \citep[Ch.4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.\ref{app:self-concordant}.
+} of $\conj$ \citep[Ch.~4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.~\ref{app:self-concordant}.
 \begin{proposition}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$}
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$.}
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
@@ -618,12 +618,12 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 }
 \end{proposition}
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
-For the MLE, $\expecti{\norm{\m^*-\hat \m_n}_{\mF}} = \frac{d}{n}$, so a sufficient condition is $n \geq 5 d$.
-For MAP, using~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
-This means that on average, we need $5$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
+For the MLE, the proof of~\eqref{eq:asymptote} from~\eqref{eq:bregmanTaylor} yields $\expecti{\norm{\m^*-\hat \m_n}^2_{\mF}} = \frac{d}{n}$ in general, so a sufficient condition is $n \geq 25 d$.
+For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition \TODO{FIX THIS!} $n\geq 5d + \sqrt{5}\norm{\m^* -  \m_0} - n_0$.
+This means that on average, we need $25$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
-The entropy $\conj$ is self-concordant for a lot of common families.
-For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.\ref{app:self-concordant}),
+The entropy $\conj$ is self-concordant for several common families.
+For instance when $T$ is 1-dimensional and $\logpart$ is self-concordant (App.~\ref{app:self-concordant}),
 as is the case with:
 exponential distributions,
 Gaussians with known mean,
@@ -641,7 +641,7 @@ However these results are expressed with quadratics in $\nat$, not $\m$, and the
 These results partially answer~\eqref{problem}.
 Partially, because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
 None of them apply to small $n$.
-That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
+That is one caveat. Another one is the Gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
 A full solution to~\eqref{problem} would address both of these caveats.
 Informed by the properties we have seen so far, let us investigate a general decomposition of the Bregman that could guide us towards a solution.
 %If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
