@@ -494,8 +494,13 @@ This correlates well with our numerical observations (cf App.\ref{app:gaussian-v
 
 \begin{figure*}[t]
 	\centering
-	\includegraphics[width=\textwidth]{figs/thales/numerical_schema_n=3.pdf}
-	\caption{A numerical illustration of the different characters featured in the bias-variance decomposition, for a 1D Gaussian $\cN(\mu, \sigma^2)$.
+	\includegraphics[width=.8\textwidth]{figs/thales/numerical_schema_n=3.pdf}
+	\caption{
+	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) as detailed in \S\ref{ssec:gaussian} with $n=3$ . 
+	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
+	But in primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition.
+	The hyperparameter of the prior $\nat_0$ is controlling the location of the brown point, while varying $n_0$ spans the Thales triangle and the red-curve.
+	Large blurry circles in the background are other instances of MAP and MLE revealing the distribution of these estimators.
 	}
 	\label{fig:thales}
 \end{figure*}
