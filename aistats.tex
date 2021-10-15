@@ -726,7 +726,7 @@ and SMD \citep{nemirovski2009robust,ghadimi2012optimal}
 are typically encountered in non-smooth (online) optimization,
 under bounded (or Lipschitz) gradient assumption on the objective $f$
 and strong convexity assumption on the potential $\logpart$
-\citep[Th.4.2(MD) \& Th.6.3(SMD)]{bubeck2015convex}.
+\citep[Th. 4.2(MD) \& Th. 6.3(SMD)]{bubeck2015convex}.
 In our case, these assumptions do not hold.
 For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 
@@ -831,11 +831,18 @@ When $\logpart$ is $\stgcvx$-strongly-convex, we recover the variance of the gra
 \[
 	\expect[g\!\!]{\inv{\stgcvx}\norm{\nabla g(\theta^*)}^2}\leq C.
 \]
-Using their descent lemma \citep[Eq.(12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th.3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
+Using their descent lemma \citep[Eq. (12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th. 3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
 
 These two analyses seem promising for~\eqref{problem}, but none of these assumptions hold in front of barrier objectives such as the $-\log$ from \S\ref{ssec:gaussian-variance}.
-Indeed, we cannot control the samples $x_i$, therefore there is a non-zero probability they make $\nabla\conj(\MAPt) = \hat\meanp_t$ arbitrarily close to zero. Since the conjugate of the log partition is $\conj=-0.5\log$, this makes $\MAPt$ unbounded.
+Indeed, they  both assume their bound holds uniformly for every possible iterate $\hat \nat_n$.
+Yet $\cN(0,\sigma^2)$ has a positive mass around $0$.
+This means that $\hat \m_n$ can get arbitrarily close from $0$, where the $-\log$ is unbounded, along with the associated  Bregman divergences~\eqref{eq:hanzely} and~\eqref{eq:dragomir}.
+In general, this uniform bound over $\hat \m_n$ cannot hold for \emph{barrier} objectives -- functions  exploding to infinity in some finite point of space.
 
+However, both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
+But this is not helpful for us, as verifying the assumption become as hard as the initial problem.
+For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper-bound on the variance term of~\eqref{eq:primal_pivot}.
+Confronted to this difficulty, let us move on to an alternative definition of variance. 
 
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
