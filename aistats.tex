@@ -639,7 +639,7 @@ Partially, because the present proposition and these related works all give \tex
 None of them apply to small $n$.
 That is one caveat. Another one is the gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
 A full solution to~\eqref{problem} would address both of these caveats.
-Informed by the properties we have seen so far, let us formulate a conjecture.
+Informed by the properties we have seen so far, let us investigate a general decomposition of the Bregman that could guide us towards a solution.
 %If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
 
 
@@ -656,45 +656,32 @@ In fact, such a decomposition exists for any Bregman divergence \citep[Theorem 0
 	\label{eq:primal_pivot}
 \end{equation}
 \end{theorem}
+We plot this decomposition for $\cN(\mu, \sigma^2)$ in Fig.\ref{fig:gaussian_decomposition} , and we illustrate the primal mean $\tilde \nat_n$ in  Fig.\ref{fig:thales}.
 
 \textbf{Remark:} In this decomposition, the primal expectation $\expecti{\hat \theta_n}$ is the reference point.
 An estimator will be unbiased if $\tilde \nat_n = \nat^*$.
 This is not true for the MLE, which is unbiased w.r.t. the dual parameter $\expecti{\hat \m_n}=\m^*$.
 
-We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MAP, and
- ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for quadratics.
-
-\textbf{Conjecture:} the bias decreases like $O(1/n^2)$.
-
-\paragraph{Illustrations.}
-We plot the bias-variance decompositions  $\cN(\mu, \sigma^2)$ (Figure~\ref{fig:gaussian_decomposition}).
-Additionally,  for $\cN(\mu, \sigma^2)$, Figure~\ref{fig:thales} plots the characters featured in these decompositions $\hat \m_n^\text{MLE},\hat \m_n^\text{MAP},\m_n,\tilde \m_n, \m^*$ and $\m_0$ (and corresponding primal parameters) . \rlp{Tune figures.}\textcolor{red}{Not super clear, what is the "characters featured in these decompositions?"}
-
-%\begin{figure}[t]
-%	\centering
-%	\includegraphics[width=.4\textwidth]{figs/gaussian_variance.pdf}
-%	\caption{
-%	\textbf{Gaussian variance $\cN(0,\sigma^2)$ example. Left:} training curves and analytic upper bound.
-%	\textbf{Center:} bias-mixed-variance decomposition, using the arithmetic mean.
-%	\textbf{Right:} bias-variance decomposition, using the harmonic mean.
-%	}
-%	\label{fig:variance_decomposition}
-%\end{figure}
+We show in App.\ref{app:bias-variance} that the bias decreases like ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{2}{n(n-2)}$ for Gaussian variance MLE, and
+ ${\bregmanconj(\m^* ; \tilde \m_n)} \leq \frac{ \norm{\m^* - \m_0}^2 }{(1 + \frac{n}{n_0})^2 }$ for a quadratic MAP.
+These observations are hinting towards a general $O(1/n^2)$ upper bound for the bias, while the variance may be less dependent on the initialization $\nat_0$. 
 
 \begin{figure}[t]
 	\centering
 	\includegraphics[width=.4\textwidth]{figs/gaussians/new_linear_n0=1.pdf}
 	\caption{
 	Bias-Variance Decomposition for a Gaussian $\cN(m, \sigma^2)$ with $\meanp^*=(0, 1), \meanp_0 = (1,2)$ and $n_0=1$.
-	} %TODO this figure has no labels.t
+	} 
 	\label{fig:gaussian_decomposition}
 \end{figure}
 
+In this section, we considered direct expansions of~\eqref{eq:bregmanMAP}.
+None of them could really solve~\eqref{problem}. 
+Is it possible to solve this problem through an optimization approach ?
 
 
 \section{AN OPTIMIZATION PROBLEM}
 \label{sec:optimization}
-
 
 %This section show how MAP can be interpreted as stochastic mirror descent (SMD). Thanks to this strong link, we show that \textbf{1)} we may obtain a convergence rate for MAP from the rate od SMD, and \textbf{2)} any insights gained from the MAP may inform on further design and analysis of SMD.
 %Then, we review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three different analyses of SMD with the MAP.
