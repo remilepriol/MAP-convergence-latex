@@ -601,12 +601,13 @@ Besides the Gaussian with known variance, the problem is that no standard expone
 
 \subsection{Locally Quadratic Case}
 \label{ssec:local-quadratic}
-From Taylor expansion~\eqref{eq:bregmanTaylor},
+From the Taylor expansion~\eqref{eq:bregmanTaylor},
 we know that all Bregman divergences are locally quadratic.
 Under some assumptions, such as self-concordance\footnote{
 In 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$.
 } of $\conj$ \citep[Ch.~4.1]{nesterov2003introductory}, we can quantify when this quadratic behavior kicks in. Proofs for this subsection are in App.~\ref{app:self-concordant}.
 \begin{proposition}
+	\label{prop:selfConcordant}
 Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then\footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$.}
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
@@ -635,12 +636,12 @@ There are quite a few pieces of work in this direction.
 More closely, in the world of exponential families, \citet{kakade2010learning} assumes a local bound on all higher-order moments of $\logpart$ in $\nat^*$, to obtain a similar result.
 However, these results are expressed with quadratics in $\nat$, not $\m$, and they do not directly translate to convergence rates for the MAP, but they might with some more work.
 
-These results partially answer~\eqref{problem}.
-Partially because the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$.
+These results answer~\eqref{problem} only \emph{partially} for the following reasons.
+First, the present proposition and these related works all give \textit{large sample} results,  that hold when $n\geq N$ for some constant $N$. 
 None of them apply to small $n$.
-That is one caveat. Another one is the Gaussian example we saw in \S\ref{ssec:gaussian}, which is not self-concordant.
-A full solution to~\eqref{problem} would address both of these caveats.
-Informed by the properties we have seen so far, let us investigate a general decomposition of the Bregman that could guide us towards a solution.
+Second, they do not apply to some standard exponential families like the full Gaussian example that we saw in \S\ref{ssec:gaussian} which is \emph{not} self-concordant. Third, Proposition~\ref{prop:selfConcordant} does not imply directly a bound on the \emph{expected} Bregman.\footnote{One way to see this is that while the entropy of the categorical distribution is self-concordant, and thus Proposition~\ref{prop:selfConcordant} applies to it, the expected KL of its MLE is still infinite as previously mentioned in \S\ref{sec:problem}.}
+A full solution to~\eqref{problem} would address all of these caveats.
+Informed by the properties that we have seen so far, we next investigate a general decomposition of the Bregman that could guide us towards a solution.
 %If no current approach solves~\eqref{problem}, then let us formulate a conjecture informed by the examples and partial solutions we have s.
 
 
@@ -784,13 +785,13 @@ We review these analyses in the light of the MAP and provide a summary in \cref{
 			%\expect[x]{\norm{\m - x}}^2\leq\sigma^2
 			%$
 			%\\
-			Var. on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
+			Variance on $\Theta$~\eqref{eq:hanzely} % \newline \citep{hanzely2018fastest}
 			& \redxmark & \greencmark & \greencmark  & \redxmark
 			\\
-			Var. at $\theta_*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
+			Variance at $\theta^*$~\eqref{eq:dragomir} %\newline \citep{dragomir2021fast}
 			& \redxmark & \greencmark & \redxmark  & \greencmark
 			\\
-			Opt. gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
+			Optimization gap~\eqref{eq:dorazio} %\newline \citep{dorazio2021stochastic}
 			& \greencmark & \redxmark & \redxmark & \greencmark
 			\\
 			\bottomrule
