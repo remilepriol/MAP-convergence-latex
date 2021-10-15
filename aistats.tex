@@ -151,7 +151,8 @@ We believe solving this very fundamental problem may bring progress to both the 
 \section{Introduction}
 \label{sec:motivation}
 
-{\bf Exponential families} are among the most widely used simple parametric models of data, yet, we will highlight some open problems about them in this paper.
+\paragraph{Models}
+Exponential families are among the most widely used simple parametric models of data, yet, we will highlight some open problems about them in this paper.
 Many standard random variables are exponential families: Gaussians, categorical, gamma, or Dirichlet, for example.
 They are flexible enough to model a variety of data sources $X$ and easy to describe with some sufficient statistics $T(X) \in \real^d$.
 They are particularly appreciated for their convex log-likelihood
@@ -162,7 +163,7 @@ f(\nat) := \E[-\log p_\nat(X)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 where $\logpart$ is the convex log-partition function and $\nat\in\Theta$ is the \textit{natural parameter}.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} or variants of principal component analysis \citep{collins2001generalization}, among other applications.
 
-{\bf Estimators.}
+\paragraph{Estimators}
 In this paper, we consider the problem of estimating $\nat$ from a dataset $\mD = (X_1, \dots, X_n)$ of iid observations from $p_\theta$ in an exponential family.
 In this case, not only is $f$ convex, but it yields a simple condition for the maximum-likelihood estimate (MLE)
 \begin{align}
@@ -172,7 +173,7 @@ In this case, not only is $f$ convex, but it yields a simple condition for the m
 This rule is also known as moment matching.
 Given a specific conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). In this paper, we will focus on analyzing MLE and MAP estimators.\footnote{A related analysis is present in the online-learning literature, but for different online estimators, which are less efficient than offline methods \citep{azoury2001relative,dasgupta2007online}.}
 
-{\bf Statistical decision theory.}
+\paragraph{Statistical decision theory}
 To assess the quality of an estimator $\hat \nat$ (and compare them), we need to define some notion of closeness to the correct parameter $\nat^*$.
 We distinguish here two ways: \textit{distance in parameter space} and \textit{``distance'' between distributions}.
 {\bf 1)} Distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation} and a wealth of asymptotic results \citep{vdv1998asymptotic}.
@@ -213,7 +214,8 @@ or close to quadratic (\S\ref{ssec:quadratic}).
 However, a  general solution for finite $n$ remains elusive.
 In this paper, we review partial solutions and give ideas on how to solve the problem.
 
-{\bf Stochastic optimization} offers an interesting perspective on this question.
+\paragraph{Optimization} 
+Stochastic optimization offers an interesting perspective on~\eqref{problem}.
 Consider the problem
 \alignn{
 	\min_{\theta\in \Theta} f(\theta)\,,
@@ -230,13 +232,13 @@ In particular, with exponential families, MAP is equivalent to stochastic mirror
 Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we consider using existing convergence rates for SMD to get the upper bound we seek.
 Unfortunately, none of the current analyses apply, highlighting open problems for the analysis of SMD.
 
-{\bf Expected Outcomes.}
+\paragraph{Expected Outcomes}
 A solution to~\eqref{problem} can clarify the importance of the prior in MAP, in particular in the few sample regime. %, for instance for Gaussians $\cN(m,\sigma^2)$.
 Also, it could enable stochastic optimization to tackle a broad class of barrier objectives.\footnote{we call \emph{barrier} an objective $f$ that is infinite on the boundaries of its domain (assuming they exist).}
 A good example is the generalized linear model based on Gaussians with unknown mean and variance, for which there is currently no theory \citep{bach2013nonstronglyconvex}.
 It could also help assess the impact of alternative forms of regularization (prior) for these models.
 
-{\bf Contributions.}
+\paragraph{Contributions}
 After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with its asymptotic properties (\S\ref{ssec:asymptote}), we make the following contributions.
 \begin{itemize}
 	\itemsep0em
@@ -248,7 +250,7 @@ After formalizing the problem~\eqref{problem} (\S\ref{sec:problem}), along with 
 \end{itemize}
 
 
-{\bf Notation.}
+\paragraph{Notation}
 $X$ and $T=T(X)$ are random variables, $x$ is a sample, $n$ is the number of samples and $d= \dim(T)$.
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
