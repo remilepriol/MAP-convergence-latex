@@ -409,6 +409,21 @@ We relate these loose convergence rates of MAP and MLE in Figure~\ref{fig:MAP_ra
 	}
 \end{figure}
 
+
+\section{Gamma with known shape}
+
+We are looking for $\Gamma(\alpha, \beta^*)$, where the shape $\alpha$ is known, but the rate $\beta^*$ is unknown. The logpartition is $\logpart(\beta) = - \alpha \log(\beta)$ and the mean parameter is $\mu* = \frac{\alpha}{\beta}$.
+The symmetrized Bregman of the MAP verifies the following upper bound
+\alignn{
+    \forall n\geq \inv{\alpha},\quad
+	\expect{\cS_\conj(\mu^*, \hat \mu_n)}
+	\leq\frac{1}{n_0+n} + 
+	\frac{\alpha\paren{\frac{\mu_0}{\mu^*} - 1 - \inv{\alpha n_0}}^2}{\paren{1+\frac{n}{n_0}}\paren{\frac{\mu_0}{\mu^*} + \frac{n - \inv{\alpha}}{n_0}}}
+}
+where the bias vanish when $\mu_0 = \mu^* \paren{1 + \inv{\alpha n_0}}$.
+
+
+
 \section{Euclidean Behaviour}
 Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mean parameter space. 
 \TODO{Add base measure to add here a discussion of the euclidean case -- the mean of a gaussian}
@@ -1610,9 +1625,9 @@ Fortunately, we derived the bound \eqref{eq:lemma_natp_bound} for this purpose.
 so putting it all together we get 
 \begin{align}
 	\expect{\bregmanconj(\mu^*; \MAPm)} 
+	& = \half \left(\frac{n_0 - a + 2}{a +n - 2}  + \frac{a - n_0}{n_0+n} \right )\\
 	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
-	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \frac{n_0 - a + 2}{(a+n-2)(n_0+n)} \\
-	&= \frac{1}{a+n-2} + \frac{(n_0 - a)^2 + 2(n_0-a) \pm 1}{2(a+n-2)(n_0+n)} \\
+	&\leq \frac{1}{a+n-2} + \frac{(n_0-a + 1) - 1}{2}  \frac{(n_0 - a + 1) + 1}{(a+n-2)(n_0+n)} \\
 	&= \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2 - 1}{2(a+n-2)(n_0+n)} \\
 	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2}{2(a+n-2)(n_0 + n)} \\
 	&= \frac{1}{a+n-2} + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \; .
@@ -1627,13 +1642,15 @@ so putting it all together we get
 so putting it all together we get
 \begin{align}
 	2\expect{\bregmanconj(\mu^*; \hat \mu_1)} 
-	&\leq \frac{a - n_0 \pm 1}{n_0 + 1}  + \frac{n_0 - a + 1}{a} \\
+	&\leq \frac{a - n_0 \pm 1}{n_0 + 1}  + \frac{n_0 +1 - a }{a} \\
 	& = \inv{n_0+1}  + ( a - n_0 - 1)(\inv{n_0+1} - \inv{a}) \\
 	& = \inv{n_0+1}  + \frac{(n_0 + 1 -a)^2}{a(n_0+1)}\\
-	&= \inv{n_0+1}  + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 \frac{\mu_0}{\mu^*}(1 + \inv{n_0} )} 
+	&= \inv{n_0+1}  + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{\frac{\mu_0}{\mu^*}(1 + \inv{n_0} )} 
 \end{align}
 so we do recover the same bias variance structure as when $n\geq2$.
 \end{proof}
+
+
 
 \section{More on the Bias-Variance Decomposition}
 
@@ -1662,6 +1679,7 @@ We can use the classical lower bound on the logarithm to upper bound the pure bi
 	\end{align}
 	which is a $O(n^{-2})$ term, worth $0$ when $n_0=a$, eg $\mu_0=\mu^*$, exactly as we expected.
 \end{example}
+
 
 \subsection{Variance Term}
 
