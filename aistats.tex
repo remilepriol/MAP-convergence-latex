@@ -863,9 +863,15 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
 
-
-
-
+Let us recall the form of the divergence with different parametrizations
+\begin{align}
+	\KL( \sigma_*^2 ; \sigma_n^2 ) 
+	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right) \\
+	\bregmanconj( \mu_*; \mu_n) 
+	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) \\
+	\bregman( \nat_n; \nat_* ) 
+	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
+\end{align}
 Intuitively, the divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
 \begin{align}
 	\phi(z) := \half (z - 1 - \log(z))
@@ -878,11 +884,78 @@ illustrated in Figure~\ref{fig:phi}.
 	\label{fig:phi}
 \end{figure}
 
-For MAP, we get an upper bound thanks to
-\begin{align}
+To get an upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we focused on the symmetrized Bregman instead
+\aligns{
 	\label{eq:log_bound}
-	\phi(z) \leq \phi(z) + \phi(\inv{z}) =  \half (z + \inv{z}) - 1 \; .
-\end{align}
+	\phi(z) \leq \phi(z) + \phi(\inv{z}) 
+	&=  \half \paren{z -1  + \inv{z} -1} 
+	= \frac{(z-1)^2}{z}
+}
+\aligns{
+	\bregmanconj( \mu_*; \mu_n) 
+	&\leq \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \\ 
+	=: \cS_{\conj} (\mu_*, \mu_n )  
+	&= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 }
+}
+
+\subsection{Proof of MLE Upper Bound}
+
+	\begin{theorem}[MLE Upper Bound]
+	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \inv{n} \sum_i X_i^2 $.
+	Its expected suboptimality is infinite when $n\leq 2$ and otherwise
+	\begin{align}
+		 \expect{\bregmanconj( \mu_*; \mu_n) }
+			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
+	\end{align}
+	\end{theorem}
+	
+	\begin{proof}
+	The ratio to the optimum  $\frac{n \mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
+	\begin{align}
+		\expect{n \frac{\mu_*}{n \mu_n}  - 1} 
+		= \expect{\frac{n}{\chi^2(n)} - 1} =
+		\begin{cases}
+			\frac{n}{n-2} -1 = \frac{2}{n-2} \ \text{ if } n>2, \\
+			+\infty \  \text{ otherwise. }
+		\end{cases}
+	\end{align}
+	There is also a closed form solution for the expected logarithm of a Chi-squared, because a Chi-squared is a special case of Gamma distributions, whose sufficient statistic is $(X,\log(X))$. For non-central chi-squares, one could also look at \citep{pav2015moments}.
+	\begin{align}
+		\expect{\log \frac{\mu_n}{\mu_*}} = \psi(\half[n]) - \log(\half[n])
+	\end{align}
+	where $\psi$ is the \href{https://en.wikipedia.org/wiki/Digamma_function}{digamma function.}
+	Consequently the suboptimality of the MLE has a closed form solution
+	\begin{align}
+	\expect{\bregmanconj( \mu_*; \mu_n) }
+	&= \half \expect{\frac{\mu_*}{ \mu_n} - 1 + \log \left(\frac{\mu_n}{\mu_*} \right) } \\
+	& =
+	\begin{cases}
+		\half \left ( \frac{2}{n-2} +\psi(\half[n]) - \log(\half[n]) \right )  \ \text{ if } n>2, \\
+			+\infty \  \text{ otherwise. }
+	\end{cases}
+	\end{align}
+	It is surprising that we need more than $3$ samples for the loss to have a bounded expectation. 
+	It is also very pleasant that the optimal value $\mu_*$ does not appear in this rate, so that the convergence rate is independent of the actual solution.
+	When the expectation is finite, we can make its formula intelligible thanks to \href{https://en.wikipedia.org/wiki/Digamma_function#Inequalities}{bounds on the digamma function}
+	\begin{align}
+		-\inv{x} \leq \psi(x) - \log(x) \leq -\inv{2x}	\; .
+	\end{align}
+	  For $n\geq 3$,
+	\begin{align}
+		\inv{n-2} - \inv{n}
+		&\leq \expect{\bregmanconj( \mu_*; \mu_n) }
+		\leq \inv{n-2} - \inv{2 n} \\
+		\iff
+			\frac{2}{n(n-2)}
+			&\leq \expect{\bregmanconj( \mu_*; \mu_n) }
+			\leq \inv{2n} +\frac{2}{n(n-2)}
+	\end{align}
+	so we get a $O(n^{-2})$ lower bound and a $O(n^{-1}) + O(n^{-2})$ upper bound.
+	\end{proof}
+
+
+
+
 
 \section{PROOFS FOR GAUSSIAN}
 \label{app:gaussian}
