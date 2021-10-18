@@ -80,14 +80,14 @@
 \newcommand{\conj}{\logpart^*}
 \newcommand{\bregman}{\cB_\logpart}
 \newcommand{\bregmanconj}{\cB_{\logpart^*}}
-\newcommand{\natp}{\theta}
+\newcommand{\nat}{\theta}
 \newcommand{\meanp}{\mu}
 \newcommand{\decrement}{D}
 \newcommand{\linear}{\ell} % linearization of a function
 \newcommand{\lr}{\gamma} % learning rate, or step-size
 
 \newcommand{\MAPm}{\hat \mu_n}
-\newcommand{\MAPt}{\hat \natp_n}
+\newcommand{\MAPt}{\hat \nat_n}
 
 
 \title{Convergence rate of MAP estimates \\
@@ -110,13 +110,13 @@ We do not know general convergence rates on the KL for maximum likelihood estima
 We want the simplest one.
 We hope  to get a new result by combining tools from statistics and optimization. 
 \paragraph{Exponential Family.}
-The exponential family member with sufficient statistic $T$ and natural parameter $\natp$ is the model 
+The exponential family member with sufficient statistic $T$ and natural parameter $\nat$ is the model 
 \begin{equation}
-	 p(X|\natp) = \exp( \natp^\top T(X) - \logpart(\natp)) \; ,
+	 p(X|\nat) = \exp( \nat^\top T(X) - \logpart(\nat)) \; ,
 \end{equation}
 where $\logpart$ is the log-partition function (aka normalization factor) 
 \begin{align}
-    \logpart(\natp) = \log \int e^{\natp^\top T(x)} dx \; .
+    \logpart(\nat) = \log \int e^{\nat^\top T(x)} dx \; .
 \end{align}
 
 \begin{example}
@@ -125,150 +125,150 @@ where $\logpart$ is the log-partition function (aka normalization factor)
 \begin{align}
 	p(x) = \inv{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}} \; .
 \end{align}
-Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\natp = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
+Defining $T(X)=X^2$ as the sufficient statistic, we get natural parameter $\nat = -\inv{2 \sigma^2} <0$, and mean parameter $\mu=\E[T(X)] = \sigma^2 >0$. 
 Mean and natural parameters are roughly inverse of each other
 \begin{align}
-	\natp = -\inv{2 \mu}\; .
+	\nat = -\inv{2 \mu}\; .
 \end{align}
 Now we can match the log-likelihood with the exponential family template to get the log-partition function.
 \begin{align}
 	\log p(x) = - \frac{x^2}{2 \sigma^2} - \half \log(2 \pi \sigma^2 ) 
-	= x^2 \natp - \logpart(\natp) \\
-	\implies \logpart (\natp) = - \half \log(-\natp)  + \half \log(\pi) 
+	= x^2 \nat - \logpart(\nat) \\
+	\implies \logpart (\nat) = - \half \log(-\nat)  + \half \log(\pi) 
 \end{align}
 \end{example}
 
 \paragraph{Duality}
 The logpartition function $\logpart$ verifies the two following identities
 \begin{align}
-    \nabla\logpart(\natp) &=  \expect[p(X|\natp)]{T(X)} =: \meanp \\
-    \nabla^2 \logpart(\natp) &= \Cov_\natp[T(X)] > 0
+    \nabla\logpart(\nat) &=  \expect[p(X|\nat)]{T(X)} =: \meanp \\
+    \nabla^2 \logpart(\nat) &= \Cov_\nat[T(X)] > 0
 \end{align}
 where $\meanp$ is called the mean parameter.
-If the sufficient statistic $T$ is minimal, then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\natp$ and mean parameters $\mu$.
+If the sufficient statistic $T$ is minimal, then the log-partition function $\logpart$ is strictly convex and its gradient $\nabla \logpart$ is a bijection between natural parameters $\nat$ and mean parameters $\mu$.
 The second identity entails that $\logpart$ is strictly-convex. 
 At this point it is useful to introduce the \href{https://en.wikipedia.org/wiki/Convex_conjugate}{convex conjugate} (aka Fenchel-Legendre transform) of the logpartition function
 \begin{align}
-	\conj(\mu) = \langle \mu, \natp \rangle - \logpart(\natp) \; .
+	\conj(\mu) = \langle \mu, \nat \rangle - \logpart(\nat) \; .
 \end{align}
 It turns out that $\conj$ matches the common notion of \textit{entropy} in information theory, so we will call it entropy.
-If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it is a bijection, and its inverse is the gradient of its dual $\nabla\conj \circ \nabla\logpart(\natp) = \natp$ (cf Fig.~\ref{fig:duality}).
+If $\logpart$ is strictly convex, then its gradient is strictly monotone, so it is a bijection, and its inverse is the gradient of its dual $\nabla\conj \circ \nabla\logpart(\nat) = \nat$ (cf Fig.~\ref{fig:duality}).
 For a full review of exponential families and their duality, see \citet[Chapter 3]{wainwright2008graphical}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width= .6\textwidth]{figs/duality} \\
 	\includegraphics[width=.7\textwidth]{figs/2d/mirrormap.pdf}
-	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\natp, \meanp$.Top figure reproduced from \citet{kunstner2020homeomorphic}. Bottom figure represents $\cN(\mu, \sigma^2)$.}
+	\caption{The gradient of the log-partition function and its dual, $(\nabla \logpart, \nabla \conj)$, form a bijection between the natural and mean parameters $\nat, \meanp$.Top figure reproduced from \citet{kunstner2020homeomorphic}. Bottom figure represents $\cN(\mu, \sigma^2)$.}
 	\label{fig:duality}
 \end{figure}
 \begin{example}
-For $\cN(0,\sigma^2)$,we can use the formula $\conj(\mu) = \mu \natp - \logpart(\natp)$ to get the entropy
+For $\cN(0,\sigma^2)$,we can use the formula $\conj(\mu) = \mu \nat - \logpart(\nat)$ to get the entropy
 \begin{align}
 	\conj(\mu) = \half\left( -\log(\mu) + \log\frac{\pi}{2} - 1 \right) \; .
 \end{align}
-We can also take gradient and derivative of $\logpart(\natp)$ to retrieve the mean and covariance of the sufficient statistic $X^2$
+We can also take gradient and derivative of $\logpart(\nat)$ to retrieve the mean and covariance of the sufficient statistic $X^2$
 \begin{align}
-	\nabla\logpart(\natp) &= \frac{-1}{2 \natp} = \sigma^2 = \mu = \E[X^2] \\
-	\nabla^2\logpart(\natp) &= \frac{1}{2 \natp^2} = 2 \sigma^4 = 2 \mu^2 = \Var(X^2) 
+	\nabla\logpart(\nat) &= \frac{-1}{2 \nat} = \sigma^2 = \mu = \E[X^2] \\
+	\nabla^2\logpart(\nat) &= \frac{1}{2 \nat^2} = 2 \sigma^4 = 2 \mu^2 = \Var(X^2) 
 \end{align}
 which we confirm thank to wikipedia since $\E[X^4] = 3 \sigma^4$ and thus $\Var(X^2) = \E[X^4] - \E[X^2]^2 = 3 \sigma^4 - \sigma^4 = 2 \sigma^4$.
 \end{example}
 
 \paragraph{Conjugate Prior}
-One conjugate prior for $p(X|\natp)$ is
+One conjugate prior for $p(X|\nat)$ is
 \begin{align}
-    p(\natp) &\propto \exp( - n_0 \bregman(\natp ; \natp_0) )
+    p(\nat) &\propto \exp( - n_0 \bregman(\nat ; \nat_0) )
 \end{align}
-where $n_0$ and $\natp_0$ are (hyper)parameters of the prior, and $\bregman(\natp ; \natp_0)$ is the Bregman divergence induced by $\logpart$ between $\natp$ and $\natp_0$
+where $n_0$ and $\nat_0$ are (hyper)parameters of the prior, and $\bregman(\nat ; \nat_0)$ is the Bregman divergence induced by $\logpart$ between $\nat$ and $\nat_0$
 \begin{align}
-    \bregman (\natp ; \natp_0)
-    & = \logpart(\natp) - \logpart(\natp_0) 
-    - \langle \nabla \logpart(\natp_0)  , \natp - \natp_0 \rangle
+    \bregman (\nat ; \nat_0)
+    & = \logpart(\nat) - \logpart(\nat_0) 
+    - \langle \nabla \logpart(\nat_0)  , \nat - \nat_0 \rangle
 \end{align}
-with $\nabla \logpart(\natp_0) = \expect[\natp_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\natp_0$. 
-Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\natp_0$.
+with $\nabla \logpart(\nat_0) = \expect[\nat_0]{T(X)} =: \meanp_0$ the mean parameter associated to $\nat_0$. 
+Intuitively, $n_0$ is a number of fictive points observed from a distribution with parameter $\nat_0$.
 We can re-write this prior as 
 \begin{align}
-    p(\natp) \propto 
-    \exp( -n_0 \logpart (\natp) 
-    + \langle n_0 \mu_0, \natp \rangle ) \; ,
+    p(\nat) \propto 
+    \exp( -n_0 \logpart (\nat) 
+    + \langle n_0 \mu_0, \nat \rangle ) \; ,
 \end{align}
-which is the formula for the exponential family with sufficient statistics $(\natp ,\logpart(\natp))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
+which is the formula for the exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and with natural parameter $(n_0 \mu_0, -n_0)$.
 The posterior given $\cD=(X_1,\dots, X_n)$ is then part of the same family, with natural parameters $(n_0 \mu_0 + \sum_i T(X_i) , -(n_0 + n))$.
 
 \begin{example}
-In the case of $\cN(0,\sigma^2)$, the logpartition function is $\logpart(\natp) = -\log(-\natp) /2 + \cst$, thus the conjugate prior is the exponential family with sufficient statistic $(\natp, \log(-\natp) )$, eg a negative \href{https://en.wikipedia.org/wiki/Gamma_distribution}{Gamma distribution}.
+In the case of $\cN(0,\sigma^2)$, the logpartition function is $\logpart(\nat) = -\log(-\nat) /2 + \cst$, thus the conjugate prior is the exponential family with sufficient statistic $(\nat, \log(-\nat) )$, eg a negative \href{https://en.wikipedia.org/wiki/Gamma_distribution}{Gamma distribution}.
 In particular,
 \begin{align}
-	p(\natp) 
+	p(\nat) 
 	&\propto 
-    \exp( -n_0 \logpart (\natp) 
-    + \langle n_0 \mu_0, \natp \rangle ) \\
-    &\propto \exp( \half[n_0] \log(-\natp) + n_0\mu_0 \natp ) \\
-	&\propto (-\natp)^{1 + \half[n_0] -1 } e^{-n_0 \mu_0 (-\natp)} / Z
+    \exp( -n_0 \logpart (\nat) 
+    + \langle n_0 \mu_0, \nat \rangle ) \\
+    &\propto \exp( \half[n_0] \log(-\nat) + n_0\mu_0 \nat ) \\
+	&\propto (-\nat)^{1 + \half[n_0] -1 } e^{-n_0 \mu_0 (-\nat)} / Z
 \end{align}
-from which we infer the shape parameter $\alpha=1 + \half[n_0]$ and the rate parameter $\beta = n_0 \mu_0$, eg $\natp \sim \Gamma (1+\half[n_0] , n_0 \mu_0)$. After seeing $n$ samples, the posterior is $\Gamma\left(1+\half[n_0+n] , n_0 \mu_0 + \sum_i T(X_i) \right)$.
+from which we infer the shape parameter $\alpha=1 + \half[n_0]$ and the rate parameter $\beta = n_0 \mu_0$, eg $\nat \sim \Gamma (1+\half[n_0] , n_0 \mu_0)$. After seeing $n$ samples, the posterior is $\Gamma\left(1+\half[n_0+n] , n_0 \mu_0 + \sum_i T(X_i) \right)$.
 \end{example}
 
 \paragraph{Maximum A Posteriori (MAP).}
 The negative log-likelihood of the prior is
 \begin{align*}
-    -\log p(\natp) = n_0 (\logpart(\natp)  - \natp^\top \meanp_0 ) + \cst
+    -\log p(\nat) = n_0 (\logpart(\nat)  - \nat^\top \meanp_0 ) + \cst
 \end{align*}
-Thus the joint log-likelihood of $\cD =(X_1,\dots,X_n,\natp)$ is
+Thus the joint log-likelihood of $\cD =(X_1,\dots,X_n,\nat)$ is
 \begin{align}
-    -\log p(\cD|\natp)p(\natp) 
-    = (n_0+n) \logpart (\natp) 
+    -\log p(\cD|\nat)p(\nat) 
+    = (n_0+n) \logpart (\nat) 
     - \theta^\top \left(n_0 \meanp_0 + \sum_{i=1}^n T(X_i) \right) + \cst \; .
 \end{align}
-Minimizing this expression over $\natp$ yields the Maximum A Posteriori estimate
+Minimizing this expression over $\nat$ yields the Maximum A Posteriori estimate
 \begin{align}
-    \hat \natp = \argmin_\natp -\log p(\cD|\natp) + n_0 \bregman(\natp ; \natp_0)
+    \hat \nat = \argmin_\nat -\log p(\cD|\nat) + n_0 \bregman(\nat ; \nat_0)
 \end{align}
 such that the MAP is
 \begin{align}
-    \nabla \logpart(\hat \natp_\text{MAP}) = \hat \meanp_\text{MAP}
+    \nabla \logpart(\hat \nat_\text{MAP}) = \hat \meanp_\text{MAP}
     = \frac{n_0 \meanp_0 + \sum_{i=1}^n T(X_i) }{n_0+n} \; .
 \end{align}
 When $n_0=0$ -- eg we observed zero samples from the prior -- we recover the Maximum Likelihood Estimate (MLE)
 \begin{align}
 	\hat \mu_\text{MLE} = \frac{\sum_{i=1}^n T(X_i)}{n}
 \end{align}
-The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\natp^*$ or $\meanp^*$.
+The MLE and MAP estimates are statistics of the dataset $\cD$. Given a random dataset, we wish to bound their deviation from the optimum $\nat^*$ or $\meanp^*$.
 
 
 \section{Open Problem}
 For a well-specified model, the suboptimality on the population log-likelihood is exactly the KL between our current model and the true distribution
 \begin{align}
-    \expect[X\sim p(.|\natp^*)]{-\log p(X|\natp) + \log p(X|\natp^*) }
-	= \KL( p(.|\natp^*) ; p(.|\natp)) \; .
+    \expect[X\sim p(.|\nat^*)]{-\log p(X|\nat) + \log p(X|\nat^*) }
+	= \KL( p(.|\nat^*) ; p(.|\nat)) \; .
 \end{align}
 For the exponential family, the KL is also the Bregman divergence induced by the log-partition function (with switched arguments)
 \begin{align}
-	\KL( p(.|\natp^*) ; p(.|\natp)) 
-	= \bregman (\natp ; \natp^*)  \; .
+	\KL( p(.|\nat^*) ; p(.|\nat)) 
+	= \bregman (\nat ; \nat^*)  \; .
 \end{align}
 There is a general relationship between Bregman divergences and convex conjugates (notice the argument switching)
 \begin{align}
-	\bregman (\natp ; \natp^*)
-    = \logpart(\natp) - \langle \natp , \mu^* \rangle + \conj(\mu^*)
+	\bregman (\nat ; \nat^*)
+    = \logpart(\nat) - \langle \nat , \mu^* \rangle + \conj(\mu^*)
     = \bregmanconj ( \meanp^* ; \meanp)
 \end{align}
 so in the end the suboptimality is a divergence, which can either be seen as a KL between distributions, as a divergence between natural parameters, or as a divergence between mean parameters
 \begin{align}
 \boxed{
-	\KL( p(.|\natp^*) ; p(.|\natp))
-    = \bregman (\natp ; \natp^*)
+	\KL( p(.|\nat^*) ; p(.|\nat))
+    = \bregman (\nat ; \nat^*)
     = \bregmanconj ( \meanp^* ; \meanp) \; .
 }
 \end{align}
 \begin{important}
-The question is: how does this quantity behave when $\natp$ is the maximum-likelihood or the MAP estimate ? Can we get bounds on the following quantities
+The question is: how does this quantity behave when $\nat$ is the maximum-likelihood or the MAP estimate ? Can we get bounds on the following quantities
 \begin{align}
 	\label{eq:bregmanMLE}
-	\expect[X_i\sim \natp^*]{\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right )} \leq \ ? \; , \\
+	\expect[X_i\sim \nat^*]{\bregmanconj \left (\E [T(X)] ;  \inv{n}  \smallsum_i T(X_i) \right )} \leq \ ? \; , \\
 	\label{eq:bregmanMAP}
-	\expect[X_i\sim \natp^*]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} \leq \ ? \; ,
+	\expect[X_i\sim \nat^*]{\bregmanconj \left (\E [T(X)] ; \frac{n_0 \mu_0 + \smallsum_i T(X_i)}{n_0+n} \right )} \leq \ ? \; ,
 \end{align}
 where the outer expectation is on the dataset $X_1, \dots, X_n$?
 \end{important}
@@ -292,14 +292,14 @@ Below we review all the attempts we made on this problem.
 	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right) \\
 	\bregmanconj( \mu_*; \mu_n) 
 	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) \\
-	\bregman( \natp_n; \natp_* ) 
-	&=  \half \left ( \frac{ \natp_n}{\natp_*} - 1 - \log  \frac{ \natp_n}{\natp_*} \right) \; .
+	\bregman( \nat_n; \nat_* ) 
+	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
 \end{align}
 \end{example}
-In other words, this divergence measures the discrepancy between the ratio $\frac{ \natp_n}{\natp_*} =  \frac{\mu_*}{ \mu_n}  $ and $1$ via the function $\phi$
+In other words, this divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\mu_*}{ \mu_n}  $ and $1$ via the function $\phi$
 \begin{align}
 	\phi(z) := \half (z - 1 - \log(z)) \\
-	\bregman( \natp_n; \natp_* )   = \phi(\frac{ \natp_n}{\natp_*}) =  \phi(\frac{\mu_*}{ \mu_n})
+	\bregman( \nat_n; \nat_* )   = \phi(\frac{ \nat_n}{\nat_*}) =  \phi(\frac{\mu_*}{ \mu_n})
 \end{align}
 as illustrated in Figure~\ref{fig:phi}. We can get a non-transcendental upper bound thanks to the inequality
 \begin{align}
@@ -353,7 +353,7 @@ We now present a lemma on its expected inverse.
 	\begin{equation}
 		\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
-		= \expect{\frac{\MAPt}{\natp^*}} 
+		= \expect{\frac{\MAPt}{\nat^*}} 
 		\leq \frac{n_0 +n}{a+ (n-2)_+}
 		\label{eq:theta_expectation_bound}
 	\end{equation}
@@ -430,7 +430,7 @@ Often we can relate this Bregman suboptimality with the $\ell^2$ distance in mea
 \paragraph{If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
     \bregmanconj(\mu^* ; \mu) 
-    \leq L \norm{\mu^* - \mu} + \norm{\natp} \norm{\mu^* - \mu}
+    \leq L \norm{\mu^* - \mu} + \norm{\nat} \norm{\mu^* - \mu}
     \leq 2L \norm{\mu^* - \mu}
 \end{align}
 so $\bregmanconj$ is $2L$-Lipschitz.
@@ -469,8 +469,8 @@ In the limit, the MAP estimates reach a rate $O(1/2n)$. This is shown by approxi
 where we introduced the Mahalanobis distance induced by the matrix 
 \begin{align}
     \nabla^2\conj(\mu^*) 
-    = \nabla^2\logpart(\natp^*)^{-1} 
-    = \Cov_{\natp^*}[T(X)]^{-1} 
+    = \nabla^2\logpart(\nat^*)^{-1} 
+    = \Cov_{\nat^*}[T(X)]^{-1} 
     =: \mSigma^{-1}  \; .
 \end{align}
 To exploit this approximation, let us extend the $\ell^2$ norm results to a Mahalanobis distance induced by matrix $\mM$
@@ -502,7 +502,7 @@ Anyway that's all good for asymptotic results, but we are interested in a finite
 \newcommand{\variance}[1]{\textcolor{Green}{\underbrace{\textcolor{black}{#1}}_{\text{variance}}}}
 
 \subsection{Dual Expectation Pivot.}
-Let $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i T(X_i)}{n_0 + n}$ be the MAP estimate of the mean (dual) parameter, $\hat \natp_n = \nabla \conj(\hat \mu_n)$ the corresponding natural (primal) parameter, and
+Let $\hat \mu_n = \frac{n_0 \mu_0 + \sum_i T(X_i)}{n_0 + n}$ be the MAP estimate of the mean (dual) parameter, $\hat \nat_n = \nabla \conj(\hat \mu_n)$ the corresponding natural (primal) parameter, and
 $\mu_n = \expect{\hat \mu_n} = \frac{n_0 \mu_0 + n \mu^*}{n_0 + n}$ the expected MAP dual estimate
 Taking $\mu_n$ as a pivot, we can decompose the expected suboptimality in 3 terms -- e.g. 
 \begin{align}
@@ -510,14 +510,14 @@ Taking $\mu_n$ as a pivot, we can decompose the expected suboptimality in 3 term
 	&= \conj(\mu^* ) 
 	\pm \conj(\mu_n)
 	-  \expect{\conj(\hat \mu_n)}
-	+ \E[\langle \hat \natp_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] 
+	+ \E[\langle \hat \nat_n ; \hat \mu_n   \pm \mu_n - \mu^*  \rangle ] 
 	\nonumber \\
 	&= \conj(\mu^* ) 
 	- \conj(\mu_n)  + \E[\bregmanconj(\mu_n, \MAPm)]
-	+ \langle \E[\hat \natp_n] \pm \nabla \conj(\mu_n) ;  \mu_n - \mu^* \rangle
+	+ \langle \E[\hat \nat_n] \pm \nabla \conj(\mu_n) ;  \mu_n - \mu^* \rangle
 	\nonumber\\
 	& = \bias{\bregmanconj(\mu^*; \mu_n)}
-	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_0 - \mu_*} ; \variance{\E[\hat \natp_n] - \natp_n} \rangle 
+	+ \frac{n_0}{n+n_0} \langle  \bias{\mu_0 - \mu_*} ; \variance{\E[\hat \nat_n] - \nat_n} \rangle 
 	+ \variance{\E[\bregmanconj(\mu_n, \MAPm)]} \; .
 	\label{eq:bias-mixed-variance}
 \end{align}
@@ -549,8 +549,8 @@ As described by \citet[Theorem 0.1]{pfau2013generalized}, the  expected Bregman 
 	\expect{\bregmanconj(\mu^* ; \hat \mu_n)} 
 	&= \bias{\bregmanconj(\mu^* ; \tilde \mu_n)}
 	+ \variance{\expect{\bregmanconj(\tilde \mu_n ; \MAPm)}} \\
-	\expect{\bregman(\MAPt; \natp^*)} 
-	&= \bias{\bregman(\E[\MAPt]; \natp^*)}
+	\expect{\bregman(\MAPt; \nat^*)} 
+	&= \bias{\bregman(\E[\MAPt]; \nat^*)}
 	+ \variance{\expect{\bregman(\MAPt; \E[\MAPt])}}  \; .
 	\label{eq:primal_pivot}
 \end{align}
@@ -599,7 +599,7 @@ In particular for $\cN(\mu, \sigma^2)$, we illustrate the characters featured in
 \label{lem:covariance}
 Taking  $\MAPt$ and $\MAPm$ as the primal and dual parameters of the MAP estimate, and $\tilde \mu_n$ the primal expectation and $\mu_n$ the dual expectation, the following identities hold
 	\begin{align}
-	\Cov(\hat \natp_n ; \MAPm )  
+	\Cov(\hat \nat_n ; \MAPm )  
 	&=\expect{\bregmanconj(\MAPm ; \mu_n)
 	+ \bregmanconj(\mu_n ; \MAPm)} \\
 	&=\expect{\bregmanconj(\MAPm ; \tilde \mu_n)
@@ -618,21 +618,21 @@ Taking the expectation,  the constant $\theta_n$ disappears since $\expect{\hat 
 \begin{align}
 	\expect{\langle \MAPt - \theta_n;  \MAPm- \mu_n \rangle } 
 	 = \expect{\langle \MAPt; \MAPm \rangle} - \langle \expect{\MAPt} ; \MAPm \rangle
-	= \Cov(\hat \natp_n ; \hat \mu_n ) 
+	= \Cov(\hat \nat_n ; \hat \mu_n ) 
 \end{align}
 which is the first identity. We get the second identity by symmetry between the primal and the dual.
 \end{proof}
 
 Note that, as a corollary, the covariance between primal and dual MAP
-$\Cov(\hat \natp_n ; \hat \mu_n )$ is positive, and it can be seen as a non-linear variance of $\hat \mu_n$ -- e.g. we can define a variance operator with a non-linear monotone operator $\nabla\conj$ plugged in the middle $\Var_{\nabla \conj}(\hat \mu_n) := \Cov(\nabla\conj(\hat \mu_n) ; \hat \mu_n ) \geq 0$.
+$\Cov(\hat \nat_n ; \hat \mu_n )$ is positive, and it can be seen as a non-linear variance of $\hat \mu_n$ -- e.g. we can define a variance operator with a non-linear monotone operator $\nabla\conj$ plugged in the middle $\Var_{\nabla \conj}(\hat \mu_n) := \Cov(\nabla\conj(\hat \mu_n) ; \hat \mu_n ) \geq 0$.
 
 \paragraph{Expansion}
 We can expand  $\hat \mu_n - \mu_n$ to get another formulation of this covariance
 \begin{align}
-	\expect{\langle \hat \natp_n ; \hat \mu_n - \mu_n \rangle}
-	&= \expect{\langle \hat \natp_n ; \frac{\sum_i T(X_i) - \mu^*}{n+n_0} \rangle}  \\
-	& = \frac{n}{n+n_0} \expect{\langle \hat \natp_n ; T(X_0) - \mu^*\rangle} \\
-	&= \frac{n}{n+n_0} \Cov(\hat \natp_n ; T(X_0) ) 
+	\expect{\langle \hat \nat_n ; \hat \mu_n - \mu_n \rangle}
+	&= \expect{\langle \hat \nat_n ; \frac{\sum_i T(X_i) - \mu^*}{n+n_0} \rangle}  \\
+	& = \frac{n}{n+n_0} \expect{\langle \hat \nat_n ; T(X_0) - \mu^*\rangle} \\
+	&= \frac{n}{n+n_0} \Cov(\hat \nat_n ; T(X_0) ) 
 	\label{eq:covariance_expansion}
 \end{align}
 where we used the property that all data points play a symmetric role to remove the sum over $i$.
@@ -667,13 +667,13 @@ For instance, this same paper says that for a gaussian variance, $\gamma=1$. The
 \paragraph{Problem.}
 We want  to solve the following problem
 \begin{align}
-	f^* = \min_\natp \E[f(\natp ; X)] := -\langle \E[T(X)] ; \natp \rangle + \logpart(\natp)
+	f^* = \min_\nat \E[f(\nat ; X)] := -\langle \E[T(X)] ; \nat \rangle + \logpart(\nat)
 \end{align}
 where $\logpart$ is a convex function.
-We assume access to stochastic oracles $X \sim p(X | \natp^*)$ -- e.g. we observe $X$ such that $\E[T(X)] = \mu^*$ and we can compute  stochastic function values and gradients 
+We assume access to stochastic oracles $X \sim p(X | \nat^*)$ -- e.g. we observe $X$ such that $\E[T(X)] = \mu^*$ and we can compute  stochastic function values and gradients 
 \begin{align}
-	f(\natp ; X) &= -\langle T(X) ; \natp \rangle + \logpart(\natp) \\
-	\nabla f(\natp ; X) &= \nabla \logpart(\natp) - T(X)\; .
+	f(\nat ; X) &= -\langle T(X) ; \nat \rangle + \logpart(\nat) \\
+	\nabla f(\nat ; X) &= \nabla \logpart(\nat) - T(X)\; .
 \end{align}
 It is important to note that our problem is merely a stochastic linear tilt of the convex function $\logpart$, yet none of the convergence rates we studied applied to this setting.
 
@@ -688,47 +688,47 @@ We are studying two algorithms solving this problem : MLE and MAP.
 \end{align}
 
 \paragraph{Interpretation.}
-As we will see in the two upcoming sections, MAP can be seen as an application of more generic iterative algorithms with divergence $\bregman$ and initialization $\natp_0$ : 
+As we will see in the two upcoming sections, MAP can be seen as an application of more generic iterative algorithms with divergence $\bregman$ and initialization $\nat_0$ : 
 \begin{itemize}
 	\item Stochastic Bregman Proximal Point with learning rate $\inv{n_0+n}$,
 	\item Stochastic Mirror Descent with learning rate  $\inv{n_0+n +1}$.
 \end{itemize}
-In both cases, $f(\natp)$ is convex and 1-smooth  and 1-strongly convex relative to the potential $\logpart$. Be cautious that the learning rate is decreasing.
+In both cases, $f(\nat)$ is convex and 1-smooth  and 1-strongly convex relative to the potential $\logpart$. Be cautious that the learning rate is decreasing.
 
-\paragraph{Goal.} We want to bound the suboptimality $f(\natp) - f^*$ as a function of the number of samples. 
+\paragraph{Goal.} We want to bound the suboptimality $f(\nat) - f^*$ as a function of the number of samples. 
 
 \section{Stochastic Bregman Proximal Point}
 \subsection{Correspondence with MAP}
 For a dataset of independent samples $\cD_n = \{X_1,\dots,X_n\}$, the posterior can be seen iteratively
 \begin{align}
-	p(\natp |\cD_n)
-	=p(\natp|X_n,\cD_{n-1})
-	\propto p(X_n|\natp,\cD_{n-1}) p(\natp|\cD_{n-1})
-	=p(X_n|\natp)p(\natp |\cD_{n-1}) \; .
+	p(\nat |\cD_n)
+	=p(\nat|X_n,\cD_{n-1})
+	\propto p(X_n|\nat,\cD_{n-1}) p(\nat|\cD_{n-1})
+	=p(X_n|\nat)p(\nat |\cD_{n-1}) \; .
 \end{align}
 For the MAP of the exponential family with a Bregman conjugate prior, the posterior takes the form
 \begin{align}
-	- \log p(\natp | \cD_n) 
-	&= \sum_{i=1}^n -\log p(X_i | \natp) - \log p(\natp) + \cst\\
-	&= \sum_i - \langle T(X_i) ; \natp \rangle  + n \logpart(\natp) + n_0 \bregman(\natp ; \natp_0) +\cst \\
-	&= (n+n_0)\logpart(\natp)  - \langle n_0 \mu_0 + \sum_i T(X_i) ; \natp \rangle + \cst \\
-	&= (n+n_0) \bregman(\natp; \hat \natp_n^\text{MAP}) + \cst \; ,
+	- \log p(\nat | \cD_n) 
+	&= \sum_{i=1}^n -\log p(X_i | \nat) - \log p(\nat) + \cst\\
+	&= \sum_i - \langle T(X_i) ; \nat \rangle  + n \logpart(\nat) + n_0 \bregman(\nat ; \nat_0) +\cst \\
+	&= (n+n_0)\logpart(\nat)  - \langle n_0 \mu_0 + \sum_i T(X_i) ; \nat \rangle + \cst \\
+	&= (n+n_0) \bregman(\nat; \hat \nat_n^\text{MAP}) + \cst \; ,
 \end{align}
 so we immediately get the recursion
 \begin{align}
-    \hat \natp_n^\text{MAP}
-    &= \argmin_\natp - \log p(\natp | \cD_n) \\
-    &= \argmin_\natp - \log p(X_n|\natp) - \log p(\natp | \cD_{n-1}) \\
-    &= \argmin_\natp f(\natp; X_{n}) + (n+n_0 - 1) \bregman(\natp; \hat \natp_{n-1}^\text{MAP})  \; .
+    \hat \nat_n^\text{MAP}
+    &= \argmin_\nat - \log p(\nat | \cD_n) \\
+    &= \argmin_\nat - \log p(X_n|\nat) - \log p(\nat | \cD_{n-1}) \\
+    &= \argmin_\nat f(\nat; X_{n}) + (n+n_0 - 1) \bregman(\nat; \hat \nat_{n-1}^\text{MAP})  \; .
     \label{eq:SBPP}
 \end{align} 
-Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\natp) = \E_X[-\log p(X|\natp)]$ , with step-size $\lr_n = \inv{n+n_0 -1}$. As a reminder this algorithm is defined with the update
+Coincidentally, this is exactly the formula of a Stochastic Bregman Proximal Point update on the function $f(\nat) = \E_X[-\log p(X|\nat)]$ , with step-size $\lr_n = \inv{n+n_0 -1}$. As a reminder this algorithm is defined with the update
 \begin{align}
-	 \hat \natp_n
-    &= \argmin_\natp \lr_n f(\natp; X_{n}) + \bregman(\natp; \hat \natp_{n-1}) \\
-    \iff \nabla \logpart(\natp_{n-1}) &= \nabla\logpart(\natp_n) + \lr_t \nabla f(\natp_n ; X_t) \; .
+	 \hat \nat_n
+    &= \argmin_\nat \lr_n f(\nat; X_{n}) + \bregman(\nat; \hat \nat_{n-1}) \\
+    \iff \nabla \logpart(\nat_{n-1}) &= \nabla\logpart(\nat_n) + \lr_t \nabla f(\nat_n ; X_t) \; .
 \end{align}
-In words, if it converges to $\natp^*$, it can be seen as a backward mirror ascent starting from $\natp^*$.
+In words, if it converges to $\nat^*$, it can be seen as a backward mirror ascent starting from $\nat^*$.
 
 \subsection{Straightforward Analysis}
 
@@ -736,13 +736,13 @@ In words, if it converges to $\natp^*$, it can be seen as a backward mirror asce
 Deterministic Bregman proximal point. was first published in \citet{eckstein1993nonlinear} with an asymptotic convergence property, soon completed by a finite sample convergence rate in \citet{chen1993convergence}. 
 This convergence rate relies on the three points lemma (Appendix~\ref{app:3points})
 \begin{align}
-	 \forall \natp, \lr_t f(\natp) + \cB(\natp ; \natp_t) \geq \lr_t f(\natp_{t+1}) + \cB( \natp; \natp_{t+1}) +\cB(\natp_{t+1} ; \natp_{t}) \; .
+	 \forall \nat, \lr_t f(\nat) + \cB(\nat ; \nat_t) \geq \lr_t f(\nat_{t+1}) + \cB( \nat; \nat_{t+1}) +\cB(\nat_{t+1} ; \nat_{t}) \; .
 \end{align}
 
 \paragraph{Monotonicity of Function Values.}
-Applying it with $\natp=\natp_t$, we prove that function values are decreasing
+Applying it with $\nat=\nat_t$, we prove that function values are decreasing
 \begin{align}
-	f(\natp_{t+1})  \leq f(\natp_{t})  - \inv{\lr_t} \underbrace{\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) }_{=: \cS(\natp_{t} ; \natp_{t+1})}
+	f(\nat_{t+1})  \leq f(\nat_{t})  - \inv{\lr_t} \underbrace{\left (\cB(\nat_{t+1} ; \nat_{t}) + \cB(\nat_{t} ; \nat_{t+1}) \right) }_{=: \cS(\nat_{t} ; \nat_{t+1})}
 \end{align}
 where we introduced $\cS$ the symmetrized Bregman divergence
 \begin{align}
@@ -750,19 +750,19 @@ where we introduced $\cS$ the symmetrized Bregman divergence
 \end{align}
 
 \paragraph{Descent Lemma and Telescopic Sum.}
-Applying the three point lemma with $\natp=\natp^*$ (assuming such a minimizer exists), we obtain a telescopic sum
+Applying the three point lemma with $\nat=\nat^*$ (assuming such a minimizer exists), we obtain a telescopic sum
 \begin{align}
-	\lr_t(f(\natp_{t+1}) - f(\natp^*)) +  \cB(\natp_{t+1} ; \natp_{t}) 
-	&\leq  \cB( \natp^*; \natp_{t})  - \cB( \natp^*; \natp_{t+1}) \\
-	\implies \sum_{t=0}^{T-1} \lr_t (f(\natp_{t+1}) - f(\natp^*)) 
-	+ \sum_{t=0}^{T-1} \cB(\natp_{t+1} ; \natp_{t}) 
-	&\leq \cB( \natp^*; \natp_{0})  - \cB( \natp^*; \natp_{T})  
-	\leq \cB( \natp^*; \natp_{0})  \; ,
+	\lr_t(f(\nat_{t+1}) - f(\nat^*)) +  \cB(\nat_{t+1} ; \nat_{t}) 
+	&\leq  \cB( \nat^*; \nat_{t})  - \cB( \nat^*; \nat_{t+1}) \\
+	\implies \sum_{t=0}^{T-1} \lr_t (f(\nat_{t+1}) - f(\nat^*)) 
+	+ \sum_{t=0}^{T-1} \cB(\nat_{t+1} ; \nat_{t}) 
+	&\leq \cB( \nat^*; \nat_{0})  - \cB( \nat^*; \nat_{T})  
+	\leq \cB( \nat^*; \nat_{0})  \; ,
 \end{align}
-which proves on the way that the total path length $ \sum_{t=0}^{t-1} \cB(\natp_{t+1} ; \natp_{t}) $ is bounded.
-Using the monotonicity of $f(\natp_t)$, we get
+which proves on the way that the total path length $ \sum_{t=0}^{t-1} \cB(\nat_{t+1} ; \nat_{t}) $ is bounded.
+Using the monotonicity of $f(\nat_t)$, we get
 \begin{align}
-	f(\natp_{T}) - f(\natp^*) \leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t} \; .
+	f(\nat_{T}) - f(\nat^*) \leq \frac{\cB( \nat^*; \nat_{0}) }{\sum_{t=0}^{T-1} \lr_t} \; .
 \end{align}
 This upper bound converges to $0$ whenever the sum of step-sizes converges to $0$. 
 This rate can be arbitrarily fast because the oracle is strong. Indeed, taking an inifinite step-size solves the problem with one iteration, but the update is (theoretically) harder to solve for larger step-sizes.
@@ -775,58 +775,58 @@ The deterministic proof does not transpose immediately to the stochastic setting
 We need an assumption on the quality of the stochastic estimates $f(. ; x)$. 
 As we will see soon, the most straightforward such assumption is 
 \begin{align}
-\boxed{\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t+1})} \leq \lr_t \sigma^2 \; , }
+\boxed{\expect{f(\nat_{t+1}) - f(\nat_{t+1} ; X_{t+1})} \leq \lr_t \sigma^2 \; , }
 \label{eq:proximal_variance}
 \end{align}
 e.g. we relate the stochastic function value on the next iterate to the function value.
 Asymptotically, this assumption is equivalent to the one of~\citet{hanzely2018fastest}. 
-To see this, linearize $f(\natp_{t+1})$ and $f(\natp_{t+1} ; X_{t+1}) $ in $\natp_t$
+To see this, linearize $f(\nat_{t+1})$ and $f(\nat_{t+1} ; X_{t+1}) $ in $\nat_t$
 \begin{align}
-	\expect{f(\natp_{t+1}) - f(\natp_{t+1} ; X_{t+1})} 
-	&\approx \expect{f(\natp_{t}) - f(\natp_{t} ; X_{t+1})} + \expect{\langle \nabla f(\natp_t) - \nabla f(\natp_t ; X_{t+1}) ; \natp_{t+1} - \natp_t \rangle } \\
-	&= 0 + \expect{\langle \nabla f(\natp_t) - \nabla f(\natp_t ; X_{t+1}) ; \natp_{t+1} \rangle } \\
-	& = \Cov(- \nabla f(\natp_t ; X_{t+1})  ; \natp_{t+1} ) \; .
+	\expect{f(\nat_{t+1}) - f(\nat_{t+1} ; X_{t+1})} 
+	&\approx \expect{f(\nat_{t}) - f(\nat_{t} ; X_{t+1})} + \expect{\langle \nabla f(\nat_t) - \nabla f(\nat_t ; X_{t+1}) ; \nat_{t+1} - \nat_t \rangle } \\
+	&= 0 + \expect{\langle \nabla f(\nat_t) - \nabla f(\nat_t ; X_{t+1}) ; \nat_{t+1} \rangle } \\
+	& = \Cov(- \nabla f(\nat_t ; X_{t+1})  ; \nat_{t+1} ) \; .
 \end{align} 
 
 \paragraph{Monotonicity of Expected Function Values.}
-Applying the tree point lemma with $\natp=\natp_t$ gives
+Applying the tree point lemma with $\nat=\nat_t$ gives
 \begin{align}
-	f(\natp_{t+1}, X_{t+1})  
-	&\leq f(\natp_{t}, X_{t+1})  - \inv{\lr_t}\left (\cB(\natp_{t+1} ; \natp_{t}) + \cB(\natp_{t} ; \natp_{t+1}) \right) \\
-	&= f(\natp_{t}, X_{t+1})  - \inv{\lr_t} \cS(\natp_{t+1} ; \natp_{t}) \\
-	\implies \expect{f(\natp_{t+1}, X_{t+1})} 
-	&\leq f(\natp_{t}) - \inv{\lr_t}\expect{\cS(\natp_{t+1} ; \natp_{t})}  \; .
+	f(\nat_{t+1}, X_{t+1})  
+	&\leq f(\nat_{t}, X_{t+1})  - \inv{\lr_t}\left (\cB(\nat_{t+1} ; \nat_{t}) + \cB(\nat_{t} ; \nat_{t+1}) \right) \\
+	&= f(\nat_{t}, X_{t+1})  - \inv{\lr_t} \cS(\nat_{t+1} ; \nat_{t}) \\
+	\implies \expect{f(\nat_{t+1}, X_{t+1})} 
+	&\leq f(\nat_{t}) - \inv{\lr_t}\expect{\cS(\nat_{t+1} ; \nat_{t})}  \; .
 	\label{eq:SPP_monotone}
 \end{align}
-This inequality bears on $\expect{f(\natp_{t+1}, X_{t+1})}$, which features a correlation between $\natp_{t+1}$ and $X_{t+1}$, and is different from $f(\natp_{t+1})$.
+This inequality bears on $\expect{f(\nat_{t+1}, X_{t+1})}$, which features a correlation between $\nat_{t+1}$ and $X_{t+1}$, and is different from $f(\nat_{t+1})$.
 Combining~\eqref{eq:SPP_monotone} with the variance assumption gives
 \begin{align}
-	\expect{f(\natp_{t+1})} 
-	&\leq \expect{f(\natp_{t+1} ; X_{t+1})}  + \lr_t \sigma^2 \\
-	&\leq f(\natp_t) +  \lr_t \sigma^2 - \inv{\lr_t}\expect{\cS(\natp_{t+1} ; \natp_{t})}
+	\expect{f(\nat_{t+1})} 
+	&\leq \expect{f(\nat_{t+1} ; X_{t+1})}  + \lr_t \sigma^2 \\
+	&\leq f(\nat_t) +  \lr_t \sigma^2 - \inv{\lr_t}\expect{\cS(\nat_{t+1} ; \nat_{t})}
 \end{align}
 from which we see that monotonicity is guaranteed if
 \begin{align}
-	\sigma^2 \leq \inv{\lr_t^2}\expect{\cS(\natp_{t+1} ; \natp_{t})} \; .
+	\sigma^2 \leq \inv{\lr_t^2}\expect{\cS(\nat_{t+1} ; \nat_{t})} \; .
 \end{align}
 This is quite annoying, as our variance assumption requires $\sigma^2$ to be large, and this inequality requires $	\sigma^2 $ to be small -- the step we take should be greater than the variance.
 
 \paragraph{Descent Lemma and Telescopic Sum.}
-Similarly, applying the three points lemma with $\natp^*$ yields
+Similarly, applying the three points lemma with $\nat^*$ yields
 \begin{align}
-	\lr_t(f(\natp_{t+1},X_{t+1}) - f(\natp^*)) +  \cB(\natp_{t+1} ; \natp_{t})
-	&\leq  \cB( \natp^*; \natp_{t})  - \cB( \natp^*; \natp_{t+1}) \; .
+	\lr_t(f(\nat_{t+1},X_{t+1}) - f(\nat^*)) +  \cB(\nat_{t+1} ; \nat_{t})
+	&\leq  \cB( \nat^*; \nat_{t})  - \cB( \nat^*; \nat_{t+1}) \; .
 \end{align}
-Ignoring the distance between iterates $\cB(\natp_{t+1} ; \natp_{t})
+Ignoring the distance between iterates $\cB(\nat_{t+1} ; \nat_{t})
 $, taking the tower expectation, and telescoping the sum, we get
 \begin{align}
-	\sum_{t=0}^{t-1} \lr_t \expect{f(\natp_{t+1},X_{t+1}) - f(\natp^*)}
-	\leq \cB( \natp^*; \natp_{0})  \; .
+	\sum_{t=0}^{t-1} \lr_t \expect{f(\nat_{t+1},X_{t+1}) - f(\nat^*)}
+	\leq \cB( \nat^*; \nat_{0})  \; .
 \end{align}
 Then, taking the iterate with the least expected loss, we get the rate
 \begin{align}
-	 \min_{1\leq t \leq T} \expect{ f(\natp_t)} - f(\natp^*)
-	\leq \frac{\cB( \natp^*; \natp_{0}) }{\sum_{t=0}^{T-1} \lr_t}
+	 \min_{1\leq t \leq T} \expect{ f(\nat_t)} - f(\nat^*)
+	\leq \frac{\cB( \nat^*; \nat_{0}) }{\sum_{t=0}^{T-1} \lr_t}
 	+ \frac{\sum_{t=0}^{T-1} \lr_t^2  }{\sum_{t=0}^{T-1} \lr_t} \sigma^2 \; .
 \end{align}
 which is very analogous to standard rates for SGD.
@@ -835,7 +835,7 @@ But in our case, $\lr_t \propto t^{-1}$, and we merely get a $O(\inv{\log(t)})$ 
 With the sums  $\sum \lr_t$ and $\sum \lr_t^2$, we would need a $O(\inv{\sqrt{t}})$ step-size to ensure a $O(\inv{\sqrt{t}})$ convergence rate, but then the iterate becomes a weighted average of the sufficient statistics, giving more weight to the end of the tail. This may be suited for online learning, but not for our stationary setting.
 
 \paragraph{Application to the MAP.}
-The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \natp_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}.
+The variance assumption \eqref{eq:proximal_variance} translates to $\Cov(T(x_{n}) , \nat_{n+1}) \leq  \gamma_n \sigma^2$ in the exponential family MAP setting -- e.g. exactly the same assumption as in \citet{hanzely2018fastest}.
 
 
 \section{Stochastic Mirror Descent (SMD)}
@@ -845,12 +845,12 @@ In this section, we show that MAP estimate can also be seen as the iterates of s
 \paragraph{Mirror Descent.}
 Let us recall mirror descent iteration
 \begin{align}
-	\natp_{t+1} 
-	&:= \argmin_\natp \lr \linear_f(\natp; \natp_t) + \bregman(\natp ; \natp_t)  \\
-	& = \nabla \conj (\nabla \logpart(\natp_t) - \lr \nabla f(\natp_t))
+	\nat_{t+1} 
+	&:= \argmin_\nat \lr \linear_f(\nat; \nat_t) + \bregman(\nat ; \nat_t)  \\
+	& = \nabla \conj (\nabla \logpart(\nat_t) - \lr \nabla f(\nat_t))
 \end{align}
-where $\linear_f(\natp; \natp_t) = f(\natp_t) + \langle \nabla f(\natp_t), \natp - \natp_t \rangle$ is the linear approximation of $f$ in $\natp_t$ evaluated at $\natp$. Solving this problem require solving problems of the form $\argmin_\natp - \langle c, \natp \rangle + \logpart(\natp)$, eg computing the convex conjugate of $\logpart$. 
-Note that finding $\natp_*$ is done with 1 step of mirror descent with step-size 1.
+where $\linear_f(\nat; \nat_t) = f(\nat_t) + \langle \nabla f(\nat_t), \nat - \nat_t \rangle$ is the linear approximation of $f$ in $\nat_t$ evaluated at $\nat$. Solving this problem require solving problems of the form $\argmin_\nat - \langle c, \nat \rangle + \logpart(\nat)$, eg computing the convex conjugate of $\logpart$. 
+Note that finding $\nat_*$ is done with 1 step of mirror descent with step-size 1.
 Indeed plugging in definitions of $f$ and $\mu$, and assuming constant step-size $\lr$ yields
 \begin{align}
 	&\mu_{t+1}  = \mu_t - \lr (\mu_t - \mu_*) \\
@@ -859,18 +859,18 @@ Indeed plugging in definitions of $f$ and $\mu$, and assuming constant step-size
 which shows exponential convergence and 1-step convergence when $\lr =1$. 
 
 \paragraph{Stochastic Mirror Descent}
-Let $f(\natp, x) = -\log p(x|\natp)$.
-MAP iterations can be cast as stochastic mirror descent (SMD),  with $g_t = \nabla f(\natp_t, x_{t+1}) = \logpart(\natp_t) - T(x_{t+1})$ as a stochastic estimate  of $\nabla f(\natp_t)$.
+Let $f(\nat, x) = -\log p(x|\nat)$.
+MAP iterations can be cast as stochastic mirror descent (SMD),  with $g_t = \nabla f(\nat_t, x_{t+1}) = \logpart(\nat_t) - T(x_{t+1})$ as a stochastic estimate  of $\nabla f(\nat_t)$.
 Resuming from the Stochastic Bregman Proximal Point formula~\eqref{eq:SBPP}, we write $\MAPt$ for the n-th MAP iterate, and do some Bregman manipulations
 \begin{align}
-    \hat \natp_{n+1}
-    &= \argmin_\natp 
-    - \langle T(x_{t+1}), \natp \rangle  + \logpart(\natp) + (n_0 + n) \bregman(\natp ; \natp_n) \\
-    %&(n_0+n)\left(\logpart(\natp) - \logpart(\natp_n) - \langle \nabla \logpart(\natp_n)  , \natp - \natp_n \rangle \right)  \\
-    &= \argmin_\natp - \langle T(x_{t+1}), \natp \rangle   + \logpart(\natp_n) + \langle \nabla \logpart(\natp_n)  , \natp - \natp_n \rangle + (n_0+n + 1) \bregman(\natp ; \natp_n) \\
-    &= \argmin_\natp \linear_f(\natp;\natp_n, x_{t+1}) + (n_0 + n + 1) \bregman(\natp ; \natp_n)
+    \hat \nat_{n+1}
+    &= \argmin_\nat 
+    - \langle T(x_{t+1}), \nat \rangle  + \logpart(\nat) + (n_0 + n) \bregman(\nat ; \nat_n) \\
+    %&(n_0+n)\left(\logpart(\nat) - \logpart(\nat_n) - \langle \nabla \logpart(\nat_n)  , \nat - \nat_n \rangle \right)  \\
+    &= \argmin_\nat - \langle T(x_{t+1}), \nat \rangle   + \logpart(\nat_n) + \langle \nabla \logpart(\nat_n)  , \nat - \nat_n \rangle + (n_0+n + 1) \bregman(\nat ; \nat_n) \\
+    &= \argmin_\nat \linear_f(\nat;\nat_n, x_{t+1}) + (n_0 + n + 1) \bregman(\nat ; \nat_n)
 \end{align}
-where $\linear_f(\natp;\natp_n, x_{t+1})$ is the stochastic linearization of $f$ at $\natp_n$ evaluated at $\natp$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
+where $\linear_f(\nat;\nat_n, x_{t+1})$ is the stochastic linearization of $f$ at $\nat_n$ evaluated at $\nat$ with randomness coming from $x_{t+1}$. This is the formula for stochastic mirror descent (SMD) applied to $f$ with mirror map $\logpart$ and step-size $\gamma_n = \inv{n_0 + n + 1}$.
 
 
 We know of 2 papers that study Stochastic Mirror Descent (SMD) under relative smoothness assumptions -- \citet{hanzely2018fastest} and \citet{dragomir2021fast}. We are now going to review these works.
@@ -880,25 +880,25 @@ We know of 2 papers that study Stochastic Mirror Descent (SMD) under relative sm
 \paragraph{General Approach.} 
 \citet{hanzely2018fastest} got convergence rates in the smooth strongly-convex case with tail averaging. With constant step-size, they proved linear convergence down to a variance ball. With step-size $\gamma_t = n_0 + t$, they proved a rate $\tilde O(\inv{t})$. These results match the rates for standard SGD.
 Let us have a look at their variance assumption \citep[Assumption 5.1]{hanzely2018fastest}.
-Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\natp_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the next iterate $\natp_{t+1} = \nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t g_t )$ that should hold for all time steps  
+Let $g_t$ be the random gradient at step $t$  (coming from data point $x_t$), and $\nat_{t+1}$ the next iterate. Then the variance bound $\sigma^2$ is an upper bound on the covariance between the gradient update  $-g_t$ and the next iterate $\nat_{t+1} = \nabla \logpart^*(\nabla \logpart(\nat_t) - \lr_t g_t )$ that should hold for all time steps  
 \begin{align}
 	\lr_t \sigma^2 \geq 
-	&\Cov(- g_t,\natp_{t+1} | X_{1 \dots t})  \label{eq:hanzely_hypothesis} \\
-	 &= \expect{\langle \nabla f(\natp_t) - g_t , \natp_{t+1}  \rangle}
+	&\Cov(- g_t,\nat_{t+1} | X_{1 \dots t})  \label{eq:hanzely_hypothesis} \\
+	 &= \expect{\langle \nabla f(\nat_t) - g_t , \nat_{t+1}  \rangle}
 \end{align}
 where $\gamma_t$ is the step-size, and expectations are conditional on all of the past. 
 Remark that when we plug in $\conj = \|.\|^2$, we recover the gradient variance typical of SGD. 
-If we introduce $\bar \natp_{t+1}=\nabla \logpart^*(\nabla \logpart(\natp_t) - \lr_t  \nabla f(\natp_t) )$ the theoretical output of a deterministic Bregman gradient step, then following Lemma~\ref{lem:covariance} we can rewrite this covariance as the expectation of symmetrized Bregman between stochastic and deterministic iterates $\expect[X_t]{\bregman(\natp_{t+1} ; \bar \natp_{t+1} ) + \bregman(\bar \natp_{t+1} ; \natp_{t+1} ) }$.
+If we introduce $\bar \nat_{t+1}=\nabla \logpart^*(\nabla \logpart(\nat_t) - \lr_t  \nabla f(\nat_t) )$ the theoretical output of a deterministic Bregman gradient step, then following Lemma~\ref{lem:covariance} we can rewrite this covariance as the expectation of symmetrized Bregman between stochastic and deterministic iterates $\expect[X_t]{\bregman(\nat_{t+1} ; \bar \nat_{t+1} ) + \bregman(\bar \nat_{t+1} ; \nat_{t+1} ) }$.
 This view is useful to understand that we are measuring the variance of each iteration, which is necessarily positive.
 
 \paragraph{MAP Special Case.}
 In our setting, 
 \begin{align}
-	\nabla f(\natp_t) - g_t =  T(X_{t+1})	- \E[T(X)]
+	\nabla f(\nat_t) - g_t =  T(X_{t+1})	- \E[T(X)]
 \end{align}
-so that $\sigma$ is really a bound on the covariance of the sufficient statistics $T(X_{t+1})$ with the next iterate $\natp_{t+1}$, which itself depends on $T(X_{t+1})$ via a coefficient $\lr_t$ and a non-linearity $\nabla\conj$.
+so that $\sigma$ is really a bound on the covariance of the sufficient statistics $T(X_{t+1})$ with the next iterate $\nat_{t+1}$, which itself depends on $T(X_{t+1})$ via a coefficient $\lr_t$ and a non-linearity $\nabla\conj$.
 \begin{align}
-	&\Cov( T(X_{t+1}), \natp_{t+1} | X_{1\dots t})
+	&\Cov( T(X_{t+1}), \nat_{t+1} | X_{1\dots t})
 	\leq \lr_t\sigma^2 
 	\label{eq:covariance_assumption} \\
 	=& \Cov(T(X_{t+1}), \nabla\conj \left(\lr_t T(X_{t+1}) + (1-\lr_t ) \mu_t \right) | X_{1\dots t}) \;.
@@ -946,14 +946,14 @@ As shown in equation~\eqref{eq:covariance_expansion}, covariance~\eqref{eq:covar
 	\Cov(\MAPm, \MAPt)  = \frac{n}{n+n_0} \expect[X_{1:n-1}]{\underbrace{\Cov(\MAPt ; T(X_{n}) | X_{1:n-1} )}_{\leq \nicefrac{\sigma^2}{n} \eqref{eq:hypvariance}}}
 	\leq  \frac{n \sigma^2}{(n+n_0)^2}
 \end{align}
-so we recover a $O(n^{-1})$ upper bound on the variance term and we are still looking for the $O(n^{-2})$ rate for the bias term. It is simpler to consider the primal pivot, but still hard to say anything about $\bregmanconj(\mu^* ; \tilde \mu_n) = \bregman(\E[\MAPt]; \natp^*)$ without further assumptions.
+so we recover a $O(n^{-1})$ upper bound on the variance term and we are still looking for the $O(n^{-2})$ rate for the bias term. It is simpler to consider the primal pivot, but still hard to say anything about $\bregmanconj(\mu^* ; \tilde \mu_n) = \bregman(\E[\MAPt]; \nat^*)$ without further assumptions.
 
 \subsection{Work by the French Musketeers}
 
 \citet{dragomir2021fast} use a quite different assumption, bearing on a Bregman measure of the stochastic gradients norm at the optimum
 \begin{align}
 	2 \lr^2 \sigma^2
-	\geq \expect[X]{\bregmanconj(\mu_t - 2 \lr_t \nabla f(\natp^*, X) ; \mu_t ) } \; .
+	\geq \expect[X]{\bregmanconj(\mu_t - 2 \lr_t \nabla f(\nat^*, X) ; \mu_t ) } \; .
 	\label{eq:dragomir_hypothesis}
 \end{align}
 When $\logpart$ is strongly convex, this hypothesis is akin to bounding the variance of the gradient at the optimum, whereas \eqref{eq:hanzely_hypothesis} is akin to bounding gradient variance everywhere. This comparison makes this assumption more interesting, as it might apply to unbounded strongly convex function, like modern analysis of SGD. 
@@ -966,11 +966,11 @@ Their work can be seen as a Bregman generalization of \citet{gower2019sgd}.
 \subsection{Work by Loizou}
 An assumption pointed out by Nicolas Loizou is 
 \begin{align}
-	f(\natp^*) - \E_{X\sim\natp^*}[\min_\natp f(\natp ; X)] < \infty
+	f(\nat^*) - \E_{X\sim\nat^*}[\min_\nat f(\nat ; X)] < \infty
 \end{align}
 for which a sufficient condition is 
 \begin{align}
-\forall X, \min_\natp f(\natp ; X) >	 - \infty \iff \max_\natp p(X|\natp) < \infty
+\forall X, \min_\nat f(\nat ; X) >	 - \infty \iff \max_\nat p(X|\nat) < \infty
 \end{align}
 which holds in a lot of settings but not all. For instance, a gaussian $\cN(\mu,\sigma^2)$ can overfit on a single data point and give it infinite density -- eg converge to a Dirac. However we can overcome this issue by grouping data points : a gaussian can not overfit on two points. Aggregating points is simple : average sufficient statistics, exactly like in MLE or MAP $T'(X_1,X_2) = \frac{T(X_1) + T(X_2)}{2}$. 
 So in general we may say that this hypothesis holds, at the expense of dividing the number of samples by some number $n/k$.
@@ -986,7 +986,7 @@ Regarding this second point, it might be possible to do something comparable to 
 \begin{align}
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t^2 \sigma^2
 \end{align}
-where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\natp^t$ and $\natp^*$ ; and $\lr_t \leq \inv{2L}$.
+where $B_t$ is some measure of suboptimality, in this case the $\ell^2$ distance between $\nat^t$ and $\nat^*$ ; and $\lr_t \leq \inv{2L}$.
 On the other hand, the problem of most Bregman analysis \citep{hanzely2018fastest,dorazio2021stochastic} is that they do not get this $\lr^2$ in front the variance. Instead they simply get a $\lr$, because they do not benefit from the homogeneity of the norm
 \begin{align}
 	B_{t+1} \leq ( 1 - \lr_t m) B_t + \lr_t \sigma^2 \; .
@@ -1069,11 +1069,11 @@ Exponential families are a mainstream tool in machine learning. They are used  t
 
 \citet{agarwal2010geometric} highlight that the MAP problem of exponential families is also a Bregman median problem. They then use this equivalence to justify the use of conjugate prior in Bayesian estimation and hybrid generative-discriminative modeling.
 Note that this equivalence holds only if sufficient statistics are within $\dom \conj  = \mathrm{Im} (\nabla\logpart)$, a point ignored by authors yet critical as it does not hold for multivariate normals with unknown covariance. 
-\citet{raskutti2015information} highlight the equivalence between mirror descent in $\natp$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
+\citet{raskutti2015information} highlight the equivalence between mirror descent in $\nat$ and natural gradient descent in $\meanp$ (or vice-versa) for the exponential family. Then they use the optimality result by Shunichi Amari on Natural Gradient Descent to show that Mirror Descent iterates reach the Cramer-Rao lower bound.
 
 \citet{kunstner2020homeomorphic} show with an exquisite elegance that Expectation-Maximization in exponential families can be cast as mirror descent on the negative log-likelihood. Then they use recent mirror descent rates based on the idea of \textit{relative smoothness} \citep{birnbaum2011distributed, bauschke2017descent, lu2018relatively} to show convergence of EM in KL-divergence, including for the ubiquitous Gaussian Mixture model, which had resisted bounding attempts for 50 years.
 
-Relative smoothness gave rise to sibling hypothesis, such as \textit{relative continuity} \citep{lu2019relative},  which was used to characterize non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and the $\ell^2$ distance. Although this hypothesis is far from intuitive, \citet{lu2019relative} obtained convergence rates for mirror descent that are very similar to typical SGD analysis. In this work we are concerned with strictly convex differentiable functions $\logpart(\natp)$, to ensure a clean bijection between natural and mean parameters. Consequently, we do not further investigate relative continuity.
+Relative smoothness gave rise to sibling hypothesis, such as \textit{relative continuity} \citep{lu2019relative},  which was used to characterize non-differentiable functions -- eg Hinge loss. These functions are typically assumed to be Lipschitz, but that is not always true -- eg squared Hinge loss. Relative continuity generalizes Lipschitz-ness by upper bounding the gradient norm (or expected norm of stochastic gradients) with the ratio between a Bregman and the $\ell^2$ distance. Although this hypothesis is far from intuitive, \citet{lu2019relative} obtained convergence rates for mirror descent that are very similar to typical SGD analysis. In this work we are concerned with strictly convex differentiable functions $\logpart(\nat)$, to ensure a clean bijection between natural and mean parameters. Consequently, we do not further investigate relative continuity.
 
 \citet{pfau2013generalized} gives a bias variance decomposition for Bregman divergences. However it does not give interesting conclusions for our problem of interest.
 
@@ -1117,26 +1117,26 @@ The log-density is written
 	\log p(X) 
 	&= -\frac{(X-m)^2}{2 \sigma^2} - \half \log \sigma^2 + \cst \\
 	&=  \frac{m}{\sigma^2} X -\inv{2 \sigma^2} X^2 - \frac{m^2}{2 \sigma^2} - \half \log \sigma^2 \\
-	&=  \natp_1 X + \natp_2 X^2  - \logpart(\natp) \; .
+	&=  \nat_1 X + \nat_2 X^2  - \logpart(\nat) \; .
 \end{align}
 From this formula, we can identify the duality map
 \begin{align}
-	\natp_1 &= \frac{m}{\sigma^2} = \frac{\mu_1}{\mu_2 - \mu_1^2} \\
-	\natp_2 &= -\inv{2 \sigma^2} =  \frac{ - 1}{2(\mu_2 - \mu_1^2)}  < 0
+	\nat_1 &= \frac{m}{\sigma^2} = \frac{\mu_1}{\mu_2 - \mu_1^2} \\
+	\nat_2 &= -\inv{2 \sigma^2} =  \frac{ - 1}{2(\mu_2 - \mu_1^2)}  < 0
 \end{align}
 and we can also explicit the log-partition as a function of the natural parameters
 \begin{align}
 	\logpart(m, \sigma) &= \frac{m^2}{2 \sigma^2} + \half \log \sigma^2 \\
-	\logpart(\natp) &= \frac{\natp_1^2}{-4\natp_2} - \half \log(-2\natp_2) \; .
+	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \; .
 \end{align}
-We can perform a sanity check by deriving $\logpart$ and verifying that its gradient gives $\mu(\natp)$
+We can perform a sanity check by deriving $\logpart$ and verifying that its gradient gives $\mu(\nat)$
 \begin{align}
-	\mu_1 &= \frac{\natp_1}{-2\natp_2}  \\
-	\mu_2 & = \left( \frac{\natp_1}{-2\natp_2} \right)^2 + \inv{-2 \natp_2} \; .
+	\mu_1 &= \frac{\nat_1}{-2\nat_2}  \\
+	\mu_2 & = \left( \frac{\nat_1}{-2\nat_2} \right)^2 + \inv{-2 \nat_2} \; .
 \end{align}
 Now let us recover the entropy
 \begin{align}
-	\conj (\mu) &= \mu_1 \natp_1 + \mu_2 \natp_2  - \logpart(\natp(\mu)) \\
+	\conj (\mu) &= \mu_1 \nat_1 + \mu_2 \nat_2  - \logpart(\nat(\mu)) \\
 	& = \frac{\mu_1^2}{\mu_2 - \mu_1^2}  - \frac{\mu_2}{2(\mu_2 - \mu_1^2)} - \frac{\mu_1^2}{2(\mu_2 - \mu_1^2)}  - \half \log(\mu_2 - \mu_1^2) \\
 	&= \half \frac{\mu_1^2 - \mu_2}{\mu_2 - \mu_1^2} - \half \log(\mu_2 - \mu_1^2) \\
 	& = - \half \log (\mu_2 - \mu_1^2) + \cst \; .
@@ -1232,108 +1232,108 @@ These notions were rediscovered and expanded by \citet{bauschke2017descent} and 
 
 \subsection{Convergence of Mirror Descent}
 \paragraph{Descent Lemma.}
-To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\natp, \natp^{t}) = f(\natp^t) + \langle \nabla f (\natp^t) ; \natp - \natp^t \rangle $ is the linearization of $f$ at $\natp^t$ evaluated in $\natp$. 
+To get the descent lemma, apply successively relative smoothness, 3 points lemma, and relative strong convexity on $f$. Note that the strong convexity constant $m$ may be zero. Recall that $\ell_f(\nat, \nat^{t}) = f(\nat^t) + \langle \nabla f (\nat^t) ; \nat - \nat^t \rangle $ is the linearization of $f$ at $\nat^t$ evaluated in $\nat$. 
 \begin{align}
-	f(\natp^{t+1}) 
-	&\leq \ell_f(\natp^{t+1}, \natp^{t})  + L \bregman(\natp^{t+1}; \natp^{t})
+	f(\nat^{t+1}) 
+	&\leq \ell_f(\nat^{t+1}, \nat^{t})  + L \bregman(\nat^{t+1}; \nat^{t})
 	& \text{(Relative $L$-smoothness)} \\
-	& \leq \ell_f(\natp^{*}, \natp^{t})  + L \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
-	& \text{(3 Points Lemma w. $x=\natp^*$)} \\
-	& \leq f(\natp^*) + (L - m) \bregman(\natp^{*}; \natp^{t}) -L \bregman(\natp^{*}; \natp^{t+1}) 
+	& \leq \ell_f(\nat^{*}, \nat^{t})  + L \bregman(\nat^{*}; \nat^{t}) -L \bregman(\nat^{*}; \nat^{t+1}) 
+	& \text{(3 Points Lemma w. $x=\nat^*$)} \\
+	& \leq f(\nat^*) + (L - m) \bregman(\nat^{*}; \nat^{t}) -L \bregman(\nat^{*}; \nat^{t+1}) 
 	& \text{(Relative $m$-strong convexity)}
 \end{align}
 
 \paragraph{Monotonicity.}
-Applying the 3 points lemma with $x=\natp_t$, 
+Applying the 3 points lemma with $x=\nat_t$, 
 \begin{align}
-	f(\natp^{t+1}) \leq  f(\natp^t) -L (\bregman(\natp^{t}, \natp^{t+1}) + \bregman(\natp^{t+1} , \natp^{t} ))
+	f(\nat^{t+1}) \leq  f(\nat^t) -L (\bregman(\nat^{t}, \nat^{t+1}) + \bregman(\nat^{t+1} , \nat^{t} ))
 \end{align}
 shows the function value is monotonically decreasing, and we the gap at each step is greater than the symmetrized bregman between iterates. 
 
 \paragraph{No Strong-Convexity.}
 The simpler case is when $m=0$, then we get a telescopic sum
 \begin{align}
-	\sum_{t=0}^{T-1} (f(\natp^{t+1}) - f(\natp^*)) 
-	&\leq L \sum_t \bregman(\natp^{*}; \natp^{t}) - \bregman(\natp^{*}); \natp^{t+1}) \\
-	&= L \bregman(\natp^{*}; \natp^{0}) - L\bregman(\natp^{*}); \natp^{T})\\
-	&\leq L \bregman(\natp^{*}; \natp^{0}) \; ,
+	\sum_{t=0}^{T-1} (f(\nat^{t+1}) - f(\nat^*)) 
+	&\leq L \sum_t \bregman(\nat^{*}; \nat^{t}) - \bregman(\nat^{*}); \nat^{t+1}) \\
+	&= L \bregman(\nat^{*}; \nat^{0}) - L\bregman(\nat^{*}); \nat^{T})\\
+	&\leq L \bregman(\nat^{*}; \nat^{0}) \; ,
 \end{align}
-from which we can conclude thanks to the monotonicity of $f(\natp^t)$
+from which we can conclude thanks to the monotonicity of $f(\nat^t)$
 \begin{align}
-	f(\natp^{T}) - f(\natp^*)
-	\leq  \frac{L}{T} \bregman(\natp^{*}; \natp^{0}) \; ,
+	f(\nat^{T}) - f(\nat^*)
+	\leq  \frac{L}{T} \bregman(\nat^{*}; \nat^{0}) \; ,
 \end{align}
 
 \paragraph{Strong Convexity.} 
 When $m>0$, we need to do some cooking with a coefficient $\frac{L-m}{L}$ to create the telescopic sum
 \begin{align}
-	\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\natp^{t+1}) - f(\natp^*)) 
-	&\leq \sum_{t=0}^{T-1} \frac{( L-m)^{T-t}}{L^{T-t -1}} \bregman(\natp^{*}; \natp^{t}) 
-	- \frac{( L-m)^{T-t-1}}{L^{T-t-2}} \bregman(\natp^{*}); \natp^{t+1}) \\
-	&= \frac{( L-m)^{T}}{L^{T-1}}  \bregman(\natp^{*}; \natp^{0}) 
-	- L \bregman(\natp^{*}); \natp^{T}) \\
-	&\leq L \left( \frac{L-m}{L} \right)^T \bregman(\natp^{*}; \natp^{0}) \; .
+	\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\nat^{t+1}) - f(\nat^*)) 
+	&\leq \sum_{t=0}^{T-1} \frac{( L-m)^{T-t}}{L^{T-t -1}} \bregman(\nat^{*}; \nat^{t}) 
+	- \frac{( L-m)^{T-t-1}}{L^{T-t-2}} \bregman(\nat^{*}); \nat^{t+1}) \\
+	&= \frac{( L-m)^{T}}{L^{T-1}}  \bregman(\nat^{*}; \nat^{0}) 
+	- L \bregman(\nat^{*}); \nat^{T}) \\
+	&\leq L \left( \frac{L-m}{L} \right)^T \bregman(\nat^{*}; \nat^{0}) \; .
 \end{align}
-Then using the monotonicity of $f(\natp^t)$, we end up with the geometric sum of $\frac{L-m}{L} < 1$
+Then using the monotonicity of $f(\nat^t)$, we end up with the geometric sum of $\frac{L-m}{L} < 1$
 \begin{align}
-		\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\natp^{t+1}) - f(\natp^*)) 
-		&\geq (f(\natp^{T}) - f(\natp^*)) \sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} \\
-		&\geq (f(\natp^{T}) - f(\natp^*)) \inv{1 - \frac{L-m}{L}} \\
-		&= (f(\natp^{T}) - f(\natp^*)) \frac{L}{m} \; .
+		\sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} (f(\nat^{t+1}) - f(\nat^*)) 
+		&\geq (f(\nat^{T}) - f(\nat^*)) \sum_{t=0}^{T-1} \left( \frac{L-m}{L} \right)^{T-1-t} \\
+		&\geq (f(\nat^{T}) - f(\nat^*)) \inv{1 - \frac{L-m}{L}} \\
+		&= (f(\nat^{T}) - f(\nat^*)) \frac{L}{m} \; .
 \end{align}
 Finally we end up with the final iterate linear convergence rate
 \begin{align}
-	f(\natp^{T}) - f(\natp^*)
-	\leq m  \left( 1 - \frac{m}{L} \right)^T \bregman(\natp^{*}; \natp^{0}) 
+	f(\nat^{T}) - f(\nat^*)
+	\leq m  \left( 1 - \frac{m}{L} \right)^T \bregman(\nat^{*}; \nat^{0}) 
 \end{align}
 featuring $\frac{L}{m} $ the relative condition number.
 
 \section{Cramer-Rao Lower Bound}
-In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\natp$ is lower bounded by the inverse Fisher information matrix, divided by $n$
+In statistics, there is this famous theorem known as the Cramer-Rao lower bound. In its simplest form, it states that the covariance of an unbiased estimator of a distribution's parameter $\nat$ is lower bounded by the inverse Fisher information matrix, divided by $n$
 \begin{align}
-    \Cov(\hat \natp_n)  
-    &\succeq \inv{n} \cI(\natp_*)^{-1} \\
+    \Cov(\hat \nat_n)  
+    &\succeq \inv{n} \cI(\nat_*)^{-1} \\
     \iff
-    \expect[\cD\sim \natp_*]{(\hat \natp_n - \natp_*)(\hat \natp_n - \natp_*)^T}
-    &\succeq \inv{n} \expect[X\sim \natp_*]{-\nabla^2 \log p(X|\natp_*)}^{-1} \; .
+    \expect[\cD\sim \nat_*]{(\hat \nat_n - \nat_*)(\hat \nat_n - \nat_*)^T}
+    &\succeq \inv{n} \expect[X\sim \nat_*]{-\nabla^2 \log p(X|\nat_*)}^{-1} \; .
 \end{align}
 This is a typical statistic bound, which is concerned with the $\ell^2$ accuracy of an estimator, via its covariance. In contrast, here we are concerned with the quality of the estimator in terms of KL-divergence, eg "how accurately am I modeling this distribution?"
 
-Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\natp)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \natp_n$, this lower bound is not trivial.
+Note that in the case of an exponential family, the lower bound is always reached for the MLE estimator $\hat \mu_n$, because $\cI(\mu) = \nabla^2 \conj(\mu) = \nabla^2 \logpart(\nat)^{-1} = \Cov(T(X))^{-1}$, where the first step takes some calculus. For the estimator $\hat \nat_n$, this lower bound is not trivial.
 
 In our case, the bias variance decomposition tells us that we are interested in the covariance between primal and dual parameters, rather than any of their individual covariance -- $\Cov(\MAPt;\MAPm)$ rather that $\Var(\MAPm)$ or $\Var(\MAPt)$.
 
 \section{Posterior Expected Loss}
 
-A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\natp$ is written as
+A conjugate prior for the exponential family with sufficient statistic $T(X)$ and natural parameter $\nat$ is written as
 \begin{align}
-    p(\natp) 
-    \propto \exp(-n_0 \bregman(\natp ; \natp_0)) 
-    \propto \exp(-n_0 \logpart(\natp) + \langle n_0 \mu_0 ; \natp \rangle) \; .
+    p(\nat) 
+    \propto \exp(-n_0 \bregman(\nat ; \nat_0)) 
+    \propto \exp(-n_0 \logpart(\nat) + \langle n_0 \mu_0 ; \nat \rangle) \; .
 \end{align}
-We see that $p(\natp)$ is part of the exponential family, with sufficient statistic $(\natp, \logpart(\natp))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $p(\natp | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
+We see that $p(\nat)$ is part of the exponential family, with sufficient statistic $(\nat, \logpart(\nat))$ and natural parameters $(n_0 \mu_0 , -n_0)$. When we update this prior with Bayes formula on dataset $\cD=(x_1,\dots,x_n)$, we get a posterior $p(\nat | \cD)$ with natural parameters $(n_0 \mu_0 + \sum_i T(x_i) , -(n_0 + n))$. This is well detailed in \citet{agarwal2010geometric}. 
 
 Given this posterior, a natural quantity to consider is the expected loss. Thus we might ask "what is the expectation of the posterior expected suboptimality?"
 \begin{align}
-    \expect[\cD\sim\natp_*]{\expect[p(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
+    \expect[\cD\sim\nat_*]{\expect[p(\nat|\cD)]{\bregman(\nat ; \nat_*)}}
 \end{align}
 This quantity is even harder to estimate than the expected MAP suboptimality, because of the double integral. We can get a closed form for the age-old $\ell^2$ loss of $\cN(\mu, 1)$, which yields the exact rate $\inv{n}$. This is exactly twice the expected loss of the MLE.
 
 \begin{example}
 	We can also get a closed form for the posterior of a centered gaussian variance 
 	\begin{align}
-		\expect[p(\natp|\cD)]{\bregman(\natp ; \natp_*)} = \bregman(\hat \natp_n ; \natp_*) + \frac{2}{n} \frac{\mu_*}{\hat \mu_n} + \log\frac{n}{2} - \psi(1 + \frac{n}{2})
+		\expect[p(\nat|\cD)]{\bregman(\nat ; \nat_*)} = \bregman(\hat \nat_n ; \nat_*) + \frac{2}{n} \frac{\mu_*}{\hat \mu_n} + \log\frac{n}{2} - \psi(1 + \frac{n}{2})
 	\end{align}
 	using the mean of the \href{https://en.wikipedia.org/wiki/Inverse-gamma_distribution}{inverse Gamma distribution} and the \href{https://en.wikipedia.org/wiki/Gamma_distribution#Logarithmic_expectation_and_variance}{logarithmic expectation} of a Gamma. 
 	Then using results from the MLE, we get the exact formula
 	\begin{align}
-		\expect[\cD\sim\natp_*]{\expect[p(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
+		\expect[\cD\sim\nat_*]{\expect[p(\nat|\cD)]{\bregman(\nat ; \nat_*)}}
 		= \frac{2}{n} + \frac{2}{n(n-2)} + \psi(\half[n]) - \psi(1+ \half[n])
 	\end{align}
 	and we bound it to 
 	\begin{align}
 		\inv{2n} + \frac{4}{n(n-2)}
-		\leq \expect[\cD\sim\natp_*]{\expect[p(\natp|\cD)]{\bregman(\natp ; \natp_*)}}
+		\leq \expect[\cD\sim\nat_*]{\expect[p(\nat|\cD)]{\bregman(\nat ; \nat_*)}}
 		\leq 
 		\inv{n} + \frac{4}{n(n-2)}
 	\end{align}
@@ -1353,16 +1353,16 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 	\end{theorem}
 	
 	\begin{proof}
-	The ratio to the optimum  $\frac{\mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$ divided by $n$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
+	The ratio to the optimum  $\frac{n \mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
 	\begin{align}
-		\expect{\frac{\mu_*}{ \mu_n}  - 1} 
+		\expect{n \frac{\mu_*}{n \mu_n}  - 1} 
 		= \expect{\frac{n}{\chi^2(n)} - 1} =
 		\begin{cases}
 			\frac{n}{n-2} -1 = \frac{2}{n-2} \ \text{ if } n>2, \\
 			+\infty \  \text{ otherwise. }
 		\end{cases}
 	\end{align}
-	There is also a closed form solution for the expected logarithm of a Chi-squared\citep{pav2015moments}
+	There is also a closed form solution for the expected logarithm of a Chi-squared, because a Chi-squared is a special case of Gamma distributions, whose sufficient statistic is $(X,\log(X))$. For non-central chi-squares, one could also look at \citep{pav2015moments}.
 	\begin{align}
 		\expect{\log \frac{\mu_n}{\mu_*}} = \psi(\half[n]) - \log(\half[n])
 	\end{align}
@@ -1395,7 +1395,8 @@ This quantity is even harder to estimate than the expected MAP suboptimality, be
 	\end{align}
 	so we get a $O(n^{-2})$ lower bound and a $O(n^{-1}) + O(n^{-2})$ upper bound.
 	\end{proof}
-	Using the \href{https://en.wikipedia.org/wiki/Digamma_function#Recurrence_formula_and_characterization}{Stirling series}, we can also get an asymptotic approximation
+
+Using the \href{https://en.wikipedia.org/wiki/Digamma_function#Recurrence_formula_and_characterization}{Stirling series}, we can also get an asymptotic approximation
 	\begin{align}
 		\expect{\bregmanconj( \mu_*; \mu_n) }
 		\in \inv{2n} + \frac{11}{6 n^2} + \frac{4}{n^2(n-2)} + O(n^{-4}) \; .
@@ -1475,7 +1476,7 @@ Let us introduce a variable characterizing the importance of the prior
 \begin{equation}
 		\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
-		= \expect{\frac{\MAPt}{\natp^*}} 
+		= \expect{\frac{\MAPt}{\nat^*}} 
 		\leq \begin{cases}
 		\frac{n_0 +n}{a+n-2} \text{ when } n\geq 2,\\
 		\frac{n_0 +1}{a} \text{ when } n=1.
@@ -1490,7 +1491,7 @@ Let us introduce a variable characterizing the importance of the prior
 	To start, let us plug in the definition of $\MAPm$
 	\begin{align}
 		\expect{\frac{\mu^*}{\MAPm}} 
-		= \expect{\frac{\MAPt}{\natp^*}} 
+		= \expect{\frac{\MAPt}{\nat^*}} 
 		&= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  \\
 		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
 		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
@@ -1688,11 +1689,11 @@ Using a linear approximation of the mirror map, we get a $O(n^{-1})$ rate for th
 \begin{align}
 	&\nabla \conj(\mu)  
 	= \nabla \conj(\mu^*) + \nabla^2\conj(\mu^*)(\mu - \mu^*) + O(\norm{\mu - \mu^*}^2) \\
-	\implies &\hat \natp_n 
-	= \natp^* + \Sigma^{-1} (\hat \mu_n - \mu^*)  + O(\E[\norm{\hat \mu_n - \mu^*}^2]) \\
-	\implies &\Cov(\hat \natp_n ; T(X) ) 
+	\implies &\hat \nat_n 
+	= \nat^* + \Sigma^{-1} (\hat \mu_n - \mu^*)  + O(\E[\norm{\hat \mu_n - \mu^*}^2]) \\
+	\implies &\Cov(\hat \nat_n ; T(X) ) 
 	= \inv{n+n_0} \E[ \norm{T(X) - \mu^*}^2_{\Sigma^{-1}}]   + O(n^{-2}) \\
-	\implies &\Cov(\hat \natp_n ; T(X) ) 
+	\implies &\Cov(\hat \nat_n ; T(X) ) 
 	 = \frac{d}{n+n_0} + O(n^{-2}) \; .
 \end{align}
 Note that we lost a factor $\half$ compared to the straightforward asymptotic analysis~\eqref{eq:MAP_asymptote}, probably because of the Jensen upper bound.
@@ -1700,26 +1701,26 @@ Note that we lost a factor $\half$ compared to the straightforward asymptotic an
 \begin{example}
 	For the gaussian variance MAP, the variance term is
 		\begin{align}
-			\Cov(\hat \natp_n ; \hat \mu_n )  
+			\Cov(\hat \nat_n ; \hat \mu_n )  
 			= \E[\MAPt \MAPm] - \E[\MAPt] \E[\MAPm] 
 			=  - \half - \E[\MAPt] \mu_n
 	\end{align}
-	where we used the fact that $\natp \mu = -\half$ for all valid pairs $(\natp, \mu)$. 
+	where we used the fact that $\nat \mu = -\half$ for all valid pairs $(\nat, \mu)$. 
 	Plugging-in \eqref{eq:theta_expectation_bound} yield
 	\begin{align}
 		-\half + \frac{\mu_n}{2 \mu_n}
-		&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		&\leq \Cov(\hat \nat_n ; \hat \mu_n ) 
 		\leq -\half + \half \frac{a + n}{a + n - 2} \\
-		\iff 0&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		\iff 0&\leq \Cov(\hat \nat_n ; \hat \mu_n ) 
 		\leq \half \frac{a+n - (a + n -2)}{a + n - 2} \\
-		\iff 0&\leq \Cov(\hat \natp_n ; \hat \mu_n ) 
+		\iff 0&\leq \Cov(\hat \nat_n ; \hat \mu_n ) 
 		\leq \inv{a +n - 2}
 	\end{align}
 	which is exactly the kind of upper bounds we were looking for !
 \end{example}
 
 \subsection{Mixed Bias-Variance Term}
-The mixed bias variance term is $ \frac{n_0}{n+n_0} \langle  {\mu_* - \mu_0} ; {\natp_n - \E[\hat \natp_n]} \rangle $.
+The mixed bias variance term is $ \frac{n_0}{n+n_0} \langle  {\mu_* - \mu_0} ; {\nat_n - \E[\hat \nat_n]} \rangle $.
 Note that it might be negative !
 Let's focus on the right factor
 \begin{align}
@@ -1746,7 +1747,7 @@ We need to use a quadratic approximation of $\nabla \conj$ to get a non-trivial 
 where the axis of the tensor product between third derivative and vector / matrix are all kept implicit for simplicity.
 Consequently the bias-variance term is 
 \begin{align}
-	\frac{n_0}{n+n_0} \langle  \bias{\mu^* - \mu_0} ; \variance{\natp_n - \E[\hat \natp_n]} \rangle
+	\frac{n_0}{n+n_0} \langle  \bias{\mu^* - \mu_0} ; \variance{\nat_n - \E[\hat \nat_n]} \rangle
 	 = \frac{n_0}{(n+n_0)^3} (\mu^* - \mu_0)^\top \nabla^3 \conj (\mu^*) \Sigma + O(n^{-4}) = O(n^{-3}) \; .
 \end{align}
 
@@ -1754,16 +1755,16 @@ Consequently the bias-variance term is
 	As we have the tight bounds \eqref{eq:theta_expectation_bound} for the expectation of the natural parameter of the MAP, we can bound above and below this mixed term
 	\begin{align}
 		0
-		\leq \natp_n - \E[\MAPt]
+		\leq \nat_n - \E[\MAPt]
 		\leq \frac{n_0 +n}{2 \mu^*} \left ( \inv{a+n-2} - \inv{a+n} \right)
 		 = \frac{n_0+n}{\mu^*(a+n)(a+n-2)}	 \in O(n^{-1}) \; .
 	\end{align} 
 	Remark how this asymptotic class differs from the $O(n^{-2})$ I expected. Is this bound less tight than I thought, or are my calculus wrong ? 
-	Also remark that $\natp_n$ is always greater than $\E[\MAPt]$, which is a good sanity-check because $\nabla \conj(\mu) = - \inv{2\mu}$ is a concave function.
+	Also remark that $\nat_n$ is always greater than $\E[\MAPt]$, which is a good sanity-check because $\nabla \conj(\mu) = - \inv{2\mu}$ is a concave function.
 
 	The rate on the mixed term depends on the sign of $\mu^* - \mu_0 $
 	\begin{align}
-		\frac{n_0}{n+n_0} \langle  \mu^* - \mu_0 ; \natp_n - \E[\hat \natp_n] \rangle
+		\frac{n_0}{n+n_0} \langle  \mu^* - \mu_0 ; \nat_n - \E[\hat \nat_n] \rangle
 		\leq \begin{cases}
 			0 \ \text{ if } \ \mu^*\leq \mu_0, \\
 			\frac{n_0 - a}{(a+n)(a+n-2)} \ \text{ otherwise.}
