@@ -954,6 +954,85 @@ To get an upper bound for the MAP, due to the difficulty of finding a closed for
 	\end{proof}
 
 
+\subsection{Multivariate MLE}
+In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, the mean parameter $\mu_*$ becomes a positive definite covariance matrix of order $d$, with $p = \frac{d(d+1)}{2} $ degrees of freedom.
+Its entropy is a negative log-determinant $\conj(\mu) = -\log\det(\mu)$, with gradient negative matrix inverse $\nabla\conj (\mu) = - \mu^{-1}$, and associated Bregman divergence
+\alignn{
+	\bregmanconj(\mu_*; \hat \mu_n) 
+	= \half \paren{\Tr(\mu_* \hat \mu_n^{-1} ) - d  - \log\det(\mu_* \hat \mu_n^{-1}) } \; .
+}
+Thanks to the linearity of the trace, the expectation becomes
+\alignn{
+	\expect{\bregmanconj(\mu_*; \hat \mu_n) }
+	= \half \paren{\Tr(\expect{\mu_* \hat \mu_n^{-1}} ) - d   
+	+\expect{\log\det( \hat \mu_n \mu_*^{ -1}))} } \; .
+}
+
+When the estimator is the MLE $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top$, 
+then the mean parameter "ratio" is
+\aligns{
+	\mV = n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top
+}
+but $\mu_*^{-\half}X_i \sim \cN(0,\mI)$, so that $\mV$
+is sampled from a Wishart  $\cW(\mI, n)$, where $\mI$ stands for the identity matrix of order $d$. 
+We know formulas for the expectation of an inverse Wishart and the log-determinant of a Wishart (thanks to $\log\det$ being a sufficient statistics and $\nabla\logpart$)
+\aligns{
+	\E[\mV] &= n \mI \\
+	\forall n > d+1,\E[\mV^{-1}] &= \frac{\mI}{n - d - 1} 
+	\implies \Tr(\E[\mV^{-1}]) = \frac{d}{n - d - 1}  \\
+	\E[\log\det \mV] &= \psi_d(\half[n]) + d \log 2 \; ,
+}
+where $\psi_d(\half[n]) = \sum_{i=0}^{d-1} \psi ( \half[n - i])$ is the multivariate digamma function.
+Putting it all together, we get the following closed form for the expectation of the KL
+ \begin{align}
+ 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
+ 	= \half \left ( \frac{d(d+1)}{n-d-1} + \psi_d(\half[n]) - d \log(\half[n])  \right )
+ \end{align}
+
+The complicated term is the $\psi_d$ function.
+We can use the upper bound $\psi(x) - \log(x) \leq - \inv{2x}$ (like in the univariate case) to get
+\begin{align}
+	\psi_d(\half[n]) - d \log(\half[n]) 
+	&= \sum_{i=0}^{d-1} \paren{\psi ( \half[n - i]) - \log(\half[n]) } \\
+	&\leq \sum_{i=0}^{d-1} \paren{\log(1 - \frac{i}{n}) - \frac{1}{n-i}} \; .
+	\label{eq:psid_bound}
+\end{align}
+We can bound the harmonic sum thanks to the typical bound
+\aligns{
+	\inv{2n +1}
+	\leq H_n - \log(n) - \gamma \leq 
+	\inv{2n - 1}
+}
+where $\gamma$ is the Euler constant. Then
+\begin{align}
+	- \sum_{i=0}^{d-1} \frac{1}{n-i} 
+	&= H_{n-d} - H_n \\
+	&\leq \log(n-d) + \gamma + \inv{2(n-d) - 1} - \log(n) - \gamma - \inv{2n+1}\\
+	&= \log(1-\frac{d}{n})  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1}
+\end{align}
+Plugging this back into~\eqref{eq:psid_bound} yields
+\begin{align}
+	\psi_d(\half[n]) - d \log(\half[n]) 
+	\leq \sum_{i=0}^{\textcolor{red}{d}} \log(1 - \frac{i}{n})
+	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1} 
+\end{align}
+where we emphasized that the sum runs up to $d$.
+Now to bound this sum of logarithms, we can use a concave tangent bound on $\log$ to get
+\begin{align}
+	\sum_{i=0}^{d} \log(1 - \frac{i}{n})
+	\leq \sum_{i=0}^{d} - \frac{i}{n}
+	 = -\frac{d(d+1)}{2n}
+\end{align}
+which yields the final rate
+\begin{align}
+ 	\boxed{
+ 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
+ 	\leq \frac{p}{2n} + \frac{(d+1) \paren{p + \inv{4}}}{n (n - d -1)} \;.
+ 	}
+\end{align}
+where $p = d(d+1)/2$.
+This rate is asymptotically tight.
+
 
 
 
