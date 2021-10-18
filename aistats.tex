@@ -24,8 +24,8 @@
 %\setlength{\pdfpageheight}{11in}
 %\setlength{\pdfpagewidth}{8.5in}
 
-\let\oldsection\section
-\renewcommand{\section}[1]{\oldsection{\texorpdfstring{\uppercase{#1}}{#1}}}
+%\let\oldsection\section
+%\renewcommand{\section}[1]{\oldsection{\texorpdfstring{\uppercase{#1}}{#1}}}
 
 % If you use natbib package, activate the following three lines:
 \usepackage[round]{natbib}
@@ -148,7 +148,7 @@ We believe solving this very fundamental problem may bring progress to both the 
 \end{figure}
 
 
-\section{Introduction}
+\section{INTRODUCTION}
 \label{sec:motivation}
 
 \paragraph{Models}
@@ -255,7 +255,7 @@ $X$ and $T=T(X)$ are random variables, $x$ is a sample, $n$ is the number of sam
 $\langle \cdot , \cdot \rangle$ is the Euclidean scalar product in $\real^d$.
 
 
-\section{Technical background}
+\section{TECHNICAL BACKGROUND}
 \label{sec:background}
 This section reviews the formalism of exponential families, their duality, a conjugate prior, and the corresponding MAP.
 We point the reader towards \citet[Chapter 3]{wainwright2008graphical} for a more detailed introduction.
@@ -436,7 +436,7 @@ Find a convergence rate for stochastic mirror descent that applies to conjugate 
 
 To address these problems, we start by investigating simple examples to provide solutions to Problem 1, getting insights into what is achievable.
 
-\section{Illustrating Examples}\label{sec:example}
+\section{ILLUSTRATING EXAMPLES}\label{sec:example}
 \subsection{Gaussian with Unknown Variance}\label{ssec:gaussian-variance}
 
 A non-trivial yet straightforward example is the centered Gaussian distribution with unknown variance $\cN(0,\sigma^2)$.
@@ -525,7 +525,7 @@ These functions are neither smooth, nor strongly convex, and $\conj$ is self-con
 , but $\logpart$ is not (see App.~\ref{app:gaussian}).
 We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
-\section{Partial Solutions}
+\section{PARTIAL SOLUTIONS}
 \label{sec:insights}
 
 \subsection{Asymptotic Rate}
@@ -688,35 +688,6 @@ Next, we investigate whether an optimization approach could solve it.
 \section{AN OPTIMIZATION PROBLEM}
 \label{sec:optimization}
 
-%This section show how MAP can be interpreted as stochastic mirror descent (SMD). Thanks to this strong link, we show that \textbf{1)} we may obtain a convergence rate for MAP from the rate od SMD, and \textbf{2)} any insights gained from the MAP may inform on further design and analysis of SMD.
-%Then, we review the assumptions of relative smoothness, useful to deal with non-smooth functions, before investigating three different analyses of SMD with the MAP.
-%\rlp{mention that examples have so far been lacking for relative SMD.}
-%
-%\subsection{MAP as Stochastic Mirror Descent}
-%\label{ssec:MAP=SMD}
-%By the Bayes rule, the posterior can always be written iteratively $p(\nat | \mD_n) \propto p(X_n | \nat) p(\nat | \mD_{n-1})$.
-%Plugging in~\eqref{eq:joint_likelihood}, and introducing $f_n(\nat) = - \log p(X_{n} | \nat)$, we see that the MAP verifies
-%\begin{align*}
-%	\hat \nat_{n}
-%	= \argmin_\nat f_n(\nat) + (n_0 + n -1) \bregman(\nat; \hat \nat_{n-1})
-%    %\label{eq:SBPP}
-%\end{align*}
-%which is the update of a Stochastic Bregman Proximal Point update with step-size $\inv{n_0 + n - 1}$.
-%%Maybe skip this SBPP story altogether
-%If we expand $f_n(\nat) = \logpart(\nat) - T_n$,  we get (after some manipulation with the Bregman divergence)
-%\begin{align*}
-%		\hat \nat_{n}
-%	= \argmin_\nat \langle g_{n}(\hat \nat_{n-1}), \nat \rangle + (n_0 + n) \bregman(\nat; \hat \nat_{n-1})
-%    %\label{eq:SMD}
-%\end{align*}
-%where $g_{n}(\nat) := \nabla f_n(\nat) = \hat \m_{n-1} - T_n$.
-%We recognize the update of Stochastic Mirror Descent (a.k.a. Stochastic Bregman Gradient) with step-size $\lr_n = \inv{n_0 + n}$.
-%From the first order optimality condition, we see this is a stochastic gradient step in the dual $\hat \m_n = \hat \m_{n-1} - \lr_n g_n$.
-%This parallel means we could obtain a finite convergence rate for the  MAP from an analysis of these algorithms.
-%In particular, it could potentially apply to a wide range of distribution $\cD$ on $X$.
-%Note that this optimization perspective does not hold for the MLE %($n_0=0$)
-%as its implicit uniform prior may correspond to an initialization outside of $\Theta$.
-
 
 As we saw in \S\ref{sec:problem}, MAP can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform other designs and analyses of SMD.
@@ -873,7 +844,7 @@ Overall, \eqref{eq:dorazio} can partially handle barrier objectives, but it fail
 This is in contrast with~\citet{dragomir2021fast} which can handle decreasing step-sizes but not barrier objectives.
 Proving convergence of stochastic mirror descent on barrier loss remains an open problem.
 
-\section{Conclusion}
+\section{CONCLUSION}
 Despite the MLE and MAP estimators in the exponential family being classical and known in statistics for decades, we highlighted in this paper open problems to bound their frequentist risk (the expected KL) in a non-asymptotic way. We reviewed some partial results, such as a large sample analysis that describes how many samples are needed to ensure a locally quadratic regime~\citep{kakade2010learning, ostrovskii2021finite} for which rates are known. We also related this problem to the one of obtaining convergence rates in stochastic optimization, observing that MAP fits the framework of stochastic mirror descent with relative smoothness assumptions.
 Nevertheless, none of the current analyses of SMD hold for the MAP, even on a simple family such as $\cN(0,\sigma^2)$, thus revealing an area for progress in non-Euclidean optimization.
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
@@ -891,6 +862,9 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
+
+
+
 
 Intuitively, the divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
 \begin{align}
