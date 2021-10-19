@@ -1640,13 +1640,23 @@ Fortunately, we derived the bound \eqref{eq:lemma_nat_bound} for this purpose.
 so putting it all together we get 
 \begin{align}
 	\expect{\bregmanconj(\mu^*; \MAPm)} 
-	& = \half \left(\frac{n_0 - a + 2}{a +n - 2}  + \frac{a - n_0}{n_0+n} \right )\\
-	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
-	&\leq \frac{1}{a+n-2} + \frac{(n_0-a + 1) - 1}{2}  \frac{(n_0 - a + 1) + 1}{(a+n-2)(n_0+n)} \\
+	&\leq \half \left(\frac{n_0 - a + 2}{a +n - 2}  + \frac{a - n_0}{n_0+n} \right )\\
+	&= \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
+	&= \frac{1}{a+n-2} + \frac{(n_0-a + 1) - 1}{2}  \frac{(n_0 - a + 1) + 1}{(a+n-2)(n_0+n)} \\
 	&= \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2 - 1}{2(a+n-2)(n_0+n)} \\
 	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2}{2(a+n-2)(n_0 + n)} \\
 	&= \frac{1}{a+n-2} + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \; .
 \end{align}
+Or using a slightly different derivation, we get slightly different bias and variance
+\begin{align}
+	\expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq \half \left(\frac{n_0 - a + 2}{a +n - 2}  + \frac{a - n_0 -2 +2}{n_0+n} \right )\\
+	&= \frac{1}{n_0 + n} + \frac{n_0+ 2 - a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
+	&= \frac{1}{n_0 + n} + \frac{n_0+ 2 - a}{2}  \frac{n_0 + 2 - a}{(a+n-2)(n_0+n)} \\
+	&= \frac{1}{n_0 + n} + \frac{(n_0 + 2 - a)^2}{2(a+n-2)(n_0+n)} \\
+	&= \frac{1}{n_0 + n} + \frac{\half \paren{1 + \frac{2}{n_0} - \frac{\mu_0}{\mu^*}}^2 }{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \; .
+\end{align}
+We will stick with the first one, because we can get a uniform bias over $n=1$ and $n=2$, but this latter one is slightly tighter, and it has the advantage that the $1/n$ term does not depend on $\mu_0$, which is pleasant if we wish to interpret it as a variance term.
 
 \textbf{When $n=1$} the bound~\eqref{eq:lemma_nat_bound}  on the expected natural parameter gives
 \begin{align}
