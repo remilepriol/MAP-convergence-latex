@@ -962,7 +962,7 @@ In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, and the mean pa
 	The expected KL between $\mu_*$ and $\hat\mu_n$ is infinite when $n\leq d+1$ and otherwise upper bounded by
 	\alignn{
 	 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	\leq \frac{p}{2n} + \frac{(d+1) \paren{p + \inv{4}}}{n (n - d -1)} 
+ 	\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)} 
  	\ , \forall n >d+1 \;.
 }
 This bound is asymptotically tight.
@@ -982,11 +982,12 @@ Thanks to the linearity of the trace, the expectation becomes
 }
 
 When the estimator is the MLE $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top$, 
-then the mean parameter "ratio" is
+then we define the mean parameter "ratio" as
 \aligns{
-	\mV = n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top
+	\mV &:= n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top 
 }
-but $\mu_*^{-\half}X_i \sim \cN(0,\mI)$, so that $\mV$
+such that $\Tr(\mu_* \hat \mu_n^{-1})  = n \Tr(\mV^{-1})$.
+But $\mu_*^{-\half}X_i \sim \cN(0,\mI)$, so that $\mV$
 is sampled from a Wishart  $\cW(\mI, n)$, where $\mI$ stands for the identity matrix of order $d$.
 Recall that $\E[\mV] = n \mI$.
 Thanks to $\log\det$ being a sufficient statistic of the Wishart, and the natural to mean parameter formula~\eqref{eq:mirror-map}, we have a closed form for the expected log-determinant of a Wishart 
@@ -1003,11 +1004,18 @@ The expectation of an inverse Wishart  is straightforward to compute from the de
 \end{equation}
 which proves the infinite part of the statement.
 We now consider only $n>d+1$.
-We deduce that $\Tr(\E[\mV^{-1}]) = \frac{d}{n - d - 1}$.
+We deduce that 
+\alignn{
+	\Tr(\expect{\mu_* \hat \mu_n^{-1}} - d
+	= n\Tr(\E[\mV^{-1}]) - d 
+	= \frac{nd}{n - d - 1} -d
+	= \frac{d (d+1}{n -d -1}
+	= \frac{2p}{n -d -1}
+}
 Putting it all together, we get the following closed form for the expectation of the KL
  \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	= \half \left ( \frac{d(d+1)}{n-d-1} + \psi_d(\half[n]) - d \log(\half[n])  \right )
+ 	= \half \left ( \frac{2p}{n-d-1} + \psi_d(\half[n]) - d \log(\half[n])  \right )
  \end{align}
 
 The complicated term is the $\psi_d$ function.
@@ -1029,28 +1037,31 @@ where $\gamma$ is the Euler constant. Then
 	- \sum_{i=0}^{d-1} \frac{1}{n-i} 
 	&= H_{n-d} - H_n \\
 	&\leq \log(n-d) + \gamma + \inv{2(n-d) - 1} - \log(n) - \gamma - \inv{2n+1}\\
-	&= \log(1-\frac{d}{n})  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1}
+	&= \log(1-\frac{d}{n})  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)}
 \end{align}
 Plugging this back into~\eqref{eq:psid_bound} yields
 \begin{align}
 	\psi_d(\half[n]) - d \log(\half[n]) 
 	\leq \sum_{i=0}^{\textcolor{red}{d}} \log(1 - \frac{i}{n})
-	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1} 
+	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)} 
 \end{align}
 where we emphasized that the sum runs up to $d$.
 Now to bound this sum of logarithms, we can use a concave tangent bound on $\log$ to get
 \begin{align}
 	\sum_{i=0}^{d} \log(1 - \frac{i}{n})
 	\leq \sum_{i=0}^{d} - \frac{i}{n}
-	 = -\frac{d(d+1)}{2n}
+	 = -\frac{d(d+1)}{2n} = -\frac{p}{n} \; .
 \end{align}
-which yields the final rate
+Putting it all together yields
 \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	\leq \frac{p}{2n} + \frac{(d+1) \paren{p + \inv{4}}}{n (n - d -1)} 
+ 	&\leq p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{(d + 1)}{(2n+1)(2(n - d) - 1)} \\
+ 	&\leq p \frac{n + d +1}{2 n (n-d-1)}  + \frac{(d + 1)}{2n.2 (n - d - 1)}\\
+ 	&= \frac{p}{2n} + \frac{2 p(d+1)}{2 n (n-d-1)} + \frac{p/d}{2n (n - d - 1)} \\
+ 	&\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)} 
  	\ , \forall n >d+1 \;.
 \end{align}
-where $p = d(d+1)/2$.
+where $p = d(d+1)/2$ and the last inequality used $\inv{2d}\leq 1$. 
 \end{proof}
 
 \subsection{Bounds on the Expected MAP Natural Parameter}
