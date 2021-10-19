@@ -1493,52 +1493,52 @@ which yields the final rate
 where $p = d(d+1)/2$.
 This rate is asymptotically tight.
 
-\subsection{Proof of Expected MAP Natural Parameter}
-Let us introduce a variable characterizing the importance of the prior
-\begin{important}
-	\begin{align}
-			a=n_0 \frac{\mu_0}{\mu^*} \; .
-	\end{align}
-\end{important}
+\subsection{Bounds on the Expected MAP Natural Parameter}
+Before proving a convergence rate for the MAP, we need to bound the expectation of its inverse, hence the following lemma.
+We introduce the notation $(z)_+ = \max(0,z)$.
 \begin{lemma}[Expected MAP natural parameter]
+	Define $a=n_0 \frac{\mu_0}{\mu^*} $ a variable characterizing the importance of the prior relative to the true parameters.
 	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
 \begin{equation}
-		\frac{\mu^*}{\mu_n}
+		\frac{n_0+n}{a+n}
+		=\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\nat^*}} 
-		\leq \begin{cases}
-		\frac{n_0 +n}{a+n-2} \text{ when } n\geq 2,\\
-		\frac{n_0 +1}{a} \text{ when } n=1.
-		\end{cases}
-		\label{eq:lemma_natp_bound}
+		\leq
+		\frac{n_0 +n}{a+(n-2)_+}
+		\label{eq:lemma_nat_bound}
 	\end{equation}
 \end{lemma}
 
 \begin{proof}
 	The lower bound can be readily obtained with the Jensen inequality applied on the convex function $x\mapsto\inv{x}$ for $x>0$.
-	The upper bound requires much more work.
+	The upper bound requires more work.
 	To start, let us plug in the definition of $\MAPm$
-	\begin{align}
+\alignn{
 		\expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\nat^*}} 
 		&= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  \\
 		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
 		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
-	\end{align}
-	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and $a=n_0 \frac{\mu_0}{\mu^*}$.
+}
+	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and $a=n_0 \frac{\mu_0}{\mu^*}$. The expectation reads
+\alignn{
+ 	\expect{\inv{a + \chi^2(n)}}  
+	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx \\
+}
 	We reformulate this expectation with the trick
-	\begin{align}
+\alignn{
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
 		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
-		\implies &\inv{a+x} = \half e^{\frac{a+x}{2}} \int_1^\infty e^{- \frac{(a+x)t}{2}}dt \; ,
-	\end{align} 
+		\implies & \boxed{\inv{a+x} = \half e^{\frac{a+x}{2}} \int_1^\infty e^{- \frac{(a+x)t}{2}}dt \; ,}
+} 
 	to get two integrals instead of one
-	\begin{align}
+\alignn{
 		2^{\half[n]}\Gamma(\half[n]) \expect{\inv{a + \chi^2(n)}}  
 		&= \int_0^\infty \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{a+x} dx \\
 		&= \int_0^\infty dx\  x^{\frac{n}{2}-1}e^{-\half[x]} \half e^{\half[a+x]} \int_1^\infty  dt\  e^{-\half[(a+x)t]}  \\
 		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
-	\end{align}
+}
 	where we used Fubini to switch integrals, without further justification.
 	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes
 	\begin{align}
@@ -1559,41 +1559,28 @@ Let us introduce a variable characterizing the importance of the prior
 	\end{align}
 	Now our goal is to bound this function with simpler functions.
 	Fortunately, mathematicians have been working on these integrals for decades.
-	When $n=2$, eg $k=1$, we have the simple exponential integral function which \href{https://dlmf.nist.gov/6.8.E1}{verifies the bound}
+	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound} \citep[Eq.~8.19.21]{DLMF}
 	\begin{align}
-		\half \log(1 + \frac{2}{x}) 
-		\leq e^x E_1(x) 
-		\leq \log(1+\inv{x}) \leq \inv{x} \; .
+		e^x E_k(x) 
+		&\leq \inv{x + k - 1} \\
+		\iff \expect{\inv{a + \chi^2(n)}}
+		&\leq \inv{a + n - 2} \\
+		\iff \expect{\frac{\mu^*}{\MAPm}} 
+		&\leq \frac{n +n_0}{a + n - 2}
 	\end{align}
-	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound}
-	\begin{align}
-		\inv{x+k}
-		\leq e^x E_k(x) 
-		\leq \inv{x + k - 1}
-	\end{align}
-	so that 
-	\begin{align}
-		\inv{a+n}
-		&\leq \expect{\inv{a + \chi^2(n)}}
-		\leq \inv{a + n - 2} \\
-		\iff \frac{n +n_0}{a + n}	
-		&\leq  \expect{\frac{\mu^*}{\MAPm}} 
-		\leq \frac{n +n_0}{a + n - 2}	\\
-		\iff \frac{\mu^*}{\mu_n}
-		&\leq \expect{\frac{\mu^*}{\MAPm}} 
-		\leq \frac{1}{\frac{\mu_n}{\mu^*} - \frac{2}{n + n_0}}  
-	\end{align}
-	where we used $\frac{a + n}{n +n_0} = \frac{\mu_n}{\mu^*}$.
-	
 We are left with a special case when  $n=1$, eg $k=\half$. 
 Then we can use the trivial bound 
 \begin{align}
 	\expect{\inv{a + X^2}} < \inv{a}
 	\label{eq:trivial_bound}
 \end{align}
-which is what we are using in the lemma,
-or we can get a stronger result with further derivations.
-The integral can be written with \href{https://dlmf.nist.gov/7.8.E1}{Mill's ratio} $M(x) = e^{x^2} \int_x^\infty e^{-t^2} dt$, by doing the change of variable $t= x \sqrt{u}$, $dt=\frac{x}{2} \frac{du}{\sqrt{u}}$ 
+to conclude the proof.
+\end{proof}
+\paragraph{Refinement.}
+In the interesting few sample  case $n=1$, 
+on can get a stronger result with further derivations.
+The integral can be written with \href{https://dlmf.nist.gov/7.8.E1}{Mill's ratio} $M(x) = e^{x^2} \int_x^\infty e^{-t^2} dt$, 
+by doing the change of variable $t= x \sqrt{u}$, $dt=\frac{x}{2} \frac{du}{\sqrt{u}}$ 
 \begin{align}
 	& \int_x^\infty e^{-t^2} dt 
 	= \frac{x}{2} \int_1^\infty \frac{e^{-x^2 u}}{\sqrt{u}} du 
@@ -1608,14 +1595,12 @@ so that
 		= \sqrt{\frac{2}{a}} M(\sqrt{\half[a]})
 		= \frac{2}{a} \sqrt{\half[a]} M(\sqrt{\half[a]}) \; .
 \end{align}
-Then using \href{https://dlmf.nist.gov/7.8.E8}{another bound from the DLMF}, we get that 
+Then using \href{https://dlmf.nist.gov/7.8.E8}{another bound} \citep[Eq.~7.8.8]{DLMF} , we obtain
 \begin{align}
-	\inv{a+1}
-	\leq \expect{\inv{a + X^2}} 
-	< \inv{a}\left( 1 - \inv{a+3} \right) \; .
+	\expect{\inv{a + X^2}} 
+	< \inv{a}\left( 1 - \inv{a+3} \right) 
 \end{align}
-\end{proof}
-
+which can be up to $2/3$ lower than the previous bound if $a$ is small.
 
 \subsection{Proof of MAP Bound}
 \begin{theorem}[MAP Upper Bound]
@@ -1643,7 +1628,7 @@ We readily get
 \end{align}
 where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
 There remains the more problematic term with the expectation of the inverse mean parameter.
-Fortunately, we derived the bound \eqref{eq:lemma_natp_bound} for this purpose.
+Fortunately, we derived the bound \eqref{eq:lemma_nat_bound} for this purpose.
 
 \textbf{When $n\geq 2$}, we get 
 \begin{align}
@@ -1663,7 +1648,7 @@ so putting it all together we get
 	&= \frac{1}{a+n-2} + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{2 (\frac{\mu_0}{\mu^*}+\frac{n-2}{n_0})(1 + \frac{n}{n_0} )} \; .
 \end{align}
 
-\textbf{When $n=1$} the bound~\eqref{eq:lemma_natp_bound}  on the expected natural parameter gives
+\textbf{When $n=1$} the bound~\eqref{eq:lemma_nat_bound}  on the expected natural parameter gives
 \begin{align}
 	\expect{\frac{\mu^*}{\MAPm}} - 1 
 	\leq \frac{n_0 + 1}{a} -1
