@@ -286,7 +286,7 @@ When explicit, we write the random variable $T = T(X)$.
 {\bf Duality.}
 The log-partition function $\logpart$ verifies the two following identities:
 \begin{align}
-    \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp, \\
+    \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp, \label{eq:mirror-map} \\
     \nabla^2 \logpart(\nat) &= \Cov_{p_\nat}[T(X)] > 0,
 \end{align}
 where $\meanp$ is called the mean (or dual) parameter, which lives in the open convex set $\cM$ equal to the relative interior of the convex hull of $T(\cX)$.
@@ -902,7 +902,7 @@ To get an upper bound for the MAP, due to the difficulty of finding a closed for
 
 	\begin{theorem}[MLE Upper Bound]
 	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \inv{n} \sum_i X_i^2 $.
-	Its expected suboptimality is infinite when $n\leq 2$ and otherwise
+	The expected KL between $\mu_*$ and $\hat\mu_n$	is infinite when $n\leq 2$ and otherwise upper bounded by
 	\begin{align}
 		 \expect{\bregmanconj( \mu_*; \mu_n) }
 			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
@@ -957,6 +957,17 @@ To get an upper bound for the MAP, due to the difficulty of finding a closed for
 \subsection{Multivariate MLE}
 In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, and the mean parameter $\mu_*$ is a symmetric positive definite covariance matrix of order $d$, living in dimension $p = \frac{d(d+1)}{2} $. Note that we switched the role of $d$ from $\dim(T(x))=d$ to $\dim(x) =d$ and $\dim(T(x))=p$.
 
+\begin{theorem}[Multivariate MLE Upper Bound]
+	The MLE of  the covariance matrix of $X_i\sim\cN(0,\mu_*)$ is $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top \in\real^{d\times d}$ with $p = \frac{d(d+1)}{2} $ degrees of freedom. 
+	The expected KL between $\mu_*$ and $\hat\mu_n$ is infinite when $n\leq d+1$ and otherwise upper bounded by
+	\alignn{
+	 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
+ 	\leq \frac{p}{2n} + \frac{(d+1) \paren{p + \inv{4}}}{n (n - d -1)} 
+ 	\ , \forall n >d+1 \;.
+}
+This bound is asymptotically tight.
+\end{theorem}
+\begin{proof}
 The entropy of $X$ is a negative log-determinant $\conj(\mu) = -\log\det(\mu)$, whose gradient is the negative matrix inverse $\nabla\conj (\mu) = - \mu^{-1}$.
 The associated Bregman divergence is
 \alignn{
@@ -976,15 +987,23 @@ then the mean parameter "ratio" is
 	\mV = n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top
 }
 but $\mu_*^{-\half}X_i \sim \cN(0,\mI)$, so that $\mV$
-is sampled from a Wishart  $\cW(\mI, n)$, where $\mI$ stands for the identity matrix of order $d$. 
-We know formulas for the expectation of an inverse Wishart and the log-determinant of a Wishart (thanks to $\log\det$ being a sufficient statistics and $\nabla\logpart$)
+is sampled from a Wishart  $\cW(\mI, n)$, where $\mI$ stands for the identity matrix of order $d$.
+Recall that $\E[\mV] = n \mI$.
+Thanks to $\log\det$ being a sufficient statistic of the Wishart, and the natural to mean parameter formula~\eqref{eq:mirror-map}, we have a closed form for the expected log-determinant of a Wishart 
 \aligns{
-	\E[\mV] &= n \mI \\
-	\forall n > d+1,\E[\mV^{-1}] &= \frac{\mI}{n - d - 1} 
-	\implies \Tr(\E[\mV^{-1}]) = \frac{d}{n - d - 1}  \\
 	\E[\log\det \mV] &= \psi_d(\half[n]) + d \log 2 \; ,
 }
 where $\psi_d(\half[n]) = \sum_{i=0}^{d-1} \psi ( \half[n - i])$ is the multivariate digamma function.
+The expectation of an inverse Wishart  is straightforward to compute from the density and the log-partition function
+\begin{equation}
+	\E[\mV^{-1}] = \begin{cases}
+		+\infty \text{ if } n\leq d+1 \\
+		 \frac{\mI}{n - d - 1} \text{ otherwise,} 
+	\end{cases}
+\end{equation}
+which proves the infinite part of the statement.
+We now consider only $n>d+1$.
+We deduce that $\Tr(\E[\mV^{-1}]) = \frac{d}{n - d - 1}$.
 Putting it all together, we get the following closed form for the expectation of the KL
  \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
@@ -1027,15 +1046,12 @@ Now to bound this sum of logarithms, we can use a concave tangent bound on $\log
 \end{align}
 which yields the final rate
 \begin{align}
- 	\boxed{
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
  	\leq \frac{p}{2n} + \frac{(d+1) \paren{p + \inv{4}}}{n (n - d -1)} 
  	\ , \forall n >d+1 \;.
- 	}
 \end{align}
 where $p = d(d+1)/2$.
-This rate is asymptotically tight.
-
+\end{proof}
 
 
 
