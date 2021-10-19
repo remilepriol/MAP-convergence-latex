@@ -955,8 +955,10 @@ To get an upper bound for the MAP, due to the difficulty of finding a closed for
 
 
 \subsection{Multivariate MLE}
-In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, the mean parameter $\mu_*$ becomes a positive definite covariance matrix of order $d$, with $p = \frac{d(d+1)}{2} $ degrees of freedom.
-Its entropy is a negative log-determinant $\conj(\mu) = -\log\det(\mu)$, with gradient negative matrix inverse $\nabla\conj (\mu) = - \mu^{-1}$, and associated Bregman divergence
+In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, and the mean parameter $\mu_*$ is a symmetric positive definite covariance matrix of order $d$, living in dimension $p = \frac{d(d+1)}{2} $. Note that we switched the role of $d$ from $\dim(T(x))=d$ to $\dim(x) =d$ and $\dim(T(x))=p$.
+
+The entropy of $X$ is a negative log-determinant $\conj(\mu) = -\log\det(\mu)$, whose gradient is the negative matrix inverse $\nabla\conj (\mu) = - \mu^{-1}$.
+The associated Bregman divergence is
 \alignn{
 	\bregmanconj(\mu_*; \hat \mu_n) 
 	= \half \paren{\Tr(\mu_* \hat \mu_n^{-1} ) - d  - \log\det(\mu_* \hat \mu_n^{-1}) } \; .
