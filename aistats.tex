@@ -527,12 +527,12 @@ and the natural parameters are $\nat= (\frac{m}{\sigma^2} , \frac{-1}{2\sigma^2}
 Examples of MAP and MLE  are represented in \cref{fig:thales} within $\cM$ and $\Theta$ delimited in grey.
 Given these parameters, log-partition and entropy are, up to constants,
 \alignn{
-	\textstyle \logpart(\nat) &= \textstyle \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\
+	\textstyle \logpart(\nat) &= \textstyle \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\  % TODO remove factor 2
 	\textstyle \conj(\m) &= \textstyle - \half \log (\mu_2 - \mu_1^2)
 }
 
 These functions are neither smooth, nor strongly convex, and $\conj$ is self-concordant
-\citep[p.177]{nesterov2003introductory} % TODO example 4.1.1.4
+\citep[p.177]{nesterov2003introductory} % TODO add citation to example 4.1.1.4
 , but $\logpart$ is not (see App.~\ref{app:gaussian}).
 We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
@@ -873,6 +873,8 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
+
+In this section, we prove all the results mentioned in \S\ref{ssec:gaussian-variance}, and add some context and experimental observations.
 
 Let us recall the form of the divergence with different parametrizations
 \begin{align}
@@ -1246,7 +1248,7 @@ The upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\frac{mu_0
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{figs/optimal_n0.pdf}
-	\caption{Contours of $\expect{\KL(\nat^*, \hat \nat_n)}$  for the Gaussian variance with $n\in\{1,5,10\}$, $\mu^*=1$ and $\mu_0, n_0$ spanning $[10^{-2}, 10^2]$. We observe that the line $\frac{\mu_0}{\mu^*} = 1 + \inv{n_0}$ coincides with the bottom valley of this landscape.
+	\caption{Contours of $\expect{\KL(\nat^*, \hat \nat_n)}$  for the Gaussian variance with $n\in\{1,5,10\}$, $\mu^*=1$ and $n_0, \mu_0$ spanning $[10^{-2}, 10^2]$. The expectation was estimated with $10^4$ draws for each value of $n_0, \mu_0$ We observe that the line $\frac{\mu_0}{\mu^*} = 1 + \inv{n_0}$ coincides with the bottom valley of this landscape.
 	}
 	\label{fig:optimal_n0}
 \end{figure}
@@ -1255,10 +1257,44 @@ The upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\frac{mu_0
 \section{COMPLEMENTS ON GAUSSIANS}
 \label{app:gaussian}
 
-\rlp{prove that $A$ is not self -concordant, while, $A^*$ is thanks to Nesterov.}
-Maybe plot both of them.
-Also plot the mirror maps.
-And plot gaussian trajectories.
+In this section, we prove that for a Gaussian, the entropy is self-concordant while the log-partition function is not.
+We also give complementary illustrations on the Gaussian mirror map and MLE.
+
+The Gaussian log-partition function and entropy are up to constants
+\alignn{
+	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \\
+	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; ,
+}
+where $\nat_1\in\real, \nat_2 <0$ and $\mu_1\in\real, \mu_2>\mu_1^2$.
+These functions and their domains they are represented in Figure \TODO{}.
+
+\begin{definition}[Self-concordance]
+A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}}$
+\end{definition}
+
+\begin{definition}[Pseudo Self-concordance] \citep{bach2010self} 
+A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(x)} \leq C \norm{v}_2 g''(x)$ for some $C\geq 0$
+\end{definition}
+
+
+\paragraph{Entropy is Self-Concordant,}
+\citet[p.177]{nesterov2003introductory} proves that logarithmic barriers for a second order region are self-concordant. Adopting their notation, $\conj$ fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$.
+
+\paragraph{Log-partition is not Self-Concordant}
+Let us fix a straight line with $\nat_1 \neq 0$, e.g. $g(\nat_2) := A(\nat_1,\nat_2)$. Then
+\alignn{
+g'(\nat_2) = \frac{\partial A}{\partial\nat_2}(\nat) 
+&= +\frac{\nat_1^2}{4 \nat_2^2} + \frac{1}{2\nat_2} \\
+g''(\nat_2) = \frac{\partial^2 A}{(\partial\nat_2)^2}(\nat) 
+&= -\frac{\nat_1^2}{2 \nat_2^3} - \frac{1}{2\nat_2^2} 
+=  \frac{1}{2\nat_2^2}\paren{\frac{\nat_1^2}{-\nat_2^2} - 1} \\ 
+g'''(\nat_2) = \frac{\partial^3 A}{(\partial\nat_2)^3}(\nat) 
+&= +\frac{3\nat_1^2}{2 \nat_2^4} + \frac{1}{\nat_2^3}
+= \frac{1}{2\nat_2^3}\paren{2 - 3 \frac{\nat_1^2}{- \nat_2^2}}
+}
+Setting $\nat_2 = - \nat_1^2$ yields $g''(\nat_2) = 0$ and $g'''(\nat_2) \neq 0$, meaning the second derivative cannot dominate the third derivative for any choice of constant. The log-partition is neither self concordant nor pseudo-self-concordant.
+
+
 
 \section{ASYMPTOTIC DERIVATION}
 \label{app:asymptote}
