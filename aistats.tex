@@ -1239,9 +1239,18 @@ so putting it all together we get
 so we  recover the same bias term as when $n\geq2$.
 \end{proof}
 
-\subsection{Complementary Plots}
+\subsection{Optimal $\mu_0$ is larger than $\mu^*$ for small $n_0$ and small $n$}
 
-\rlp{Show that the optimal mu0 is larger than mu* for small n0.}
+The upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\frac{mu_0}{\mu^*} = 1 + \inv{n_0}$, e.g. for large values of $n_0$, it is $\mu_0=\mu^*$ is the best prior, but for small $n_0$, one better sets larger values for $\mu_0$. In Figure~\ref{fig:optimal_n0}, we observe this behavior numerically.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=\textwidth]{figs/optimal_n0.pdf}
+	\caption{Contours of $\expect{\KL(\nat^*, \hat \nat_n)}$  for the Gaussian variance with $n\in\{1,5,10\}$, $\mu^*=1$ and $\mu_0, n_0$ spanning $[10^{-2}, 10^2]$. We observe that the line $\frac{\mu_0}{\mu^*} = 1 + \inv{n_0}$ coincides with the bottom valley of this landscape.
+	}
+	\label{fig:optimal_n0}
+\end{figure}
+
 
 \section{COMPLEMENTS ON GAUSSIANS}
 \label{app:gaussian}
