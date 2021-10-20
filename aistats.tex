@@ -133,9 +133,20 @@ After exhibiting various facets of the problem, we show we can interpret the MAP
 We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
 
-%In particular, no rates hold in the few samples regime  -- e.g. after seeing 5 samples from a gaussian, we do not know how many bits away from the true distribution we should expect our model to be.
-%No rates hold either when the loss is ill-behaved : infinite domain, not smooth, not self-concordant
-
+% TODO
+%\begin{figure}[t]
+%	\centering
+%\includegraphics[width=.4\textwidth]{gammaMAPrate.pdf}
+%	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
+%		Solid curve  are average over $10^5$ trials.
+%		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
+%		Shaded areas are 90\% confidence interval.
+%		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
+%		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
+%		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
+%	}
+%	\label{fig:curves}
+%\end{figure}
 
 \begin{figure}[t]
 	\centering
@@ -187,7 +198,7 @@ $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \, \& \, p(x)>0$.
 }
 has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
-We thus consider the fundamental problem:
+We thus consider the fundamental problem: %TODO thus
 %\begin{center}
 %	\framebox{
 %		\parbox[c][]{0.9\linewidth}{
@@ -211,7 +222,7 @@ We thus consider the fundamental problem:
 
 There are already general asymptotic results (\S\ref{ssec:asymptote}), and a finite $n$ result when $\logpart$ is quadratic (e.g., $X$ is Gaussian with known variance)
 or close to quadratic (\S\ref{ssec:quadratic}).
-However, a  general solution for finite $n$ remains elusive.
+However, a  general solution for finite $n$ remains elusive. %TODO add link to figure 1
 In this paper, we review partial solutions and give ideas on how to solve the problem.
 
 \paragraph{Optimization} 
@@ -521,7 +532,7 @@ Given these parameters, log-partition and entropy are, up to constants,
 }
 
 These functions are neither smooth, nor strongly convex, and $\conj$ is self-concordant
-\citep[p.177]{nesterov2003introductory} % example 4.1.1.4
+\citep[p.177]{nesterov2003introductory} % TODO example 4.1.1.4
 , but $\logpart$ is not (see App.~\ref{app:gaussian}).
 We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
