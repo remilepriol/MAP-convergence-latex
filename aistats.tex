@@ -1261,21 +1261,15 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 In this section, we prove that for a Gaussian, the entropy is self-concordant while the log-partition function is not.
 We also give complementary illustrations on the Gaussian mirror map and MLE.
 
-The Gaussian log-partition function and entropy are up to constants
+The Gaussian log-partition function and entropy are, up to constants,
 \alignn{
 	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \\
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; ,
 }
 where $\nat_1\in\real, \nat_2 <0$ and $\mu_1\in\real, \mu_2>\mu_1^2$.
 These functions and their domains they are represented in Figure \TODO{}.
+We provide definitions of self-concordance in \cref{app:self-concordant}.
 
-\begin{definition}[Self-concordance]
-A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}}$
-\end{definition}
-
-\begin{definition}[Pseudo Self-concordance] \citep{bach2010self} 
-A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(x)} \leq C \norm{v}_2 g''(x)$ for some $C\geq 0$
-\end{definition}
 
 
 \paragraph{Entropy is Self-Concordant,}
@@ -1293,7 +1287,7 @@ g'''(\nat_2) = \frac{\partial^3 A}{(\partial\nat_2)^3}(\nat)
 &= +\frac{3\nat_1^2}{2 \nat_2^4} + \frac{1}{\nat_2^3}
 = \frac{1}{2\nat_2^3}\paren{2 - 3 \frac{\nat_1^2}{- \nat_2^2}}
 }
-Setting $\nat_2 = - \nat_1^2$ yields $g''(\nat_2) = 0$ and $g'''(\nat_2) \neq 0$, meaning the second derivative cannot dominate the third derivative for any choice of constant. The log-partition is neither self concordant nor pseudo-self-concordant.
+Setting $\nat_2 = - \nat_1^2$ yields $g''(\nat_2) = 0$ and $g'''(\nat_2) \neq 0$, meaning the second derivative cannot dominate the third derivative for any choice of constant or exponent. The log-partition is neither self concordant nor pseudo-self-concordant.
 
 
 
@@ -1347,6 +1341,14 @@ This $O(n^{-2})$ term is dominated by the $O(n^{-\half[3]})$ term from the quadr
 \TODO{Damien : review self-concordance + prove proposition 1 + graph to explain $x<0.21$.}
 
 \rlp{Add connection duality / self-concordant}
+
+\begin{definition}[Self-concordance]
+A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}}$
+\end{definition}
+
+\begin{definition}[Pseudo Self-concordance] \citep{bach2010self} 
+A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(x)} \leq C \norm{v}_2 g''(x)$ for some $C\geq 0$
+\end{definition}
 
 
 \section{BIAS-VARIANCE}
