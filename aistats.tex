@@ -1338,9 +1338,10 @@ This $O(n^{-2})$ term is dominated by the $O(n^{-\half[3]})$ term from the quadr
 
 \section{SELF-CONCORDANCE}
 \label{app:self-concordant}
-\TODO{Damien : review self-concordance + prove proposition 1 + graph to explain $x<0.21$.}
 
-\rlp{Add connection duality / self-concordant}
+In this section, we define self-concordance, we prove proposition~\ref{prop:selfConcordant}, and we prove that a 1 dimensional function is self-concordant if and only if its convex conjugate is self-concordant as well.
+
+\TODO{Damien : review self-concordance + prove proposition 1 + graph to explain $x<0.21$.}
 
 \begin{definition}[Self-concordance]
 A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}}$
@@ -1350,6 +1351,43 @@ A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is d
 A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies $\abs{g'''(x)} \leq C \norm{v}_2 g''(x)$ for some $C\geq 0$
 \end{definition}
 
+\begin{proposition}
+	\label{prop:conjugateConcordance}
+	Let $f:\real \rightarrow \real$ be a self-concordant function of Legendre type. Then its convex conjugate $f^*$ is also self-concordant.
+\end{proposition}
+\begin{proof}
+When $f$ is of Legendre type then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ has inverse gadients
+\begin{align}
+    \nabla f \circ \nabla f^*  &= \Id \\
+     \nabla f^* \circ \nabla f &= \Id
+\end{align}
+where $\Id$ is the identity function on the relevant domain. 
+Deriving this equality proves that some Hessians are inverse of each other 
+\begin{align}
+    \nabla^2 f(x) \nabla^2 f^*(x^*) = \mI
+    \label{eq:conjugateHessian}
+\end{align}
+where $(x,x^*)$ are conjugate points -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
+\TODO{Why are Hessians not 0?}
+In 1 dimension, this inequality is more simply written 
+\aligns{f''(x) f^{* \prime \prime}(x^*) = 1}
+Until now, this should be familiar to the reader.
+The interesting surprise is that self-concordance appears when we derive again this equality. 
+\begin{align}
+    &1= f''(x) f^{* \prime \prime}(f'(x)), \forall x \\
+    \implies
+    &0 = f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))\\
+    \iff
+    &0 = f'''(x)f^{* \prime \prime}(x^*)  + f''(x)^2 f^{* \prime \prime \prime}(x^*)\\
+    \implies
+    &0 = \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  f^{* \prime \prime}(x^*)^{-\half}
+    + f''(x)^{\half} \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}} \\
+    \implies
+    &0= \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}}
+\end{align}
+where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
+We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
+\end{proof}
 
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
