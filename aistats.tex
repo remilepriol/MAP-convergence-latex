@@ -866,17 +866,37 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 Let us recall the form of the divergence with different parametrizations
 \begin{align}
 	\KL( \sigma_*^2 ; \sigma_n^2 ) 
-	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right) \\
+	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right)
+	= \phi\paren{\frac{\sigma_*^2}{ \sigma_n^2}} \\
 	\bregmanconj( \mu_*; \mu_n) 
-	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) \\
+	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) 
+	= \phi\paren{\frac{\mu_*}{ \mu_n}} \\
 	\bregman( \nat_n; \nat_* ) 
-	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right) \; .
+	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
+	= \phi\paren{\frac{ \nat_n}{\nat_*}}
 \end{align}
-Intuitively, the divergence measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
+where all these lines are equal, and $\phi$ measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
 \begin{align}
 	\phi(z) := \half (z - 1 - \log(z))
 \end{align}
-illustrated in Figure~\ref{fig:phi}.
+illustrated in orange in Figure~\ref{fig:phi}.
+To get an upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we will focus on the symmetrized Bregman instead
+\alignn{
+	\bregmanconj( \mu_*; \mu_n) 
+	\leq \cS_{\conj} (\mu_*, \mu_n ) 
+	:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) 
+	= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 }
+	\label{eq:symmetrized_bregman}
+}
+which can also be expressed with $\phi$ as follows:
+\aligns{
+	\label{eq:log_bound}
+	\phi(z) \leq \phi(z) + \phi(\inv{z}) 
+	&=  \half \paren{z -1  + \inv{z} -1} 
+	= \frac{(z-1)^2}{z} \; .
+}
+See the grey upper bound in Figure~\ref{fig:phi}.
+
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=.4\textwidth]{phi.pdf}
@@ -884,19 +904,7 @@ illustrated in Figure~\ref{fig:phi}.
 	\label{fig:phi}
 \end{figure}
 
-To get an upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we will focus on the symmetrized Bregman instead
-\aligns{
-	\label{eq:log_bound}
-	\phi(z) \leq \phi(z) + \phi(\inv{z}) 
-	&=  \half \paren{z -1  + \inv{z} -1} 
-	= \frac{(z-1)^2}{z}
-}
-\aligns{
-	\bregmanconj( \mu_*; \mu_n) 
-	&\leq \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \\ 
-	=: \cS_{\conj} (\mu_*, \mu_n )  
-	&= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 }
-}
+
 
 \subsection{Proof of MLE Upper Bound}
 
@@ -1152,12 +1160,15 @@ to conclude the proof.
 
 \subsection{Proof of MAP Bound}
 
+We did not find a closed form or an upper bound for the expected logarithm of the MAP $\expect{\log\frac{\MAPm}{\mu^*}}$.
+Consequently, we derived a bound for the symmetrized Bregman~\eqref{eq:symmetrized_bregman} instead. This bound is not asymptotically  tight for the Bregman by a factor $2$.
+
 \begin{theorem}[MAP Bound]
-The expected symmetrized Bregman of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is upper bounded as
+The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is upper bounded as
  \begin{align}
-	& \expect{\bregmanconj( \m^*; \hat \m_n^\mathrm{MAP})}
+	& \expect{\cS_\conj( \m^*; \hat \m_n^\mathrm{MAP})}
 	\leq \begin{cases}
-		\bregmanconj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
+		\cS_\conj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
 		\inv{2(n_0+1)}  +  b_1 \ \text{ if }\ n=1,\\
 		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n \ \text{ if }\ n\geq 2
 	\end{cases}\\
@@ -1167,16 +1178,19 @@ The expected symmetrized Bregman of the MAP of $\cN(0,\m^*)$ with prior hyper-pa
 
 \begin{proof}
 When $n=0$, the inequality is an equality. 
-Wen $n>0$, Wolfram finds no closed form for $\expect{\log\frac{\MAPm}{\mu^*}}$ so we focus on the simple log-bound given by \eqref{eq:log_bound},
+For $n>0$, we expand the symmetrized Bregman~\eqref{eq:symmetrized_bregman} to get
 \begin{align}
-	2\expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \expect{\frac{\mu^*}{\MAPm}} -1  + \expect{\frac{\MAPm}{\mu^*}} - 1 \; .
+	\expect{\cS_\conj(\mu^*; \MAPm)} 
+	&\leq \half \paren{\expect{\frac{\mu^*}{\MAPm}} -1  + \expect{\frac{\MAPm}{\mu^*}} - 1} \; .
 \end{align}
-We readily get 
+The expectation of $\MAPm$ is straightforward
 \begin{align}
-	 \expect{\frac{\MAPm}{\mu^*}} - 1 = \frac{a+n}{n_0+n} - 1 = \frac{a - n_0}{n_0+n}
+	 \expect{\frac{\MAPm}{\mu^*}} - 1 
+	 = \frac{n_0 \mu_0 + n \mu^*}{(n_0+n)\mu^*} - 1 
+	 = \frac{a+n}{n_0+n} - 1 = \frac{a - n_0}{n_0+n}
+	 \quadtext{where}
+	 a:=n_0\frac{\mu_0}{\mu^*} \; .
 \end{align}
-where recall that $a=n_0\frac{\mu_0}{\mu^*}$. 
 There remains the more problematic term with the expectation of the inverse mean parameter.
 Fortunately, we derived the bound \eqref{eq:lemma_nat_bound} for this purpose.
 
@@ -1190,8 +1204,7 @@ Fortunately, we derived the bound \eqref{eq:lemma_nat_bound} for this purpose.
 so putting it all together we get 
 \begin{align}
 	\expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq \half \left(\frac{n_0 - a + 2}{a +n - 2}  + \frac{a - n_0}{n_0+n} \right )\\
-	&= \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
+	&\leq \frac{1}{a+n-2} + \frac{n_0-a}{2}  \left( \inv{a+n-2} - \inv{n_0+n} \right)\\
 	&= \frac{1}{a+n-2} + \frac{(n_0-a + 1) - 1}{2}  \frac{(n_0 - a + 1) + 1}{(a+n-2)(n_0+n)} \\
 	&= \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2 - 1}{2(a+n-2)(n_0+n)} \\
 	&\leq \frac{1}{a+n-2} + \frac{(n_0 - a +1)^2}{2(a+n-2)(n_0 + n)} \\
@@ -1212,7 +1225,7 @@ so putting it all together we get
 	& = \inv{n_0+1}  + \frac{(n_0 + 1 -a)^2}{a(n_0+1)}\\
 	&= \inv{n_0+1}  + \frac{(1 + \inv{n_0} - \frac{\mu_0}{\mu^*})^2}{\frac{\mu_0}{\mu^*}(1 + \inv{n_0} )} 
 \end{align}
-so we do recover the same bias variance structure as when $n\geq2$.
+so we  recover the same bias term as when $n\geq2$.
 \end{proof}
 
 \subsection{Complementary Plots}
