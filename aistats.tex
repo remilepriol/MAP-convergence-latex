@@ -874,37 +874,41 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
 
-In this section, we prove all the results mentioned in \S\ref{ssec:gaussian-variance}, and add some context and experimental observations.
-
-Let us recall the form of the divergence with different parametrizations
+In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
+and add some context and experimental observations.
+Let us recall the form of the divergence with different parametrizations.
+For a Gaussian with known mean $0$ and covariance $\sigma^2$, 
+natural and mean parameters $\theta, \m$;
 \begin{align}
 	\KL( \sigma_*^2 ; \sigma_n^2 ) 
 	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right)
-	= \phi\paren{\frac{\sigma_*^2}{ \sigma_n^2}} \\
-	\bregmanconj( \mu_*; \mu_n) 
-	&= \half \left ( \frac{\mu_*}{ \mu_n} - 1 - \log  \frac{\mu_*}{ \mu_n} \right) 
-	= \phi\paren{\frac{\mu_*}{ \mu_n}} \\
+	= \phi\paren{\frac{\sigma_*^2}{ \sigma_n^2}},
+	\\
+	\bregmanconj(\m_*; \m_n) 
+	&= \half \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right) 
+	= \phi\paren{\frac{\m_*}{ \m_n}},
+	\\
 	\bregman( \nat_n; \nat_* ) 
 	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
-	= \phi\paren{\frac{ \nat_n}{\nat_*}}
+	= \phi\paren{\frac{ \nat_n}{\nat_*}},
 \end{align}
 where all these lines are equal, and $\phi$ measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
 \begin{align}
-	\phi(z) := \half (z - 1 - \log(z))
+	\phi(z) := \half (z - 1 - \log(z)),
 \end{align}
 illustrated in orange in Figure~\ref{fig:phi}.
-To get an upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we will focus on the symmetrized Bregman instead
+To upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we focus on the symmetrized Bregman instead
 \alignn{
 	\bregmanconj( \mu_*; \mu_n) 
 	\leq \cS_{\conj} (\mu_*, \mu_n ) 
 	:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) 
-	= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 }
+	= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 },
 	\label{eq:symmetrized_bregman}
 }
 which can also be expressed with $\phi$ as follows:
 \aligns{
 	\label{eq:log_bound}
-	\phi(z) \leq \phi(z) + \phi(\inv{z}) 
+	\phi(z) \leq \phi(z) + \phi\paren{\inv{z}}
 	&=  \half \paren{z -1  + \inv{z} -1} 
 	= \frac{(z-1)^2}{z} \; .
 }
@@ -913,74 +917,90 @@ See the grey upper bound in Figure~\ref{fig:phi}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=.4\textwidth]{phi.pdf}
-	\caption{$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. It is a barrier near $0$. As a result, it admits another upper bound (in grey) despite being poorly approximated by quadratics.}
+	\caption{%
+	$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. 
+	It is a barrier near $0$, and admits an upper bound (in grey) despite being poorly approximated by quadratics.
+	% fdk: Text said that it admits an the grey upper bound because it is a barrier. Don't follow the logical implication.
+	}
 	\label{fig:phi}
 \end{figure}
 
 
 
-\subsection{Proof of MLE Upper Bound}
+\subsection{Upper bound for the MLE of the variance}
 
 	\begin{theorem}[MLE Upper Bound]
 	The MLE of $\cN(0,\mu_*)$ is $\mu_n = \inv{n} \sum_i X_i^2 $.
 	The expected KL between $\mu_*$ and $\hat\mu_n$	is infinite when $n\leq 2$ and otherwise upper bounded by
 	\begin{align}
-		 \expect{\bregmanconj( \mu_*; \mu_n) }
+		 \expect{\bregmanconj( \mu_*; \hat \mu_n) }
 			\leq \inv{2n} +\frac{2}{n(n-2)} \; .
 	\end{align}
 	\end{theorem}
 	
 	\begin{proof}
-	The ratio to the optimum  $\frac{n \mu_n}{\mu_*}$follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom $\chi^2(n)$. Its inverse $\frac{\mu_*}{ \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
+	As $\hat \mu_n = \inv{n} \sum_i X_i^2$ 
+	with $X_i \sim \cN(0, \mu_*)$, the ratio to the optimum $n \frac{\hat \mu_n}{\mu_*}$
+	follows a \href{https://en.wikipedia.org/wiki/Chi-square_distribution}{Chi-square distribution} with $n$ degrees of freedom, $\chi^2(n)$. Its inverse $\frac{\mu_*}{\hat \mu_n} $ follows an \href{https://en.wikipedia.org/wiki/Inverse-chi-squared_distribution}{inverse Chi-square distribution} with expectation 
 	\begin{align}
-		\expect{n \frac{\mu_*}{n \mu_n}  - 1} 
+		\expect[\hat \mu_n]{\frac{\mu_*}{\hat \mu_n}  - 1}  
+		= \expect[\mu_n]{n \frac{\mu_*}{n \hat \mu_n}  - 1} 
 		= \expect{\frac{n}{\chi^2(n)} - 1} =
 		\begin{cases}
 			\frac{n}{n-2} -1 = \frac{2}{n-2} \ \text{ if } n>2, \\
 			+\infty \  \text{ otherwise. }
 		\end{cases}
 	\end{align}
-	There is also a closed form solution for the expected logarithm of a Chi-squared, because a Chi-squared is a special case of Gamma distributions, whose sufficient statistic is $(X,\log(X))$. For non-central chi-squares, one could also look at \citep{pav2015moments}.
+	There is also a closed form solution for the expected logarithm of a Chi-squared, 
+	because a Chi-squared is a special case of Gamma distributions, whose sufficient statistic is $(X, \log(X))$,
+	\fdk{I don't follow why this is ``because it is a Gamma with sufficient statistics $(X,\log(X))$''?}
 	\begin{align}
-		\expect{\log \frac{\mu_n}{\mu_*}} = \psi(\half[n]) - \log(\half[n])
+		\expect{\log \frac{\hat \mu_n}{\mu_*}} = \psi\paren{\half[n]} - \log\paren{\half[n]}
 	\end{align}
 	where $\psi$ is the \href{https://en.wikipedia.org/wiki/Digamma_function}{digamma function.}
+	Closed forms also exist for non-central chi-squares, see for example the note of \citep{pav2015moments}.
 	Consequently the suboptimality of the MLE has a closed form solution
 	\begin{align}
-	\expect{\bregmanconj( \mu_*; \mu_n) }
-	&= \half \expect{\frac{\mu_*}{ \mu_n} - 1 + \log \left(\frac{\mu_n}{\mu_*} \right) } \\
+	\expect{\bregmanconj( \mu_*; \hat \mu_n) }
+	&= \half \expect{\frac{\mu_*}{ \hat \mu_n} - 1 + \log \left(\frac{\hat \mu_n}{\mu_*} \right) },
+	\\
 	& =
 	\begin{cases}
 		\half \left ( \frac{2}{n-2} +\psi(\half[n]) - \log(\half[n]) \right )  \ \text{ if } n>2, \\
 			+\infty \  \text{ otherwise. }
 	\end{cases}
 	\end{align}
-	It is surprising that we need more than $3$ samples for the loss to have a bounded expectation. 
-	It is also very pleasant that the optimal value $\mu_*$ does not appear in this rate, so that the convergence rate is independent of the actual solution.
-	When the expectation is finite, we can make its formula intelligible thanks to \href{https://en.wikipedia.org/wiki/Digamma_function#Inequalities}{bounds on the digamma function}
+	Surprisingly, we need $3$ samples or more for the expected loss to be bounded and
+	the optimal value $\mu_*$ does not appear in this rate, 
+	so that the convergence rate is independent of the solution.
+	When the expectation is finite, we can get a more interpretable formula using known \href{https://en.wikipedia.org/wiki/Digamma_function#Inequalities}{bounds on the digamma function},
 	\begin{align}
-		-\inv{x} \leq \psi(x) - \log(x) \leq -\inv{2x}	\; .
+		-\inv{x} \leq \psi(x) - \log(x) \leq -\inv{2x}	\; ,
 	\end{align}
-	  For $n\geq 3$,
+	giving, for $n\geq 3$,
 	\begin{align}
 		\inv{n-2} - \inv{n}
-		&\leq \expect{\bregmanconj( \mu_*; \mu_n) }
-		\leq \inv{n-2} - \inv{2 n} \\
+		&\leq \expect{\bregmanconj( \mu_*; \hat \mu_n) }
+		\leq \inv{n-2} - \inv{2 n},
+		\\
 		\iff
 			\frac{2}{n(n-2)}
-			&\leq \expect{\bregmanconj( \mu_*; \mu_n) }
-			\leq \inv{2n} +\frac{2}{n(n-2)}
+			&\leq \expect{\bregmanconj( \mu_*; \hat \mu_n) }
+			\leq \inv{2n} +\frac{2}{n(n-2)},
 	\end{align}
-	so we get a $O(n^{-2})$ lower bound and a $O(n^{-1}) + O(n^{-2})$ upper bound.
+	so we get a $\Omega(n^{-2})$ lower bound and a $O(n^{-1}) + O(n^{-2})$ upper bound.
 	\end{proof}
 
 
 \subsection{Multivariate MLE}
-In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, and the mean parameter $\mu_*$ is a symmetric positive definite covariance matrix of order $d$, living in dimension $p = \frac{d(d+1)}{2} $. Note that we switched the role of $d$ from $\dim(T(x))=d$ to $\dim(x) =d$ and $\dim(T(x))=p$.
+In higher dimensions, $X_i \sim \cN(0, \mu_*)$, $X_i\in\real^d$, and the mean parameter $\mu_*$ is a symmetric positive definite covariance matrix of order $d$, living in dimension $p = \frac{d(d+1)}{2}$. 
+Note that we switched the role of $d$ from $\dim(T(x))=d$ to $\dim(x) =d$ and $\dim(T(x))=p$.
+\fdk{This $\dim$ is not introduced? I would say that $\dim(T(X))$ is $d^2$ if $T(X) = XX^\top$. Slightly confused here.}
 
 \begin{theorem}[Multivariate MLE Upper Bound]
 	The MLE of  the covariance matrix of $X_i\sim\cN(0,\mu_*)$ is $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top \in\real^{d\times d}$ with $p = \frac{d(d+1)}{2} $ degrees of freedom. 
-	The expected KL between $\mu_*$ and $\hat\mu_n$ is infinite when $n\leq d+1$ and otherwise upper bounded by
+	The expected KL divergence between $\mu_*$ and $\hat\mu_n$ 
+	is infinite when $n\leq d+1$ and otherwise upper bounded by
 	\alignn{
 	 	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
  	\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)} 
@@ -1001,11 +1021,10 @@ Thanks to the linearity of the trace, the expectation becomes
 	= \half \paren{\Tr(\expect{\mu_* \hat \mu_n^{-1}} ) - d   
 	+\expect{\log\det( \hat \mu_n \mu_*^{ -1}))} } \; .
 }
-
-When the estimator is the MLE $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top$, 
-then we define the mean parameter "ratio" as
+When the estimator is the MLE, $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top$, 
+then we define the mean parameter ``ratio'' as
 \aligns{
-	\mV &:= n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top 
+	\mV &:= n \mu_*^{-\half}\hat \mu_n \mu_*^{-\half} = \sum_i (\mu_*^{-\half} X_i) (\mu_*^{-\half}X_i)^\top,
 }
 such that $\Tr(\mu_* \hat \mu_n^{-1})  = n \Tr(\mV^{-1})$.
 But $\mu_*^{-\half}X_i \sim \cN(0,\mI)$, so that $\mV$
@@ -1013,7 +1032,7 @@ is sampled from a Wishart  $\cW(\mI, n)$, where $\mI$ stands for the identity ma
 Recall that $\E[\mV] = n \mI$.
 Thanks to $\log\det$ being a sufficient statistic of the Wishart, and the natural to mean parameter formula~\eqref{eq:mirror-map}, we have a closed form for the expected log-determinant of a Wishart 
 \aligns{
-	\E[\log\det \mV] &= \psi_d(\half[n]) + d \log 2 \; ,
+	\E[\log\det \mV] &= \psi_d\paren{\half[n]} + d \log 2 \; ,
 }
 where $\psi_d(\half[n]) = \sum_{i=0}^{d-1} \psi ( \half[n - i])$ is the multivariate digamma function.
 The expectation of an inverse Wishart  is straightforward to compute from the density and the log-partition function
@@ -1024,73 +1043,80 @@ The expectation of an inverse Wishart  is straightforward to compute from the de
 	\end{cases}
 \end{equation}
 which proves the infinite part of the statement.
-We now consider only $n>d+1$.
-We deduce that 
+Consider now the case $n>d+1$. Using
 \alignn{
-	\Tr(\expect{\mu_* \hat \mu_n^{-1}} - d
+	\Tr(\expect{\mu_* \hat \mu_n^{-1}}) - d
 	= n\Tr(\E[\mV^{-1}]) - d 
 	= \frac{nd}{n - d - 1} -d
-	= \frac{d (d+1}{n -d -1}
-	= \frac{2p}{n -d -1}
+	= \frac{d (d+1)}{n -d -1}
+	= \frac{2p}{n -d -1},
 }
-Putting it all together, we get the following closed form for the expectation of the KL
+and putting it all together, we get the following closed form for the expectation of the divergence
  \begin{align}
+ 	\label{eq:where-we-put-it-back-together-multivariate-gaussian}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	= \half \left ( \frac{2p}{n-d-1} + \psi_d(\half[n]) - d \log(\half[n])  \right )
+ 	= \half \left ( \frac{2p}{n-d-1} + \psi_d\paren{\half[n]} - d \log\paren{\half[n]}  \right ).
  \end{align}
-
-The complicated term is the $\psi_d$ function.
-We can use the upper bound $\psi(x) - \log(x) \leq - \inv{2x}$ (like in the univariate case) to get
+To bound $\psi_d$, we can use the same bound as in the univariate case, $\psi(x) \leq \log(x) - \inv{2x}$, to get
 \begin{align}
-	\psi_d(\half[n]) - d \log(\half[n]) 
-	&= \sum_{i=0}^{d-1} \paren{\psi ( \half[n - i]) - \log(\half[n]) } \\
-	&\leq \sum_{i=0}^{d-1} \paren{\log(1 - \frac{i}{n}) - \frac{1}{n-i}} \; .
+	\psi_d\paren{\half[n]} - d \log\paren{\half[n]}
+	&= \sum_{i=0}^{d-1} \paren{\psi \paren{\half[n - i]} - \log\paren{\half[n]} },
+	\\
+	&\leq \sum_{i=0}^{d-1} \paren{\log\paren{\half[n-i]} - \inv{n-i} - \log\paren{\half[n]} }
+	= \sum_{i=0}^{d-1} \paren{\log\paren{1 - \frac{i}{n}} - \frac{1}{n-i}} \; .
 	\label{eq:psid_bound}
 \end{align}
-We can bound the harmonic sum thanks to the typical bound
+We can bound sum of reciprocals $\sum_{i=0}^{d-1} \frac{1}{n-i}$ by the typical bound on 
+the harmonic sum $H_n = \sum_{k=1}^n \frac{1}{k}$,
 \aligns{
 	\inv{2n +1}
 	\leq H_n - \log(n) - \gamma \leq 
-	\inv{2n - 1}
+	\inv{2n - 1},
 }
 where $\gamma$ is the Euler constant. Then
 \begin{align}
 	- \sum_{i=0}^{d-1} \frac{1}{n-i} 
-	&= H_{n-d} - H_n \\
-	&\leq \log(n-d) + \gamma + \inv{2(n-d) - 1} - \log(n) - \gamma - \inv{2n+1}\\
-	&= \log(1-\frac{d}{n})  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)}
+	= H_{n-d} - H_n
+	&\leq \log(n-d) + \gamma + \inv{2(n-d) - 1} - \log(n) - \gamma - \inv{2n+1},
+	\\
+	&= \log\paren{1 - \frac{d}{n}}  + \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)}.
 \end{align}
 Plugging this back into~\eqref{eq:psid_bound} yields
 \begin{align}
 	\psi_d(\half[n]) - d \log(\half[n]) 
-	\leq \sum_{i=0}^{\textcolor{red}{d}} \log(1 - \frac{i}{n})
-	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)} 
+	\leq \sum_{i=0}^{\textcolor{red}{d}} \log\paren{1 - \frac{i}{n}}
+	+ \frac{2(d + 1)}{(2n+1)(2(n - d) - 1)},
 \end{align}
-where we emphasized that the sum runs up to $d$.
-Now to bound this sum of logarithms, we can use a concave tangent bound on $\log$ to get
+where the sum now goes up to $d$.
+To bound the remaining sum, we use $\log(1+x)\leq x$ (for $x > -1$) to get
 \begin{align}
-	\sum_{i=0}^{d} \log(1 - \frac{i}{n})
+	\sum_{i=0}^{d} \log\paren{1 - \frac{i}{n}}
 	\leq \sum_{i=0}^{d} - \frac{i}{n}
 	 = -\frac{d(d+1)}{2n} = -\frac{p}{n} \; .
 \end{align}
-Putting it all together yields
+Putting those bounds together in 
+\cref{eq:where-we-put-it-back-together-multivariate-gaussian}
+and reorganizing yields
 \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	&\leq p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{(d + 1)}{(2n+1)(2(n - d) - 1)} \\
- 	&\leq p \frac{n + d +1}{2 n (n-d-1)}  + \frac{(d + 1)}{2n.2 (n - d - 1)}\\
- 	&= \frac{p}{2n} + \frac{2 p(d+1)}{2 n (n-d-1)} + \frac{p/d}{2n (n - d - 1)} \\
- 	&\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)} 
+ 	&\leq p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{(d + 1)}{(2n+1)(2(n - d) - 1)}, 
+ 	\intertext{\fdk{I don't follow the second term on the next line. Is it because it is $\leq$ rather than $=$?}}
+ 	&\leq p \frac{n + d +1}{2 n (n-d-1)}  + \frac{(d + 1)}{2n.2 (n - d - 1)}, \\
+ 	&= \frac{p}{2n} + \frac{2 p(d+1)}{2 n (n-d-1)} + \frac{p/d}{2n (n - d - 1)}, \\
+ 	\intertext{\fdk{Why is this an inequality and }}
+ 	&\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)}
  	\ , \forall n >d+1 \;.
 \end{align}
 where $p = d(d+1)/2$ and the last inequality used $\inv{2d}\leq 1$. 
 \end{proof}
 
-\subsection{Bounds on the Expected MAP Natural Parameter}
+\subsection{Bounding the expected natural parameters for the MAP}
 Before proving a convergence rate for the MAP, we need to bound the expectation of its inverse, hence the following lemma.
 We introduce the notation $(z)_+ = \max(0,z)$.
-\begin{lemma}[Expected MAP natural parameter]
-	Define $a=n_0 \frac{\mu_0}{\mu^*} $ a variable characterizing the importance of the prior relative to the true parameters.
-	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded as
+\begin{lemma}[Expected MAP natural parameter]\label{lem:expected-map-natural-parameter-gaussian}
+	Define the variable $a = n_0 \frac{\mu_0}{\mu^*}$, which characterizes 
+	the importance of the prior relative to the true parameters.
+	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded by
 \begin{equation}
 		\frac{n_0+n}{a+n}
 		=\frac{\mu^*}{\mu_n}
@@ -1103,22 +1129,24 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 \end{lemma}
 
 \begin{proof}
-	The lower bound can be readily obtained with the Jensen inequality applied on the convex function $x\mapsto\inv{x}$ for $x>0$.
+	The lower bound can be readily obtained by applying Jensen's inequality 
+	to the convex function $x\mapsto\inv{x}$ for $x>0$.
 	The upper bound requires more work.
 	To start, let us plug in the definition of $\MAPm$
 \alignn{
 		\expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\nat^*}} 
-		&= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  \\
-		&= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} \\
-		&= (n_0 +n) \expect{\inv{a + \chi^2(n)}}
+		= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  
+		= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} 
+		= (n_0 +n) \expect{\inv{a + \chi^2(n)}},
 }
 	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and $a=n_0 \frac{\mu_0}{\mu^*}$. The expectation reads
 \alignn{
  	\expect{\inv{a + \chi^2(n)}}  
-	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx \\
+	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx.
 }
 	We reformulate this expectation with the trick
+	\fdk{I don't follow from there.}
 \alignn{
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
 		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
@@ -1132,6 +1160,7 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
 }
 	where we used Fubini to switch integrals, without further justification.
+	\fdk{Fubini's theorem would be a justification here, right? Are you trying to say ``assuming we can exchange the order of integration''?}
 	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes
 	\begin{align}
 		\expect{\inv{a + \chi^2(n)}}  
@@ -1151,6 +1180,7 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 	\end{align}
 	Now our goal is to bound this function with simpler functions.
 	Fortunately, mathematicians have been working on these integrals for decades.
+	\fdk{Was this a comment from your notes that passed its way here or do you want to go with this?}
 	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound} \citep[Eq.~8.19.21]{DLMF}
 	\begin{align}
 		e^x E_k(x) 
@@ -1174,18 +1204,24 @@ to conclude the proof.
 \subsection{Proof of MAP Bound}
 
 We did not find a closed form or an upper bound for the expected logarithm of the MAP $\expect{\log\frac{\MAPm}{\mu^*}}$.
-Consequently, we derived a bound for the symmetrized Bregman~\eqref{eq:symmetrized_bregman} instead. This bound is not asymptotically  tight for the Bregman by a factor $2$.
+Consequently, we derived a bound for the symmetrized Bregman~\eqref{eq:symmetrized_bregman} instead. 
+This bound is asymptotically tight for the Bregman, up to a factor $2$.
 
 \begin{theorem}[MAP Bound]
 The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP of $\cN(0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is upper bounded as
  \begin{align}
 	& \expect{\cS_\conj( \m^*; \hat \m_n^\mathrm{MAP})}
-	\leq \begin{cases}
-		\cS_\conj( \mu_*; \mu_0) \ \text{ if } \ n=0, \\
-		\inv{2(n_0+1)}  +  b_1 \ \text{ if }\ n=1,\\
-		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n \ \text{ if }\ n\geq 2
-	\end{cases}\\
-	& \text{where }b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; . \nonumber
+	\leq 
+	\left\{\begin{array}{ll}
+		\cS_\conj( \mu_*; \mu_0) 					& \text{ if } \ n=0, \\
+		\inv{2(n_0+1)}  +  b_1 						& \text{ if }\ n=1,\\
+		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n  & \text{ if }\ n\geq 2,
+	\end{array}\right.
+	\quad 
+	\quad 
+	\text{where }
+	b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; . 
+	%\nonumber
 \end{align}
 \end{theorem} 
 
@@ -1204,8 +1240,8 @@ The expectation of $\MAPm$ is straightforward
 	 \quadtext{where}
 	 a:=n_0\frac{\mu_0}{\mu^*} \; .
 \end{align}
-There remains the more problematic term with the expectation of the inverse mean parameter.
-Fortunately, we derived the bound \eqref{eq:lemma_nat_bound} for this purpose.
+There remains the more problematic term with the expectation of the inverse mean parameter, 
+for which we use the bound derived in Lemma \ref{lem:expected-map-natural-parameter-gaussian}.
 
 \textbf{When $n\geq 2$}, we get 
 \begin{align}
@@ -1288,6 +1324,8 @@ g'''(\nat_2) = \frac{\partial^3 A}{(\partial\nat_2)^3}(\nat)
 = \frac{1}{2\nat_2^3}\paren{2 - 3 \frac{\nat_1^2}{- \nat_2^2}}
 }
 Setting $\nat_2 = - \nat_1^2$ yields $g''(\nat_2) = 0$ and $g'''(\nat_2) \neq 0$, meaning the second derivative cannot dominate the third derivative for any choice of constant or exponent. The log-partition is neither self concordant nor pseudo-self-concordant.
+
+\fdk{TODO: Double check the above, something doesn't sit quite right, for the following. How can we get $g'' = 0$ if $A$strictly convex?}
 
 
 
@@ -1399,8 +1437,14 @@ We see that for a pair of conjugate functions, the self-concordance ratios are o
 \section{REVIEW OF SMD}
 \label{app:SMD}
 
-\rlp{Introduce SMD, in primal and dual formulations.}
+\rlp{Introduce SMD, in primal (minimization) and dual formulations.}
 
+
+
+
+
+
+\iffalse
 \section{TODO}
 \begin{enumerate}
 	\item new plots: add 2d trajectories to paper, with background level set, and new legend: primal/dual expectation, and clear explanation!
@@ -1507,5 +1551,6 @@ We use
 	\item $\tilde\theta_n$ for $\expect{\hat\theta_n}$, which is biased
 	\item $(\stgcvx , \smooth)$ for strong-convexity and smoothness
 \end{itemize}
+\fi
 
  \end{document}
