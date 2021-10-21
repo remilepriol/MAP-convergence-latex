@@ -1484,10 +1484,69 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 
 \rlp{prove that the expectation of Hanzely is the symmetrized bias, e.g.  an upper bound on the bias.}
 
+
+
+
 \section{REVIEW OF SMD}
 \label{app:SMD}
 
-\rlp{Introduce SMD, in primal (minimization) and dual formulations.}
+We use this section to give more details on the (stochastic) mirror descent algorithm.
+One perspective on gradient descent with step-sizes, 
+the update $\theta_{n+1} = \theta_n - \gamma \nabla f(\theta_n)$ is to view it 
+as the minimization of the linear approximation of $f$ at $\theta_n$, 
+$f(\theta) \approx f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n}$
+and a quadratic penalty scaled by ${1}/{\gamma}$, 
+\alignn{
+	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} \frac{1}{2}\norm{\theta - \theta_n}^2.
+}
+Mirror descent generalizes the above, using the Bregman divergence induced by a (Legendre) function $A$ instead of the Euclidean norm, 
+\alignn{\label{eq:mirror-descent-primal}
+	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} {\theta - \theta_n}^2.
+}
+Mirror descent coincides with gradient descent if $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
+As \cref{eq:mirror-descent-primal} is convex, the minimum is at a stationary point, 
+found by taking the derivative and setting to 0, 
+leading to the update $\theta_{n+1}$ satisfying
+\alignn{
+	\nabla f(\theta_n) + \frac{1}{\gamma}\paren{\nabla A(\theta_{n+1}) - \nabla A(\theta_n)} = 0
+	&&\implies&&
+	\nabla A(\theta_{n+1}) = \nabla A(\theta_n) - \gamma \nabla f(\theta_n).
+}
+Expressed with the dual parameters $\mu_{n} = \nabla A(\theta_{n})$, 
+$\mu_{n+1} = \mu_n - \gamma \nabla f(\theta_n)$. 
+
+{\bf In our case,} where the objective function is the (negative) log-likelihood of an exponential family, 
+\alignn{
+	f(\theta) = A(\theta) - \lin{\frac{1}{n} \sum_{i=1}^n T(X_i), \theta},
+}
+mirror descent with a step-size of $1$ and the log-partition function $A$ as the reference function is exact;
+\alignn{\begin{aligned}
+	\mu_{n+1} 
+	= \mu_n - \nabla f(\theta_n)
+	= \mu_n - \paren{\nabla A(\theta_n) - \frac{1}{n}\sum_{i=1}^n T(x_i)}
+	= \frac{1}{n}\sum_{i=1}^n T(x_i).
+	\end{aligned}
+}
+In a stochastic, online version 
+where the linearization of the objective is obtained from iid samples, 
+a decreasing step-size of $\gamma_n = 1/n$ recovers the ``online'' estimate of the MLE.
+The case of $\mu_1 = T(x_1)$ follows from the above, 
+and in general, assuming it holds for $\mu_n$, 
+\alignn{\begin{aligned}
+	\mu_{n+1} &= \mu_n - \gamma_n g(\theta_n)
+	= \mu_n - \gamma_n (\mu_n - x_n)
+	\\
+	&= (1 - \frac{1}{n}) \mu_n + \frac{1}{n} T(x_n)
+	=
+	\frac{n-1}{n} \frac{1}{n-1}\sum_{i=1}^{n-1} T(x_i)
+	= 
+	\frac{1}{n} \sum_{i=1}^{n} T(x_i)
+	+ \frac{1}{n} T(x_n).
+\end{aligned}}
+The derivation in the main text gives the more general result, 
+of using step-sizes of the form $1/(n+n_0)$ to recover online MAP estimation 
+with a conjugate prior depending on $n_0$ and the initial estimate of the parameters $\theta_0$.
+
 	
 
 
