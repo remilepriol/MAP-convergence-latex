@@ -64,6 +64,12 @@
 	final,
 }
 
+% To make a table of contents only for the appendix
+\usepackage[toc,page,header]{appendix}
+\usepackage{minitoc}
+\renewcommand \thepart{}
+\renewcommand \partname{}
+
 \usepackage[capitalise]{cleveref}
 \newcommand{\rlp}[1]{\textcolor{BrickRed}{(RLP:#1)}}
 \newcommand{\fdk}[1]{\textcolor{Periwinkle}{(fdk:#1)}}
@@ -131,6 +137,11 @@ Surprisingly, we found no general solution to this problem in the literature. In
 After exhibiting various facets of the problem, we show we can interpret the MAP as running stochastic mirror descent (SMD) on the log-likelihood. However, modern convergence results do not apply for standard examples of the exponential family, highlighting holes in the convergence literature.
 We believe solving this very fundamental problem may bring progress to both the statistics and optimization communities.
 \end{abstract}
+
+\doparttoc % Tell to minitoc to generate a toc for the parts
+\faketableofcontents % Run a fake tableofcontents command for the partocs
+%\part{} % Start the document part
+%\parttoc % Insert the document TOC
 
 % TODO
 %\begin{figure}[t]
@@ -869,6 +880,11 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \clearpage
 \appendix
 \onecolumn
+
+
+\addcontentsline{toc}{section}{Appendix} % Add the appendix text to the document TOC
+\part{Appendix} % Start the appendix part
+\parttoc % Insert the appendix TOC
 
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
