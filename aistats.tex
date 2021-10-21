@@ -95,7 +95,7 @@
 
 \newcommand{\cond}{\,\vert\,}
 \newcommand{\logpart}{A}
-\newcommand{\conj}{\logpart^*}
+\newcommand{\conj}{{\logpart^*}}
 \newcommand{\bregman}{\cB_\logpart}
 \newcommand{\bregmanconj}{\cB_{\logpart^*}}
 \newcommand{\nat}{\theta}
@@ -528,7 +528,7 @@ This correlates well with our numerical observations (cf App.~\ref{app:gaussian-
 	\caption{
 	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) (\S\ref{ssec:gaussian} with $n=3$).
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
-	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:primal_pivot} from~\S\ref{ssec:bias-variance}.
+	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:bias-variance} from~\S\ref{ssec:bias-variance}.
 	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the long edges of the triangle and the red curve.
 	Large blurry circles in the background are other instances of MAP and MLE revealing their distribution.
 	}
@@ -687,7 +687,7 @@ Such a decomposition exists for any Bregman divergence \citep[Theorem 0.1]{pfau2
 \begin{equation}
 	\expect{\bregmanconj(\m^* ; \hat \m_n)} = {\bregmanconj(\m^* ; \tilde \m_n)}
 	+ {\expect{\bregmanconj(\tilde \m_n ; \MAPm)}}
-	\label{eq:primal_pivot}
+	\label{eq:bias-variance}
 \end{equation}
 \end{theorem}
 We plot this decomposition for $\cN(\mu, \sigma^2)$ in Fig.~\ref{fig:gaussian_decomposition} , and we illustrate the primal mean $\tilde \nat_n$ in  Fig.~\ref{fig:thales}.
@@ -848,7 +848,7 @@ In general, this uniform bound over $\hat \m_n$ cannot hold for \emph{barrier} o
 
 Both of their proofs hold if we add an expectation over $\MAPm$ to their assumption.
 However, this is not helpful, as verifying the assumption becomes as hard as the initial problem.
-For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper bound on the variance term of~\eqref{eq:primal_pivot} (cf App.~\ref{app:bias-variance}).
+For instance, the expectation of~\eqref{eq:hanzely} over $\MAPm$ is an upper bound on the variance term of~\eqref{eq:bias-variance} (cf App.~\ref{app:bias-variance}).
 Confronted with this difficulty, we investigate an alternative definition of variance.
 
 \subsubsection{Bounded Optimality Gap}
@@ -1174,7 +1174,6 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 }
 	This $1/(a+x)$ is hard to deal with.
 	Fortunately, there is a trick to express it as an integral itself , with an exponential that fits well with the $\chi^2$-density,
-	\fdk{I don't follow from there.} \rlp{do you have more detailed feedback ? I don't know how to improve it.}
 \alignn{
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
 		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
@@ -1326,7 +1325,7 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 \end{important}
 
 In this section, we prove that for a Gaussian, the entropy and log-partition functions are self-concordant.
-%We also give complementary illustrations on the Gaussian mirror map and MLE.
+% TODO We also give complementary illustrations on the Gaussian mirror map and MLE.
 
 The Gaussian log-partition function and entropy are, up to constants,
 \alignn{
@@ -1334,7 +1333,7 @@ The Gaussian log-partition function and entropy are, up to constants,
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; ,
 }
 where $\nat_1\in\real, \nat_2 <0$ and $\mu_1\in\real, \mu_2>\mu_1^2$.
-%These functions and their domains are represented in Figure \TODO{}.
+% TODO These functions and their domains are represented in Figure \TODO{}.
 We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 
@@ -1479,10 +1478,59 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
+In this section, we start from the notions of bias and variance introduced in \cref{eq:bias-variance}.
+First, we prove that the bias of the MLE of a Gaussian variance decreases in $O(\inv{n^2})$. 
+Then we prove that the expectation of \cref{eq:hanzely} is an upper bound on the variance term.
 
+\subsection{Bias of a Gaussian Variance MLE}
 \rlp{prove that the bias decreases like $1/n^2$ for gaussian variance and gaussian mean.}
 
-\rlp{prove that the expectation of Hanzely is the symmetrized bias, e.g.  an upper bound on the bias.}
+\subsection{Expectation of SMD's Variance Assumption}
+The first step is to notice the symmetrized Bregman can be expressed as an inner product between primal and dual parameters
+\alignn{
+	\cS_\conj (\mu , \bar\mu)
+	= \lin{ \nabla \conj(\mu) - \nabla \conj(\bar\mu) , \mu - \bar\mu}
+	= \lin{ \nat -\bar\nat , \mu - \bar\mu} \; .
+}
+Now notice that~\eqref{eq:hanzely} features $\mu := \hat \mu_n = \hat\m_{n} - \lr g(\hat \nat_{n})$ stochastic and $\bar\mu := \bar\mu_n =  \hat\m_{n}   -\lr \nabla f(\hat \nat_{n})$ deterministic such that $\E_g[\mu] = \bar\mu$.
+This means that
+\alignn{
+	\expect{\cS_\conj (\mu , \E[\mu])} 
+	= \expect{\lin{\nat, \mu - \E[\mu]}}
+	=\Cov(\nat, \mu)
+	=\expect{\lin{\nat - \E[\nat],\mu}} 
+	= \expect{\cS_\logpart(\nat, \E[\nat])} \; .
+}
+where the last equality holds by symmetry between the roles of $\logpart$ and $\conj$.
+Note that the middle covariance formulation is actually the one  used by \citet{hanzely2018fastest}.
+Now, \cref{eq:bias-variance} defines the variance as 
+\aligns{
+	\expect{\bregmanconj(\tilde \m_n , \hat\m_n} \;,
+	\expect{\bregman(\hat\nat_n , \E[\hat\nat_n]} \;,
+}
+where expectations are on all samples $X_1, \dots, X_n$.
+
+
+
+
+\alignn{
+	\expect[g]{\cS_\conj \paren{
+			\hat\m_{n} - \lr g(\hat \nat_{n}),
+			\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
+	}} &= \expect{\lin{
+		\hat \nat_{n+1}  - \nabla \conj(\hat\m_{n}   -\lr \nabla f(\hat \nat_{n}))\ , \
+	  	-\lr( g(\hat \nat_{n})    - \nabla f(\hat \nat_{n}) )
+	}} \\
+	&=\expect{\lin{
+		\hat \nat_{n+1}\ , \
+	  	-\lr( g(\hat \nat_{n})    - \nabla f(\hat \nat_{n}) )
+	}}\\
+	&=\Cov_g(\hat \nat_{n+1}, -g(\hat \nat_{n}))
+	= \Cov_g(\hat \nat_{n+1}, \hat\m_{n+1})
+}
+where the last two lines are due to $\E[g] = \nabla f$.
+
+
 
 \section{REVIEW OF SMD}
 \label{app:SMD}
