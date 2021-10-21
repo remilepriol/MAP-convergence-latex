@@ -1518,7 +1518,7 @@ This means that
 \alignn{
 	\expect{\cS_\conj (\mu , \E[\mu])} 
 	= \expect{\lin{\nat, \mu - \E[\mu]}}
-	=\Cov(\nat, \mu)
+	= \underbrace{\expect{\lin{\nat, \mu}} -\lin{\expect{\nat}, \expect{\mu} } }_{\Cov(\nat, \mu)}
 	=\expect{\lin{\nat - \E[\nat],\mu}} 
 	= \expect{\cS_\logpart(\nat, \E[\nat])} \; .
 }
