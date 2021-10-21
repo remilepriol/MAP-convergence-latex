@@ -31,6 +31,7 @@
 \renewcommand{\bibname}{References}
 \renewcommand{\bibsection}{\subsubsection*{\bibname}}
 
+%\usepackage{microtype} % RLP tried it, no change.
 %\usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{lmodern}
@@ -879,7 +880,7 @@ Nevertheless, none of the current analyses of SMD hold for the MAP, even on a si
 In writing this paper, we hope to attract attention to this fundamental problem, leading to progress in both optimization and statistics.
 
 
-
+\nocite{dragomir2021optimal}
 \newpage
 \bibliographystyle{apalike}
 \bibliography{references}
@@ -1505,30 +1506,12 @@ where the last equality holds by symmetry between the roles of $\logpart$ and $\
 Note that the middle covariance formulation is actually the one  used by \citet{hanzely2018fastest}.
 Now, \cref{eq:bias-variance} defines the variance as 
 \aligns{
-	\expect{\bregmanconj(\tilde \m_n , \hat\m_n} \;,
-	\expect{\bregman(\hat\nat_n , \E[\hat\nat_n]} \;,
+	\expect{\bregmanconj(\tilde \m_n , \hat\m_n}
+	=\expect{\bregman(\hat\nat_n , \E[\hat\nat_n]} \;,
 }
 where expectations are on all samples $X_1, \dots, X_n$.
 
 
-
-
-\alignn{
-	\expect[g]{\cS_\conj \paren{
-			\hat\m_{n} - \lr g(\hat \nat_{n}),
-			\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
-	}} &= \expect{\lin{
-		\hat \nat_{n+1}  - \nabla \conj(\hat\m_{n}   -\lr \nabla f(\hat \nat_{n}))\ , \
-	  	-\lr( g(\hat \nat_{n})    - \nabla f(\hat \nat_{n}) )
-	}} \\
-	&=\expect{\lin{
-		\hat \nat_{n+1}\ , \
-	  	-\lr( g(\hat \nat_{n})    - \nabla f(\hat \nat_{n}) )
-	}}\\
-	&=\Cov_g(\hat \nat_{n+1}, -g(\hat \nat_{n}))
-	= \Cov_g(\hat \nat_{n+1}, \hat\m_{n+1})
-}
-where the last two lines are due to $\E[g] = \nabla f$.
 
 
 
