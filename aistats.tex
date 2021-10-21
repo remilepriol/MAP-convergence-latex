@@ -1326,6 +1326,7 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 	In the main text, we claimed that the log-partition of a Gaussian was not self-concordant. 
 	There was an error in our derivations and we will now prove the opposite.
 	However this does not change our story, and in particular our concern about the lack of results in the few sample regime remains valid.
+	%TODO ostroskii and bach are using a subgaussian assumption which does not hold for a Gaussian, so there might still be work to do. But also check anastasiou to be sure.
 \end{important}
 
 In this section, we prove that for a Gaussian, the entropy and log-partition functions are self-concordant.
@@ -1484,7 +1485,7 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 \label{app:bias-variance}
 In this section, we start from the notions of bias and variance introduced in \cref{eq:bias-variance}.
 First, we prove that the bias of the MLE of a Gaussian variance decreases in $O(\inv{n^2})$. 
-Then we prove that the expectation of \cref{eq:hanzely} is an upper bound on the variance term.
+Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields a convergence rate on the variance term.
 
 \subsection{Bias of a Gaussian Variance MLE}
 \rlp{prove that the bias decreases like $1/n^2$ for gaussian variance and gaussian mean.}
@@ -1496,7 +1497,7 @@ The first step is to notice the symmetrized Bregman can be expressed as an inner
 	= \lin{ \nabla \conj(\mu) - \nabla \conj(\bar\mu) , \mu - \bar\mu}
 	= \lin{ \nat -\bar\nat , \mu - \bar\mu} \; .
 }
-Now notice that~\eqref{eq:hanzely} features $\mu := \hat \mu_n = \hat\m_{n} - \lr g(\hat \nat_{n})$ stochastic and $\bar\mu := \bar\mu_n =  \hat\m_{n}   -\lr \nabla f(\hat \nat_{n})$ deterministic such that $\E_g[\mu] = \bar\mu$.
+Now notice that~\eqref{eq:hanzely} features $\mu := \hat \mu_{n+1} = \hat\m_{n} - \lr g(\hat \nat_{n})$ stochastic and $\bar\mu := \bar\mu_{n+1} =  \hat\m_{n}   -\lr \nabla f(\hat \nat_{n})$ deterministic such that $\E_g[\mu] = \bar\mu$.
 This means that
 \alignn{
 	\expect{\cS_\conj (\mu , \E[\mu])} 
@@ -1508,15 +1509,47 @@ This means that
 where the last equality holds by symmetry between the roles of $\logpart$ and $\conj$.
 Note that the middle covariance formulation is actually the one  used by \citet{hanzely2018fastest}.
 Now, \cref{eq:bias-variance} defines the variance as 
-\aligns{
-	\expect{\bregmanconj(\tilde \m_n , \hat\m_n}
-	=\expect{\bregman(\hat\nat_n , \E[\hat\nat_n]} \;,
+\alignn{
+	\expect[1:n]{\bregmanconj(\tilde \m_n , \hat\m_n) }
+	=\expect[1:n]{\bregman(\hat\nat_n , \E_{1:n}[\hat\nat_n]) }
+	\leq \expect[1:n]{\cS_A(\hat\nat_n , \E_{1:n}[\hat\nat_n]) }
+	=  \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{1:n}[\hat\mu_n]) }\;,
+	\label{eq:bregman-covariance}
 }
-where expectations are on all samples $X_1, \dots, X_n$.
-
-
-
-
+where expectations $\E_{1:n}$ are on all samples $X_1, \dots, X_n$, whereas~\eqref{eq:hanzely} is written with 
+\alignn{
+	\expect[n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) } \leq \lr^2 C \; ,
+}
+where the expectation $\E_{n}$ is taken over only the last sample $X_n$, and the bound should hold uniformly over all $\hat\mu_{n-1}$.
+Taking the expectation over $\hat\mu_{n-1}$ instead yields
+\alignn{
+	\expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }  \leq \lr^2 C \;.
+}
+The only difference with the RHS of \cref{eq:bregman-covariance} is in the inner expectation.
+To overcome this difference, we need to plug in the form of $\hat \mu_n = \frac{n_0\mu_0 + \sum_i T_i}{n_0 +n}$. Notice that 
+\alignn{
+	&\MAPm - \E_n[\MAPm] = \frac{T_n - \m^*}{n_0+n} \\
+	\implies & \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }
+	= \inv{n_0+n} \expect[1:n]{ \lin{\MAPt , T_1 - \m^*} }
+}
+while
+\alignn{
+	&\MAPm - \E_{1:n}[\MAPm] = \frac{\smallsum_i (T_i - \m^*)}{n_0+n} \\
+	\implies & \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{1:n}[\hat\mu_n]) }
+	=\frac{n}{n_0+n} \expect[1:n]{ \lin{\MAPt , T_1 - \m^*} } \; .
+}
+In the end we get that the variance is dominated by $n$ times the expectation of \cref{eq:hanzely}
+\alignn{
+	\expect[1:n]{\bregmanconj(\tilde \m_n , \hat\m_n) }
+	\leq n \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }  \; .	
+}
+If assumption~\eqref{eq:hanzely} holds, then
+\alignn{
+\expect[1:n]{\bregmanconj(\tilde \m_n , \hat\m_n) }
+\leq n \lr_n^2 C \in O\paren{\inv{n}} \; ,
+}
+where we assumed $\lr_n  \in O\paren{\inv{n}}$.
+In conclusion, assuming~\eqref{eq:hanzely} holds uniformly or in expectation immediately implies a $O\paren{\inv{n}}$ convergence rate on the variance.
 
 \section{REVIEW OF SMD}
 \label{app:SMD}
