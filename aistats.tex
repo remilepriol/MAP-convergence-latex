@@ -1019,8 +1019,8 @@ Note that we switched the role of $d$ from $\dim(T(\cX))=d$ to $\dim(\cX) =d$ an
  	\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)} 
  	\ , \forall n >d+1 \;.
 }
-This bound is asymptotically tight.
 \end{theorem}
+We see from~\eqref{eq:asymptote} that this bound is asymptotically tight.
 \begin{proof}
 The entropy of $X$ is a negative log-determinant $\conj(\mu) = -\log\det(\mu)$, whose gradient is the negative matrix inverse $\nabla\conj (\mu) = - \mu^{-1}$.
 The associated Bregman divergence is
@@ -1389,9 +1389,9 @@ This yield the final rate for the MLE
 \end{align}
 For the MAP~\eqref{eq:defMAP}, the quadratic decomposes into bias and variance
 \begin{align}
-	\E \half \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mSigma^{-1}}
-	&= \frac{n d}{2(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \half \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} \\
-	&= \frac{d}{2n} + O\left(\frac{1 + \norm{\mu^* -  \mu_0}^2_{\mSigma^{-1}} }{n^2} \right) \; .
+	\E \half \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mF}
+	&= \frac{n d}{2(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \half \norm{\mu^* -  \mu_0}^2_{\mF} \\
+	&= \frac{d}{2n} + O\left(\frac{1 + \norm{\mu^* -  \mu_0}^2_{\mF} }{n^2} \right) \; .
 \end{align}
 This $O(n^{-2})$ term is dominated by the $O(n^{-\half[3]})$ term from the quadratic approximation of the Bregman, yielding the same first order rate as for the MLE
 \begin{align}
