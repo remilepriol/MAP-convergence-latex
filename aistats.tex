@@ -1018,17 +1018,10 @@ See the grey upper bound in Figure~\ref{fig:phi}.
 
 
 \subsection{Multivariate MLE}
-In higher dimensions, $X \sim \cN(0, \mu_*)$, $X\in\real^d$, $T(X) = XX^\top$, and the mean parameter $\mu_*$ is a symmetric positive definite covariance matrix of order $d$, living in dimension $p = \frac{d(d+1)}{2}$. 
-Note that we switched the role of $d$ from $\dim(T(\cX))=d$ to $\dim(\cX) =d$ and $\dim(T(\cX))=p$, where $\dim(\cZ)$ is the dimension of the smallest affine subspace containing $\cZ$.
 
-\fdk{I'm worried talking about dimension might be confused with curved EF (less parameters than sufficient statistics). What do you think of
-%
-\\~\\
-%
 In higher dimensions, $X \sim \cN(0, \mu_*)$, $X\in\real^d$, $T(X) = XX^\top$, and the mean parameter $\mu_*$ 
 is a $d \times d$ symmetric, positive definite covariance matrix with $p = \frac{d(d+1)}{2}$ degrees of freedom.
 Note that here $d$ denotes the dimensionality of the data $X$, rather than the dimensionality of the parameters $\mu_*$.
-}
 
 \begin{theorem}[Multivariate MLE Upper Bound]
 	The MLE of  the covariance matrix of $X_i\sim\cN(0,\mu_*)$ is $\hat \mu_n = \inv{n} \sum_i X_i X_i^\top \in\real^{d\times d}$ with $p = \frac{d(d+1)}{2} $ degrees of freedom. 
@@ -1131,17 +1124,17 @@ Putting those bounds together in
 and reorganizing yields
 \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
- 	&\leq p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{d + 1}{4n(n - d - 1)}\\
+ 	&< p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{d + 1}{4n(n - d - 1)}\\
  	\intertext{\fdk{Isn't this =?
  	For the first term, $\inv{n-d-1} - \inv{2n} = \frac{2n}{2n(n-d-1)} - \frac{n-d-1}{2n(n-d-1)} = \frac{n+d+1}{2n(n-d-1)}$ and the second is $\times d/d$?
  	}}
- 	&< p \frac{n + d +1}{2 n (n-d-1)}  + \frac{d(d + 1)/2}{2dn(n - d - 1)}\\
+ 	&= p \frac{n + d +1}{2 n (n-d-1)}  + \frac{d(d + 1)/2}{2dn(n - d - 1)}\\
  	&= p\frac{n-d-1}{2n(n-d-1)} + p\frac{2(d+1)}{2 n (n-d-1)} + \frac{p}{2dn (n - d - 1)}\\
  	&= \frac{p}{2n} + \frac{p(d+ 1 + \inv{2d})}{n (n-d-1)} \\
  	&\leq \frac{p}{2n} + \frac{p(d+2)}{n (n - d -1)}
  	\ , \forall n >d+1 \;.
 \end{align}
-where $p = d(d+1)/2$ and the last inequality used $\inv{2d}\leq 1$. 
+where $p = \frac{d(d+1)}{2}$ and the last inequality used $\inv{2d}\leq 1$. 
 \end{proof}
 
 \subsection{Bounding the expected natural parameters for the MAP}
@@ -1180,7 +1173,7 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx \; .
 }
 	This $1/(a+x)$ is hard to deal with.
-	Fortunately, there is a trick to express it as an integral itself , with exponential terms that fit well with the $\chi^2$-density,
+	Fortunately, there is a trick to express it as an integral itself , with an exponential that fits well with the $\chi^2$-density,
 	\fdk{I don't follow from there.} \rlp{do you have more detailed feedback ? I don't know how to improve it.}
 \alignn{
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
@@ -1406,16 +1399,17 @@ In this section, we define self-concordance, we prove proposition~\ref{prop:self
 
 \begin{definition}[Self-concordance]
 \label{def:self-concordance}
-A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies 
-\alignn{\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}}}
-for all feasible $t$.
+A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies for all feasible $t$
+\alignn{
+	\abs{g'''(t)} \leq 2 g''(t)^{\frac{3}{2}} \; .
+}
 \end{definition}
 
-\begin{definition}[Pseudo Self-concordance] \citep{bach2010self} 
-A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies 
-\alignn{\abs{g'''(x)} \leq C \norm{v}_2 g''(x)}
-for all feasible $t$ and for some $C\geq 0$.
-\end{definition}
+%\begin{definition}[Pseudo Self-concordance] \citep{bach2010self} 
+%A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is differentiable $3$ times and if for all $w, v \in\real^p$ the function $g(t) = F(w+tv)$ satisfies 
+%\alignn{\abs{g'''(x)} \leq C \norm{v}_2 g''(x)}
+%for all feasible $t$ and for some $C\geq 0$.
+%\end{definition}
 
 {\bf Correction:} In the main text, we claimed that the Fenchel conjugate of a 1 dimensional function is also self-conjugate. 
 Actually, this is also true in higher dimension, as proved by \citet{nesterov1994interior}. See \citet[Prop.~6]{sun2019generalized} for a more accessible reference.
@@ -1426,10 +1420,10 @@ Actually, this is also true in higher dimension, as proved by \citet{nesterov199
 We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
 \begin{itemize}
 	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ 
-	and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
-	\fdk{The second one should be 
-	$\sqrt{ \langle [\nabla^2A^*({\color{red} \nabla A(x)})]^{-1}\cdot,\, \cdot \rangle }$?
-	}
+	%and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
+%	\fdk{The second one should be 
+%	$\sqrt{ \langle [\nabla^2A^*({\color{red} \nabla A(x)})]^{-1}\cdot,\, \cdot \rangle }$?
+%	}
 	\item the distance function $\omega(t) = t-\ln (1+t),\;t\geq 0$, and its dual $\;\omega^*(t) = -t-\ln(1-t)$ defined for $t\in [0,1]$.
 \end{itemize}
 Note that $\omega^*(t)$ is positive, convex and monotonically increasing for $t\in[0,1]$.
@@ -1481,57 +1475,6 @@ and replace $t$ by $\|\meanp^*-\meanp\|_{\meanp^*}$. This finally gives the sequ
 \]
 that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired result.
 
-
-%\begin{proposition}
-%	Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then
-%	\aligns{
-%		\norm{\m^*-\m}_{\mF} < 0.21
-%		\implies
-%		\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2.
-%	}
-%\end{proposition}
-%\begin{proof}
-%	
-%\end{proof}
-
-\subsection{Self-concordance and Convex Conjugates}
-\begin{proposition}
-	\label{prop:conjugateConcordance}
-	Let $f:\real \rightarrow \real$ be a self-concordant function of Legendre type. Then its convex conjugate $f^*$ is also self-concordant.
-\end{proposition}
-\begin{proof}
-When $f$ is of Legendre type then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ has inverse gadients
-\begin{align}
-    \nabla f \circ \nabla f^*  &= \Id \\
-     \nabla f^* \circ \nabla f &= \Id
-\end{align}
-where $\Id$ is the identity function on the relevant domain. 
-Deriving this equality proves that Hessians are inverse of each other 
-\begin{align}
-    \nabla^2 f(x) \nabla^2 f^*(x^*) = \mI
-    \label{eq:conjugateHessian}
-\end{align}
-when evaluated at conjugate pairs of points $(x,x^*)$ -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
-These Hessians are never $0$.
-In 1 dimension, this inequality is more simply written 
-\aligns{f''(x) f^{* \prime \prime}(x^*) = 1}
-Until now, this should be familiar to the reader.
-The interesting surprise is that self-concordance appears when we derive again this equality. 
-\begin{align}
-    &1= f''(x) f^{* \prime \prime}(f'(x)), \forall x \\
-    \implies
-    &0 = f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))\\
-    \implies
-    &0 = f'''(x)f^{* \prime \prime}(x^*)  + f''(x)^2 f^{* \prime \prime \prime}(x^*)\\
-    \implies
-    &0 = \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  f^{* \prime \prime}(x^*)^{-\half}
-    + f''(x)^{\half} \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}} \\
-    \implies
-    &0= \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}}
-\end{align}
-where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
-We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
-\end{proof}
 
 
 \section{BIAS-VARIANCE}
