@@ -4,7 +4,8 @@ code/
 .ipynb_checkpoints/
 .swp
 *.pdf
-
+*.mtc
+*.ptc1
 
 # Latex IDE
 .texpadtmp/
