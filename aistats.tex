@@ -1427,6 +1427,75 @@ where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
 We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
 \end{proof}
 
+\subsection{Properties of Self-concordant functions}
+
+We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
+\begin{itemize}
+	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
+	\item the distance function $\omega(t) = t-\ln (1+t),\;t\geq 0$, and its dual $\;\omega^*(t) = -t-\ln(1-t)$ defined for $t\in [0,1]$.
+\end{itemize}
+Note that $\omega^*(t)$ is positive, convex and monotonically increasing for $t\in[0,1]$.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.4\textwidth]{figs/self_concordance/omega.eps}
+	\includegraphics[width=0.4\textwidth]{figs/self_concordance/omega_star.eps}
+	\caption{(left) Graph of the distance function $\omega$ and its dual $\omega^*$. (right) Graph of the dual of distance function $\omega^*$ evaluated at $\frac{t}{1-t}$, compared with $t^2$. The two curves cross each other at $t\approx 0.21$.}
+	\label{fig:omega}
+\end{figure}
+
+We now present two important results. The first one shows how to convert the local norm $\|y-x\|_y$ using $\|y-x\|_x$.
+\begin{proposition}\label{prop:conversion_norm}
+	(Conversion of norms, \citep[Theorem 4.1.5]{nesterov2003introductory}) For any $x,\,y\in\dom A^*$, if $\|y-x\|_x<1$, then
+	\[
+		\|y-x\|_y \leq \frac{\|y-x\|_x}{1-\|y-x\|_x}.
+	\]
+\end{proposition}
+
+The next result show that, if $y$ is sufficiently close to $x$, then we can bound the Bregman divergence of $A^*$ using the distance function $\omega^*$ and local norms.
+\begin{proposition}(Upper bound of self-concordant functions \citep[Theorem 4.1.8]{nesterov2003introductory}) \label{prop:upper_bound_self_concordance}
+	For any $x,\,y\in\dom A^*$, if $\|y-x\|_x<1$, then
+	\[
+		\bregmanconj(y,x) \leq \omega^*(\|y-x\|_x).
+	\]
+\end{proposition}
+
+We are now ready to prove Proposition~\ref{prop:selfConcordant}.
+
+
+\subsection{Proof of Proposition~\ref{prop:selfConcordant}.}
+
+We start with Proposition~\ref{prop:upper_bound_self_concordance}, evaluated at $y=\meanp^*$ and $x=\meanp$:
+\[
+	\bregmanconj(\meanp^*,\meanp) \leq \omega^*(\|\meanp^*-\meanp\|_{\meanp}).
+\]
+This hold if $\|\meanp^*-\meanp\|_{\meanp}<1$. Since $\omega^*$ is monotonically increasing, we can replace $\|\meanp^*-\meanp\|_{\meanp}$ by its upper bound from Proposition~\ref{prop:conversion_norm},
+\[
+	\omega^*(\|\meanp^*-\meanp\|_{\meanp}) \leq \omega^*\left(\frac{\|\meanp^*-\meanp\|_{\meanp^*}}{1-\|\meanp^*-\meanp\|_{\meanp^*}}\right),
+\]
+under the conditions that $\|\meanp^*-\meanp\|_{\meanp^*}<1$ (to satisfy the assumption of Proposition~\ref{prop:conversion_norm}) and $\frac{\|\meanp^*-\meanp\|_{\meanp^*}}{1-\|\meanp^*-\meanp\|_{\meanp^*}} <1$ (to ensure that $\|\meanp^*-\meanp\|_{\meanp} <1$). Those two conditions holds if $\|\meanp^*-\meanp\|_{\meanp^*} <0.5$. Now, we use the bound (see figure \ref{fig:omega})
+\[
+	\omega^*\left(\frac{t}{1-t}\right) \leq t^2, \quad 0\leq t \leq 0.21,
+\]
+and replace $t$ by $\|\meanp^*-\meanp\|_{\meanp^*}$. This finally gives the sequence of inequalities
+\[
+	\bregmanconj(\meanp^*,\meanp) \leq \omega^*(\|\meanp^*-\meanp\|_{\meanp}) \leq \omega^*\left(\frac{\|\meanp^*-\meanp\|_{\meanp^*}}{1-\|\meanp^*-\meanp\|_{\meanp^*}}\right) \leq \|\meanp^*-\meanp\|_{\meanp^*}^2,
+\]
+that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired result.
+
+
+%\begin{proposition}
+%	Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then
+%	\aligns{
+%		\norm{\m^*-\m}_{\mF} < 0.21
+%		\implies
+%		\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2.
+%	}
+%\end{proposition}
+%\begin{proof}
+%	
+%\end{proof}
+
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
 
