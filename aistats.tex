@@ -1324,15 +1324,23 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 \citet[Example 4.1.1.4,   p.177]{nesterov2003introductory} proves that logarithmic barriers for a second order region are self-concordant. Adopting their notation, $\conj$ fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = ( 1 \ 0 )^\top$.
 
 \paragraph{Log-partition is Self-Concordant}
-Adopting the notation of definition~\ref{def:self-concordance}, let us set $w=(\nat_1 \ 0)^\top$ and $v=(0 \ -1)^\top$.
-Then 
-\alignn{g(t) := 2A(w+tv) = \frac{a}{t} - \log(t)}
-is well defined for $t>0$ and $a=\frac{\nat_1^2}{2} \geq 0$.
+Adopting the notation of definition~\ref{def:self-concordance}, let us set $w=(\nat_1 \ 0)^\top$ and $v=(\alpha \ \ -1)^\top$. 
+For varying $\nat_1, \alpha$, this covers the whole range of possible straight lines in the 2D plane, except lines of constant $\nat_2$ (horizontal).
+But on lines with $\nat_2=\cst$,   the log-partition function $A$ is simply a quadratic, so it is self-concordant.
+Then, up to constants,
+\alignn{
+g(t) := 2A(w+tv) 
+= \frac{(\nat_1 + t \alpha)^2}{2 t} - \log(t) + \cst
+= \frac{a}{t}  + b t - \log(t) + \cst
+}
+where $a=\frac{\nat_1^2}{2} \geq 0$, and $b = \frac{\alpha^2}{2}$.
+$g$ is well defined for $t>0$.
 The logarithm is self-concordant for the same reason that the entropy is, but the inverse function $\inv{t}$ is not \citep[example 4.1.1.5]{nesterov2003introductory}.
 Linear combinations with positive coefficients  preserves self-concordance \citep[theorem 4.1.1]{nesterov2003introductory} -- e.g. self-concordance is a cone, so it seems unlikely that this sum of a self-concordant function and a not self-concordant function would be self-concordant. 
-But let us verify it to be sure. The derivatives of $g$ are
+So let us prove it.
+The derivatives of $g$ are
 \alignn{
-g'(t) &= -\frac{a}{t^2} - \frac{1}{t} \; ,\\
+g'(t) &= -\frac{a}{t^2} - \frac{1}{t} + b \; ,\\
 g''(t) &= \frac{2a}{t^3} + \inv{t^2} = \frac{1}{t^2}\paren{\frac{2a}{t} + 1} \; , \\
 g'''(t) &= -\frac{6a}{t^4} - \frac{2}{t^3} = \frac{-2}{t^3}\paren{\frac{3a}{t} + 1} \;.
 }
