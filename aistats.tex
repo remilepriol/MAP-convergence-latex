@@ -1486,7 +1486,25 @@ First, we prove that the bias of the MLE of a Gaussian variance decreases in $O(
 Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields a convergence rate on the variance term.
 
 \subsection{Bias of a Gaussian Variance MLE}
-\rlp{prove that the bias decreases like $1/n^2$ for gaussian variance and gaussian mean.}
+For a Gaussian variance model, the MLE follows a scaled $\chi^2(n)$ distribution. 
+This means that
+\alignn{
+	\frac{\m^*}{\tilde \m_n} 
+	= \frac{\tilde\nat_n}{\nat^*}
+	=\expect{\frac{\hat\nat_n}{\nat^*}}
+	=\expect{\frac{\m^*}{\hat \m_n} }
+	=\expect{\frac{n}{\chi^2(n)}}
+	= \frac{n}{n-2}\; .
+}
+Consequently
+\alignn{
+	\bregmanconj(\m^*, \tilde \m_n) 
+	&= \half \paren{\frac{n}{n-2} -1 + \log\frac{n-2}{n}}\\
+	&= \frac{1}{n-2} + \half \log\paren{1 - \frac{2}{n}}\\
+	&\leq \inv{n-2} - \inv{n} 
+	= \frac{2}{n(n-2)}
+}
+so the bias of the MLE of a Gaussian Variance decreases like $O\paren{\inv{n^2}}$.
 
 \subsection{Expectation of SMD's Variance Assumption}
 The first step is to notice the symmetrized Bregman can be expressed as an inner product between primal and dual parameters
@@ -1566,7 +1584,7 @@ and a quadratic penalty scaled by ${1}/{\gamma}$,
 }
 Mirror descent generalizes the above, using the Bregman divergence induced by a (Legendre) function $A$ instead of the Euclidean norm, 
 \alignn{\label{eq:mirror-descent-primal}
-	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} {\theta - \theta_n}^2.
+	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} \bregman(\theta, \theta_n).
 }
 Mirror descent coincides with gradient descent if $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
 As \cref{eq:mirror-descent-primal} is convex, the minimum is at a stationary point, 
