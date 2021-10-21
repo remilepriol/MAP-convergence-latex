@@ -947,7 +947,6 @@ See the grey upper bound in Figure~\ref{fig:phi}.
 	\caption{%
 	$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. 
 	It is a barrier near $0$, and admits an upper bound (in grey) despite being poorly approximated by quadratics.
-	% fdk: Text said that it admits an the grey upper bound because it is a barrier. Don't follow the logical implication.
 	}
 	\label{fig:phi}
 \end{figure}
@@ -1126,9 +1125,6 @@ and reorganizing yields
 \begin{align}
  	\expect{\bregmanconj( \mu_*; \hat \mu_n^\text{MLE(d)})}
  	&< p \paren{ \inv{n-d-1} - \inv{2n}}  + \frac{d + 1}{4n(n - d - 1)}\\
- 	\intertext{\fdk{Isn't this =?
- 	For the first term, $\inv{n-d-1} - \inv{2n} = \frac{2n}{2n(n-d-1)} - \frac{n-d-1}{2n(n-d-1)} = \frac{n+d+1}{2n(n-d-1)}$ and the second is $\times d/d$?
- 	}}
  	&= p \frac{n + d +1}{2 n (n-d-1)}  + \frac{d(d + 1)/2}{2dn(n - d - 1)}\\
  	&= p\frac{n-d-1}{2n(n-d-1)} + p\frac{2(d+1)}{2 n (n-d-1)} + \frac{p}{2dn (n - d - 1)}\\
  	&= \frac{p}{2n} + \frac{p(d+ 1 + \inv{2d})}{n (n-d-1)} \\
@@ -1174,7 +1170,7 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx \; .
 }
 	This $1/(a+x)$ is hard to deal with.
-	Fortunately, there is a trick to express it as an integral itself , with an exponential that fits well with the $\chi^2$-density,
+	Fortunately, there is a trick to express it as an integral itself, with an exponential that fits well with the $\chi^2$-density,
 \alignn{
 		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
 		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
@@ -1188,7 +1184,6 @@ We can then plug this integral into the expectation and apply Fubini's theorem t
 		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
 }
 	assuming we can exchange the order of integration.
-	%\fdk{Fubini's theorem would be a justification here, right? Are you trying to say ``assuming we can exchange the order of integration''?}\rlp{yes exactly.}
 	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes
 	\begin{align}
 		\expect{\inv{a + \chi^2(n)}}  
@@ -1215,12 +1210,12 @@ We can then plug this integral into the expectation and apply Fubini's theorem t
 		\iff \expect{\inv{a + \chi^2(n)}}
 		&\leq \inv{a + n - 2} \\
 		\iff \expect{\frac{\mu^*}{\MAPm}} 
-		&\leq \frac{n +n_0}{a + n - 2}
+		&\leq \frac{n +n_0}{a + n - 2}.
 	\end{align}
 We are left with a special case when  $n=1$, eg $k=\half$. 
 Then we can use the trivial bound 
 \begin{align}
-	\expect{\inv{a + X^2}} < \inv{a}
+	\expect{\inv{a + X^2}} < \inv{a}.
 	\label{eq:trivial_bound}
 \end{align}
 to conclude the proof.
@@ -1344,7 +1339,14 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 
 \paragraph{Entropy is Self-Concordant,}
-\citet[Example 4.1.1.4,   p.177]{nesterov2003introductory} proves that logarithmic barriers for a second order region are self-concordant. Adopting their notation, $\conj$ fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = ( 1 \ 0 )^\top$.
+\citet[Example 4.1.1.4,   p.177]{nesterov2003introductory} proves that logarithmic barriers for second order regions are self-concordant, 
+that is functions of the form 
+\alignn{
+	f(\theta) = -\log\paren{\alpha + \lin{a, \theta} - \frac{1}{2}\lin{\mA \theta, \theta}}
+	\text{ on }
+	\left\{\theta\in\mathbb{R}^n \cond \alpha + \lin{a, \theta} - \frac{1}{2}\lin{\mA \theta, \theta} > 0\right\}.
+}
+The entropy fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = ( 0 \ 1 )^\top$.
 
 \paragraph{Log-partition is Self-Concordant}
 As proved in \citet{nesterov1994interior} self-concordance is preserved by Fenchel conjugacy.
@@ -1365,14 +1367,14 @@ where the norm is induced by the matrix
     \mF
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
-    = \Cov_{\nat^*}(T)^{-1} 
+    = \Cov_{\nat^*}(T)^{-1}
 }
 where the second equality is a general property of convex conjugates.
 Plugging the MLE~\eqref{eq:defMLE} into this quadratic and expanding it yields
 \aligns{
 	\E \half \norm{\inv{n}  \sum_i T_i - \m^* }_\mF^2 
 	&=\inv{2n^2} \sum_i \E \norm{T_i - \m^* }_\mF^2 
-	+ \inv{2n^2} \sum_{i\neq j}\expect{T_i - \m^*}^\top \mF \overbrace{\expect{T_j - \m^*}}^{0} ]\\
+	+ \inv{2n^2} \sum_{i\neq j}\expect{T_i - \m^*}^\top \mF \overbrace{\expect{T_j - \m^*}}^{0}\\
 	&=\inv{2n}  \E \norm{T_1 - \m^* }_\mF^2 \\
 	& = \inv{2n} \Tr(\mF\ \expect{(T_1 - \m^*) (T_1 - \m^*)^\top}) \\
 	&= \inv{2 n} \Tr(\mF \Cov_{\nat^*}(T)) = \frac{d}{2n} 
@@ -1424,10 +1426,6 @@ Actually, this is also true in higher dimension, as proved by \citet{nesterov199
 We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
 \begin{itemize}
 	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ 
-	%and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
-%	\fdk{The second one should be 
-%	$\sqrt{ \langle [\nabla^2A^*({\color{red} \nabla A(x)})]^{-1}\cdot,\, \cdot \rangle }$?
-%	}
 	\item the distance function $\omega(t) = t-\ln (1+t),\;t\geq 0$, and its dual $\;\omega^*(t) = -t-\ln(1-t)$ defined for $t\in [0,1]$.
 \end{itemize}
 Note that $\omega^*(t)$ is positive, convex and monotonically increasing for $t\in[0,1]$.
@@ -1551,10 +1549,69 @@ If assumption~\eqref{eq:hanzely} holds, then
 where we assumed $\lr_n  \in O\paren{\inv{n}}$.
 In conclusion, assuming~\eqref{eq:hanzely} holds uniformly or in expectation immediately implies a $O\paren{\inv{n}}$ convergence rate on the variance.
 
+
+
+
 \section{REVIEW OF SMD}
 \label{app:SMD}
 
-\rlp{Introduce SMD, in primal (minimization) and dual formulations.}
+We use this section to give more details on the (stochastic) mirror descent algorithm.
+One perspective on gradient descent with step-sizes, 
+the update $\theta_{n+1} = \theta_n - \gamma \nabla f(\theta_n)$ is to view it 
+as the minimization of the linear approximation of $f$ at $\theta_n$, 
+$f(\theta) \approx f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n}$
+and a quadratic penalty scaled by ${1}/{\gamma}$, 
+\alignn{
+	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} \frac{1}{2}\norm{\theta - \theta_n}^2.
+}
+Mirror descent generalizes the above, using the Bregman divergence induced by a (Legendre) function $A$ instead of the Euclidean norm, 
+\alignn{\label{eq:mirror-descent-primal}
+	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} {\theta - \theta_n}^2.
+}
+Mirror descent coincides with gradient descent if $A(\theta) = \frac{1}{2}\norm{\theta}^2$.
+As \cref{eq:mirror-descent-primal} is convex, the minimum is at a stationary point, 
+found by taking the derivative and setting to 0, 
+leading to the update $\theta_{n+1}$ satisfying
+\alignn{
+	\nabla f(\theta_n) + \frac{1}{\gamma}\paren{\nabla A(\theta_{n+1}) - \nabla A(\theta_n)} = 0
+	&&\implies&&
+	\nabla A(\theta_{n+1}) = \nabla A(\theta_n) - \gamma \nabla f(\theta_n).
+}
+Expressed with the dual parameters $\mu_{n} = \nabla A(\theta_{n})$, 
+$\mu_{n+1} = \mu_n - \gamma \nabla f(\theta_n)$. 
+
+{\bf In our case,} where the objective function is the (negative) log-likelihood of an exponential family, 
+\alignn{
+	f(\theta) = A(\theta) - \lin{\frac{1}{n} \sum_{i=1}^n T(X_i), \theta},
+}
+mirror descent with a step-size of $1$ and the log-partition function $A$ as the reference function is exact;
+\alignn{\begin{aligned}
+	\mu_{n+1} 
+	= \mu_n - \nabla f(\theta_n)
+	= \mu_n - \paren{\nabla A(\theta_n) - \frac{1}{n}\sum_{i=1}^n T(x_i)}
+	= \frac{1}{n}\sum_{i=1}^n T(x_i).
+	\end{aligned}
+}
+In a stochastic, online version 
+where the linearization of the objective is obtained from iid samples, 
+a decreasing step-size of $\gamma_n = 1/n$ recovers the ``online'' estimate of the MLE.
+The case of $\mu_1 = T(x_1)$ follows from the above, 
+and in general, assuming it holds for $\mu_n$, 
+\alignn{\begin{aligned}
+	\mu_{n+1} &= \mu_n - \gamma_n g(\theta_n)
+	= \mu_n - \gamma_n (\mu_n - x_n)
+	\\
+	&= (1 - \frac{1}{n}) \mu_n + \frac{1}{n} T(x_n)
+	=
+	\frac{n-1}{n} \frac{1}{n-1}\sum_{i=1}^{n-1} T(x_i)
+	= 
+	\frac{1}{n} \sum_{i=1}^{n} T(x_i)
+	+ \frac{1}{n} T(x_n).
+\end{aligned}}
+The derivation in the main text gives the more general result, 
+of using step-sizes of the form $1/(n+n_0)$ to recover online MAP estimation 
+with a conjugate prior depending on $n_0$ and the initial estimate of the parameters $\theta_0$.
+
 	
 
 
