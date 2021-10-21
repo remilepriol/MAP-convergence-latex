@@ -1441,7 +1441,11 @@ for all feasible $t$ and for some $C\geq 0$.
 
 We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
 \begin{itemize}
-	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
+	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ 
+	and its dual local norm $\|\cdot\|_x^*= \sqrt{ \langle [\nabla^2A^*(x)]^{-1}\cdot,\, \cdot \rangle }$,
+	\fdk{The second one should be 
+	$\sqrt{ \langle [\nabla^2A^*({\color{red} \nabla A(x)})]^{-1}\cdot,\, \cdot \rangle }$?
+	}
 	\item the distance function $\omega(t) = t-\ln (1+t),\;t\geq 0$, and its dual $\;\omega^*(t) = -t-\ln(1-t)$ defined for $t\in [0,1]$.
 \end{itemize}
 Note that $\omega^*(t)$ is positive, convex and monotonically increasing for $t\in[0,1]$.
@@ -1545,6 +1549,7 @@ where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
 We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
 \end{proof}
 
+
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
 
@@ -1556,7 +1561,7 @@ We see that for a pair of conjugate functions, the self-concordance ratios are o
 \label{app:SMD}
 
 \rlp{Introduce SMD, in primal (minimization) and dual formulations.}
-
+	
 
 
 
