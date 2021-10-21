@@ -1366,14 +1366,14 @@ where the norm is induced by the matrix
     \mF
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
-    = \Cov_{\nat^*}(T)^{-1} 
+    = \Cov_{\nat^*}(T)^{-1}
 }
 where the second equality is a general property of convex conjugates.
 Plugging the MLE~\eqref{eq:defMLE} into this quadratic and expanding it yields
 \aligns{
 	\E \half \norm{\inv{n}  \sum_i T_i - \m^* }_\mF^2 
 	&=\inv{2n^2} \sum_i \E \norm{T_i - \m^* }_\mF^2 
-	+ \inv{2n^2} \sum_{i\neq j}\expect{T_i - \m^*}^\top \mF \overbrace{\expect{T_j - \m^*}}^{0} ]\\
+	+ \inv{2n^2} \sum_{i\neq j}\expect{T_i - \m^*}^\top \mF \overbrace{\expect{T_j - \m^*}}^{0}\\
 	&=\inv{2n}  \E \norm{T_1 - \m^* }_\mF^2 \\
 	& = \inv{2n} \Tr(\mF\ \expect{(T_1 - \m^*) (T_1 - \m^*)^\top}) \\
 	&= \inv{2 n} \Tr(\mF \Cov_{\nat^*}(T)) = \frac{d}{2n} 
