@@ -1426,44 +1426,6 @@ A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is d
 for all feasible $t$ and for some $C\geq 0$.
 \end{definition}
 
-\begin{proposition}
-	\label{prop:conjugateConcordance}
-	Let $f:\real \rightarrow \real$ be a self-concordant function of Legendre type. Then its convex conjugate $f^*$ is also self-concordant.
-\end{proposition}
-\begin{proof}
-When $f$ is of Legendre type then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ has inverse gadients
-\begin{align}
-    \nabla f \circ \nabla f^*  &= \Id \\
-     \nabla f^* \circ \nabla f &= \Id
-\end{align}
-where $\Id$ is the identity function on the relevant domain. 
-Deriving this equality proves that some Hessians are inverse of each other 
-\begin{align}
-    \nabla^2 f(x) \nabla^2 f^*(x^*) = \mI
-    \label{eq:conjugateHessian}
-\end{align}
-where $(x,x^*)$ are conjugate points -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
-\TODO{Why are Hessians not 0?}
-In 1 dimension, this inequality is more simply written 
-\aligns{f''(x) f^{* \prime \prime}(x^*) = 1}
-Until now, this should be familiar to the reader.
-The interesting surprise is that self-concordance appears when we derive again this equality. 
-\begin{align}
-    &1= f''(x) f^{* \prime \prime}(f'(x)), \forall x \\
-    \implies
-    &0 = f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))\\
-    \iff
-    &0 = f'''(x)f^{* \prime \prime}(x^*)  + f''(x)^2 f^{* \prime \prime \prime}(x^*)\\
-    \implies
-    &0 = \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  f^{* \prime \prime}(x^*)^{-\half}
-    + f''(x)^{\half} \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}} \\
-    \implies
-    &0= \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}}
-\end{align}
-where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
-We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
-\end{proof}
-
 \subsection{Properties of Self-concordant functions}
 
 We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
@@ -1532,6 +1494,45 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 %\begin{proof}
 %	
 %\end{proof}
+
+\subsection{Self-concordance and Convex Conjugates}
+\begin{proposition}
+	\label{prop:conjugateConcordance}
+	Let $f:\real \rightarrow \real$ be a self-concordant function of Legendre type. Then its convex conjugate $f^*$ is also self-concordant.
+\end{proposition}
+\begin{proof}
+When $f$ is of Legendre type then its convex conjugate $f^*(y) = \max_x \langle x, y \rangle - f(x)$ has inverse gadients
+\begin{align}
+    \nabla f \circ \nabla f^*  &= \Id \\
+     \nabla f^* \circ \nabla f &= \Id
+\end{align}
+where $\Id$ is the identity function on the relevant domain. 
+Deriving this equality proves that Hessians are inverse of each other 
+\begin{align}
+    \nabla^2 f(x) \nabla^2 f^*(x^*) = \mI
+    \label{eq:conjugateHessian}
+\end{align}
+when evaluated at conjugate pairs of points $(x,x^*)$ -- e.g. $x^*=\nabla f(x)$ and $x = \nabla f^*(x^*)$.
+These Hessians are never $0$.
+In 1 dimension, this inequality is more simply written 
+\aligns{f''(x) f^{* \prime \prime}(x^*) = 1}
+Until now, this should be familiar to the reader.
+The interesting surprise is that self-concordance appears when we derive again this equality. 
+\begin{align}
+    &1= f''(x) f^{* \prime \prime}(f'(x)), \forall x \\
+    \implies
+    &0 = f'''(x)f^{* \prime \prime}(f'(x))  + f''(x)^2 f^{* \prime \prime \prime}(f'(x))\\
+    \iff
+    &0 = f'''(x)f^{* \prime \prime}(x^*)  + f''(x)^2 f^{* \prime \prime \prime}(x^*)\\
+    \implies
+    &0 = \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  f^{* \prime \prime}(x^*)^{-\half}
+    + f''(x)^{\half} \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}} \\
+    \implies
+    &0= \frac{f'''(x)}{f''(x)^{\frac{3}{2}}}  + \frac{f^{* \prime \prime \prime}(x^*)}{f^{* \prime \prime}(x^*)^{\frac{3}{2}}}
+\end{align}
+where to reach the last line, we used~\eqref{eq:conjugateHessian} again.
+We see that for a pair of conjugate functions, the self-concordance ratios are opposite of each other, which concludes the proof.
+\end{proof}
 
 \section{BIAS-VARIANCE}
 \label{app:bias-variance}
