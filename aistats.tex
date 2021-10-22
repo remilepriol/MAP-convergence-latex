@@ -1367,7 +1367,7 @@ where the norm is induced by the matrix
     \mF
     :=\nabla^2\conj(\m^*)
     = \nabla^2\logpart(\nat^*)^{-1}
-    = \Cov_{\nat^*}(T)^{-1}
+    = \Cov_{\nat^*}(T)^{-1},
 }
 where the second equality is a general property of convex conjugates.
 Plugging the MLE~\eqref{eq:defMLE} into this quadratic and expanding it yields
@@ -1377,7 +1377,7 @@ Plugging the MLE~\eqref{eq:defMLE} into this quadratic and expanding it yields
 	+ \inv{2n^2} \sum_{i\neq j}\expect{T_i - \m^*}^\top \mF \overbrace{\expect{T_j - \m^*}}^{0}\\
 	&=\inv{2n}  \E \norm{T_1 - \m^* }_\mF^2 \\
 	& = \inv{2n} \Tr(\mF\ \expect{(T_1 - \m^*) (T_1 - \m^*)^\top}) \\
-	&= \inv{2 n} \Tr(\mF \Cov_{\nat^*}(T)) = \frac{d}{2n} 
+	&= \inv{2 n} \Tr(\mF \Cov_{\nat^*}(T)) = \frac{d}{2n} ,
 }
 where on the first line we used independence of samples, on the second line we used the fact that samples are identically distributed, and on the third line we used the  trace trick along with the linearity of the trace $\Tr$.
 On the way, this also proves that for the MLE $\norm{\m - \m^*}^3 \in O(n^{-\half[3]})$.
@@ -1386,7 +1386,7 @@ This yield the final rate for the MLE
 	\E \bregmanconj \paren{\E [T(X)] ; \inv{n}  \sum_i T_i}
 	= \frac{d}{2n} + O(n^{- \frac{3}{2}} ) \; .
 \end{align}
-For the MAP~\eqref{eq:defMAP}, the quadratic decomposes into bias and variance
+For the MAP~\eqref{eq:defMAP}, the quadratic decomposes into bias and variance:
 \begin{align}
 	\E \half \norm{\mu^* -  \frac{n_0 \mu_0 + \smallsum_i T(x_i)}{n_0+n} }^2_{\mF}
 	&= \frac{n d}{2(n+n_0)^2}  +  \frac{n_0^2}{(n+n_0)^2} \half \norm{\mu^* -  \mu_0}^2_{\mF} \\
@@ -1483,7 +1483,7 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 \label{app:bias-variance}
 In this section, we start from the notions of bias and variance introduced in \cref{eq:bias-variance}.
 First, we prove that the bias of the MLE of a Gaussian variance decreases in $O(\inv{n^2})$. 
-Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields a convergence rate on the variance term.
+Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields to a convergence rate on the variance term.
 
 \subsection{Bias of a Gaussian Variance MLE}
 For a Gaussian variance model, the MLE follows a scaled $\chi^2(n)$ distribution. 
@@ -1496,13 +1496,13 @@ This means that
 	=\expect{\frac{n}{\chi^2(n)}}
 	= \frac{n}{n-2}\; .
 }
-Consequently
+Consequently,
 \alignn{
 	\bregmanconj(\m^*, \tilde \m_n) 
 	&= \half \paren{\frac{n}{n-2} -1 + \log\frac{n-2}{n}}\\
 	&= \frac{1}{n-2} + \half \log\paren{1 - \frac{2}{n}}\\
 	&\leq \inv{n-2} - \inv{n} 
-	= \frac{2}{n(n-2)}
+	= \frac{2}{n(n-2)},
 }
 so the bias of the MLE of a Gaussian Variance decreases like $O\paren{\inv{n^2}}$.
 
@@ -1522,7 +1522,7 @@ This means that
 	=\expect{\lin{\nat - \E[\nat],\mu}} 
 	= \expect{\cS_\logpart(\nat, \E[\nat])} \; .
 }
-where the last equality holds by symmetry between the roles of $\logpart$ and $\conj$.
+The last equality holds by symmetry between the roles of $\logpart$ and $\conj$.
 Note that the middle covariance formulation is actually the one  used by \citet{hanzely2018fastest}.
 Now, \cref{eq:bias-variance} defines the variance as 
 \alignn{
@@ -1537,7 +1537,7 @@ where expectations $\E_{1:n}$ are on all samples $X_1, \dots, X_n$, whereas~\eqr
 	\expect[n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) } \leq \lr^2 C \; ,
 }
 where the expectation $\E_{n}$ is taken over only the last sample $X_n$, and the bound should hold uniformly over all $\hat\mu_{n-1}$.
-Taking the expectation over $\hat\mu_{n-1}$ instead yields
+Taking the expectation over $\hat\mu_{n-1}$ instead gives
 \alignn{
 	\expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }  \leq \lr^2 C \;.
 }
@@ -1546,7 +1546,7 @@ To overcome this difference, we need to plug in the form of $\hat \mu_n = \frac{
 \alignn{
 	&\MAPm - \E_n[\MAPm] = \frac{T_n - \m^*}{n_0+n} \\
 	\implies & \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }
-	= \inv{n_0+n} \expect[1:n]{ \lin{\MAPt , T_1 - \m^*} }
+	= \inv{n_0+n} \expect[1:n]{ \lin{\MAPt , T_1 - \m^*} },
 }
 while
 \alignn{
@@ -1554,12 +1554,12 @@ while
 	\implies & \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{1:n}[\hat\mu_n]) }
 	=\frac{n}{n_0+n} \expect[1:n]{ \lin{\MAPt , T_1 - \m^*} } \; .
 }
-In the end we get that the variance is dominated by $n$ times the expectation of \cref{eq:hanzely}
+In the end, we get that the variance is dominated by $n$ times the expectation of \cref{eq:hanzely}:
 \alignn{
 	\expect[1:n]{\bregmanconj(\tilde \m_n , \hat\m_n) }
 	\leq n \expect[1:n]{\cS_\conj(\hat\mu_n , \E_{n}[\hat\mu_n]) }  \; .	
 }
-If assumption~\eqref{eq:hanzely} holds, then
+If assumption~\eqref{eq:hanzely} holds, then we have
 \alignn{
 \expect[1:n]{\bregmanconj(\tilde \m_n , \hat\m_n) }
 \leq n \lr_n^2 C \in O\paren{\inv{n}} \; ,
@@ -1574,15 +1574,14 @@ In conclusion, assuming~\eqref{eq:hanzely} holds uniformly or in expectation imm
 \label{app:SMD}
 
 We use this section to give more details on the (stochastic) mirror descent algorithm.
-One perspective on gradient descent with step-sizes, 
-the update $\theta_{n+1} = \theta_n - \gamma \nabla f(\theta_n)$ is to view it 
-as the minimization of the linear approximation of $f$ at $\theta_n$, 
-$f(\theta) \approx f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n}$
-and a quadratic penalty scaled by ${1}/{\gamma}$, 
+We start with gradient descent with step-sizes $\gamma$. 
+the update $\theta_{n+1} = \theta_n - \gamma \nabla f(\theta_n)$ can be viewed as the minimization of the linear approximation of $f$ at $\theta_n$
+$f(\theta) \approx f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n}$, 
+alongside with quadratic penalty scaled by ${1}/{\gamma}$:
 \alignn{
 	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} \frac{1}{2}\norm{\theta - \theta_n}^2.
 }
-Mirror descent generalizes the above, using the Bregman divergence induced by a (Legendre) function $A$ instead of the Euclidean norm, 
+Mirror descent generalizes the above, using the Bregman divergence induced by a (Legendre) function $A$ instead of the Euclidean norm as follow, 
 \alignn{\label{eq:mirror-descent-primal}
 	\theta_{n+1} = \arg\min_\theta f(\theta_n) + \lin{\nabla f(\theta_n), \theta - \theta_n} + \frac{1}{\gamma} \bregman(\theta, \theta_n).
 }
@@ -1595,14 +1594,14 @@ leading to the update $\theta_{n+1}$ satisfying
 	&&\implies&&
 	\nabla A(\theta_{n+1}) = \nabla A(\theta_n) - \gamma \nabla f(\theta_n).
 }
-Expressed with the dual parameters $\mu_{n} = \nabla A(\theta_{n})$, 
+Expressed with the dual parameters, we obtain $\mu_{n} = \nabla A(\theta_{n})$, 
 $\mu_{n+1} = \mu_n - \gamma \nabla f(\theta_n)$. 
 
-{\bf In our case,} where the objective function is the (negative) log-likelihood of an exponential family, 
+{\bf In our case,} where the objective function is the (negative) log-likelihood of an exponential family, we have
 \alignn{
-	f(\theta) = A(\theta) - \lin{\frac{1}{n} \sum_{i=1}^n T(X_i), \theta},
+	f(\theta) = A(\theta) - \lin{\frac{1}{n} \sum_{i=1}^n T(X_i), \theta}.
 }
-mirror descent with a step-size of $1$ and the log-partition function $A$ as the reference function is exact;
+Using Mirror descent with a step-size of $1$ and the log-partition function $A$ as the reference function gives
 \alignn{\begin{aligned}
 	\mu_{n+1} 
 	= \mu_n - \nabla f(\theta_n)
