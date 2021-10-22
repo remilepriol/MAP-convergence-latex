@@ -894,7 +894,7 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \addcontentsline{toc}{section}{Appendix} % Add the appendix text to the document TOC
 \part{Appendix} % Start the appendix part
 \begin{important}
-	{\bf Erratum:}  contrary to what is written in the main text, the log-partition of a Gaussian \emph{is} self-concordant. See \cref{app:gaussian} for details. 
+	{\bf Erratum:} contrary to what is written in the main text in the last paragraph of Section~\ref{ssec:gaussian} and~\ref{ssec:local-quadratic}, the log-partition of a full Gaussian \emph{is} self-concordant. See \cref{app:gaussian} for details. This does not change the narrative of the paper though.
 \end{important}
 \parttoc % Insert the appendix TOC
 
@@ -1318,9 +1318,9 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 
 \begin{important}
 	{\bf Erratum:}  
-	In the main text, we claimed that the log-partition of a Gaussian was not self-concordant. 
-	There was an error in our derivations and we will now prove the opposite.
-	However this does not change our story, and in particular our concern about the lack of results in the few sample regime remains valid.
+	In the main text, we claimed by mistake in the last paragraph of Section~\ref{ssec:gaussian} and~\ref{ssec:local-quadratic} that the log-partition of a full Gaussian is not self-concordant. 
+	There was an error in our derivations and we will now prove the opposite (using classical results).
+	However, this does not change our main story, and in particular, the point that we made in the last paragraph of Section~\ref{ssec:local-quadratic} that there is a lack of results in the few sample regime remains valid.
 	%TODO ostroskii and bach are using a subgaussian assumption which does not hold for a Gaussian, so there might still be work to do. But also check anastasiou to be sure.
 \end{important}
 
@@ -1330,7 +1330,7 @@ In this section, we prove that for a Gaussian, the entropy and log-partition fun
 The Gaussian log-partition function and entropy are, up to constants,
 \alignn{
 	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \\
-	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; ,
+	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; , \label{eq:app-entropy}
 }
 where $\nat_1\in\real, \nat_2 <0$ and $\mu_1\in\real, \mu_2>\mu_1^2$.
 % TODO These functions and their domains are represented in Figure \TODO{}.
@@ -1338,7 +1338,7 @@ We provide definitions of self-concordance in \cref{app:self-concordant}.
 
 
 
-\paragraph{Entropy is Self-Concordant,}
+\paragraph{Entropy is Self-Concordant.}
 \citet[Example 4.1.1.4,   p.177]{nesterov2003introductory} proves that logarithmic barriers for second order regions are self-concordant, 
 that is functions of the form 
 \alignn{
@@ -1346,11 +1346,11 @@ that is functions of the form
 	\text{ on }
 	\left\{\theta\in\mathbb{R}^n \cond \alpha + \lin{a, \theta} - \frac{1}{2}\lin{\mA \theta, \theta} > 0\right\}.
 }
-The entropy fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = ( 0 \ 1 )^\top$.
+The entropy~\eqref{eq:app-entropy} fits into this definition with $\mA = \begin{pmatrix} 2 & 0 \\ 0 & 0 \end{pmatrix}$ and $a = ( 0 \ 1 )^\top$.
 
-\paragraph{Log-partition is Self-Concordant}
-As proved in \citet{nesterov1994interior} self-concordance is preserved by Fenchel conjugacy.
-Since $\conj$ is self-concordant, $\logpart$ as well.
+\paragraph{Log-partition is Self-Concordant.}
+As proved in \citet{nesterov1994interior}, self-concordance is preserved by Fenchel conjugacy.
+Since $\conj$ is self-concordant, $\logpart$ is as well.
 For a more accessible reference, see also \citet[Prop.~6]{sun2019generalized}.
 
 \section{ASYMPTOTIC DERIVATION}
@@ -1401,7 +1401,7 @@ This $O(n^{-2})$ term is dominated by the $O(n^{-\half[3]})$ term from the quadr
 \section{SELF-CONCORDANCE}
 \label{app:self-concordant}
 
-In this section, we define self-concordance, we prove proposition~\ref{prop:selfConcordant}, and we prove that a 1 dimensional function is self-concordant if and only if its convex conjugate is self-concordant as well.
+In this section, we define self-concordance and we prove Proposition~\ref{prop:selfConcordant}.
 
 \begin{definition}[Self-concordance]
 \label{def:self-concordance}
@@ -1417,13 +1417,13 @@ A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is d
 %for all feasible $t$ and for some $C\geq 0$.
 %\end{definition}
 
-{\bf Correction:} In the main text, we claimed that the Fenchel conjugate of a 1 dimensional function is also self-conjugate. 
-Actually, this is also true in higher dimension, as proved by \citet{nesterov1994interior}. See \citet[Prop.~6]{sun2019generalized} for a more accessible reference.
+{\bf Clarification:} In the main text in Section~\ref{ssec:local-quadratic}, we claimed that the Fenchel conjugate of a 1-dimensional function is also self-concordant. 
+Actually, this is also true in higher dimensions, as proved by \citet{nesterov1994interior}. See \citet[Prop.~6]{sun2019generalized} for a more accessible reference.
 
 
 \subsection{Properties of Self-concordant functions}
 
-We quickly reviews some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a few notations. Let $A^*$ be a self-concordant function. Then, we write
+We quickly review some important properties of self-concordant functions, introduced in \citep{nesterov2003introductory}. We start with a some notation. Let $A^*$ be a self-concordant function. Then, we write
 \begin{itemize}
 	\item the local norm $\|\cdot\|_x = \sqrt{ \langle \nabla^2A^*(x)\cdot,\, \cdot \rangle }$ 
 	\item the distance function $\omega(t) = t-\ln (1+t),\;t\geq 0$, and its dual $\;\omega^*(t) = -t-\ln(1-t)$ defined for $t\in [0,1]$.
@@ -1446,7 +1446,7 @@ We now present two important results. The first one shows how to convert the loc
 	\]
 \end{proposition}
 
-The next result show that, if $y$ is sufficiently close to $x$, then we can bound the Bregman divergence of $A^*$ using the distance function $\omega^*$ and local norms.
+The next result shows that, if $y$ is sufficiently close to $x$, then we can bound the Bregman divergence of $A^*$ using the distance function $\omega^*$ and local norms.
 \begin{proposition}(Upper bound of self-concordant functions \citep[Theorem 4.1.8]{nesterov2003introductory}) \label{prop:upper_bound_self_concordance}
 	For any $x,\,y\in\dom A^*$, if $\|y-x\|_x<1$, then
 	\[
