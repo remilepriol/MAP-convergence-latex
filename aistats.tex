@@ -217,7 +217,7 @@ $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \, \& \, p(x)>0$.
 }
 has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
-We thus consider the fundamental problem: %TODO thus
+We thus consider the fundamental problem: %TODO thus repetition
 %\begin{center}
 %	\framebox{
 %		\parbox[c][]{0.9\linewidth}{
@@ -1325,17 +1325,50 @@ Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\f
 \end{important}
 
 In this section, we prove that for a Gaussian, the entropy and log-partition functions are self-concordant.
-% TODO We also give complementary illustrations on the Gaussian mirror map and MLE.
+We also provide complementary illustrations of 
+these functions in \cref{fig:logpart-entropy}, 
+their gradients (e.g. the mirror maps) in \cref{fig:mirrormaps},
+and paths taken by MLE and MAP in \cref{fig:gaussian-paths} .
 
 The Gaussian log-partition function and entropy are, up to constants,
 \alignn{
-	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \\
+	\logpart(\nat) &= \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \label{eq:app-logpart} \\
 	\conj(\m) &= - \half \log (\mu_2 - \mu_1^2) \; , \label{eq:app-entropy}
 }
 where $\nat_1\in\real, \nat_2 <0$ and $\mu_1\in\real, \mu_2>\mu_1^2$.
-% TODO These functions and their domains are represented in Figure \TODO{}.
 We provide definitions of self-concordance in \cref{app:self-concordant}.
 
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.45\textwidth]{figs/2d/logpart.pdf}
+	\includegraphics[width=.45\textwidth]{figs/2d/entropy.pdf}
+	\caption{
+	(left) Contours of the log-partition function~\eqref{eq:app-logpart}.
+	(right) Contours of the entropy~\eqref{eq:app-entropy}.
+	}
+	\label{fig:logpart-entropy}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.9\textwidth]{figs/2d/mirrormap.pdf}
+	\caption{
+	(top) Grid deformation produce by $\nabla \logpart(\nat)$.
+	(bottom) Grid deformation produced by $\nabla\conj(\m)$.
+	}
+	\label{fig:mirrormaps}
+\end{figure}
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.9\textwidth]{figs/2d/gaussian_paths.pdf}
+	\caption{
+		Paths taken by MLE (blue) and MAP (orange) on top of contours for $\KL(\nat^* || \nat)$. 
+		We set $\mu^*=(0, 1), \mu_0 = (1, 2)$, and $n_0=4$, and $n$ varies from $1$ to $20$.
+		In green, red and purple, we represent the paths respectively taken by the MAP dual expectation  $(\bar\nat_n, \bar \mu_n)$, MAP primal expectation $(\tilde\nat_n,\tilde\mu_n)$, and MLE primal expectation. Recall that the MLE dual expectation is $\mu^*$ itself.
+	}
+	\label{fig:gaussian-paths}
+\end{figure}
 
 
 \paragraph{Entropy is Self-Concordant.}
@@ -1483,7 +1516,7 @@ that holds while $ \|\meanp^*-\meanp\|_{\meanp^*}<0.21$, which is the desired re
 \label{app:bias-variance}
 In this section, we start from the notions of bias and variance introduced in \cref{eq:bias-variance}.
 First, we prove that the bias of the MLE of a Gaussian variance decreases in $O(\inv{n^2})$. 
-Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields to a convergence rate on the variance term.
+Then we prove that assuming~\eqref{eq:hanzely} holds, whether uniformly or in expectation, yields a convergence rate on the variance term.
 
 \subsection{Bias of a Gaussian Variance MLE}
 For a Gaussian variance model, the MLE follows a scaled $\chi^2(n)$ distribution. 
@@ -1514,7 +1547,7 @@ The first step is to notice the symmetrized Bregman can be expressed as an inner
 	= \lin{ \nat -\bar\nat , \mu - \bar\mu} \; .
 }
 Now notice that~\eqref{eq:hanzely} features $\mu := \hat \mu_{n+1} = \hat\m_{n} - \lr g(\hat \nat_{n})$ stochastic and $\bar\mu := \bar\mu_{n+1} =  \hat\m_{n}   -\lr \nabla f(\hat \nat_{n})$ deterministic such that $\E_g[\mu] = \bar\mu$.
-This means that
+For such a pair of variables, the expectation of the symmetrized Bregman corresponds to a covariance between primal and dual parameters
 \alignn{
 	\expect{\cS_\conj (\mu , \E[\mu])} 
 	= \expect{\lin{\nat, \mu - \E[\mu]}}
