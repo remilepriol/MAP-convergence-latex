@@ -901,8 +901,22 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
 
+\begin{figure}[ht]
+	\centering
+\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
+		Solid curve  are average over $10^5$ trials.
+		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, tight up to a factor 2).
+		Shaded areas are 90\% confidence interval.
+		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
+		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
+	}
+	\label{fig:MAP_rate}
+\end{figure}
+
 In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
 and add some context and experimental observations.
+In particular, we show the bound~\eqref{eq:MAP_rate} in \cref{fig:MAP_rate}.
 Let us recall the form of the divergence with different parametrizations.
 For a Gaussian with known mean $0$ and covariance $\sigma^2$, 
 natural and mean parameters $\theta, \m$;
