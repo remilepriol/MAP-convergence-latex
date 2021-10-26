@@ -152,27 +152,16 @@ We believe solving this very fundamental problem may bring progress to both the 
 %\part{} % Start the document part
 %\parttoc % Insert the document TOC
 
-% TODO
-%\begin{figure}[t]
-%	\centering
-%\includegraphics[width=.4\textwidth]{gammaMAPrate.pdf}
-%	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
-%		Solid curve  are average over $10^5$ trials.
-%		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
-%		Shaded areas are 90\% confidence interval.
-%		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
-%		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
-%		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
-%	}
-%	\label{fig:curves}
-%\end{figure}
-
 \begin{figure}[t]
 	\centering
-\includegraphics[width=.4\textwidth]{fewsamples.pdf}
-	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance MLE (\S\ref{ssec:gaussian-variance}) against number of samples $n$. The bold curve plots the average over 10000 trials,  dark shaded area is 90\% confidence interval, and light shade is a min-max interval.
-		The expected value is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}, while the variance remains large.
-		We wish to find similar upper bounds for a variety of exponential families.
+\includegraphics[width=.4\textwidth]{gammaMAPrate.pdf}
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
+		Solid curve  are average over $10^5$ trials.
+		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
+		Shaded areas are 90\% confidence interval.
+		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
+		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
+		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
 	}
 	\label{fig:curves}
 \end{figure}
@@ -216,17 +205,8 @@ $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \, \& \, p(x)>0$.
 %Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
 }
 has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
-With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research.
-We thus consider the fundamental problem: %TODO thus repetition
-%\begin{center}
-%	\framebox{
-%		\parbox[c][]{0.9\linewidth}{
-%			\begin{center}
-%			\emph{Can we upper bound  the expected value of the KL divergence for MLE or MAP?}
-%		\end{center}
-%		}
-%	}
-%\end{center}
+With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research,
+and raising the fundamental problem:
 \begin{equation}
 \boxed{
 \begin{aligned}
@@ -237,11 +217,10 @@ We thus consider the fundamental problem: %TODO thus repetition
 \tag{$\star$}
 \label{problem}
 \end{equation}
-% RLP : that is a dirty hack, but I would like to be able to reference the problem somehow.
 
-There are already general asymptotic results (\S\ref{ssec:asymptote}), and a finite $n$ result when $\logpart$ is quadratic (e.g., $X$ is Gaussian with known variance)
+There are already general asymptotic results (\S\ref{ssec:asymptote} and Fig.~\ref{fig:curves}), and a finite $n$ result when $\logpart$ is quadratic (e.g., $X$ is Gaussian with known variance)
 or close to quadratic (\S\ref{ssec:quadratic}).
-However, a  general solution for finite $n$ remains elusive. %TODO add link to figure 1
+However, a  general solution for finite $n$ remains elusive. 
 In this paper, we review partial solutions and give ideas on how to solve the problem.
 
 \paragraph{Optimization} 
@@ -546,12 +525,12 @@ and the natural parameters are $\nat= (\frac{m}{\sigma^2} , \frac{-1}{2\sigma^2}
 Examples of MAP and MLE  are represented in \cref{fig:thales} within $\cM$ and $\Theta$ delimited in grey.
 Given these parameters, log-partition and entropy are, up to constants,
 \alignn{
-	\textstyle \logpart(\nat) &= \textstyle \frac{\nat_1^2}{-4\nat_2} - \half \log(-2\nat_2) \\  % TODO remove factor 2
+	\textstyle \logpart(\nat) &= \textstyle \frac{\nat_1^2}{-4\nat_2} - \half \log(-\nat_2) \\ 
 	\textstyle \conj(\m) &= \textstyle - \half \log (\mu_2 - \mu_1^2)
 }
 
 These functions are neither smooth, nor strongly convex, and $\conj$ is self-concordant
-\citep[p.177]{nesterov2003introductory} % TODO add citation to example 4.1.1.4
+\citep[p.177, example 4.1.1.4]{nesterov2003introductory}
 , but $\logpart$ is not (see App.~\ref{app:gaussian}).
 We now discuss the general problem and some ways to solve it via direct expansions of the Bregman divergence.
 
@@ -901,22 +880,9 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
 
-\begin{figure}[ht]
-	\centering
-\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
-	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
-		Solid curve  are average over $10^5$ trials.
-		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, tight up to a factor 2).
-		Shaded areas are 90\% confidence interval.
-		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
-		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
-	}
-	\label{fig:MAP_rate}
-\end{figure}
 
 In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
 and add some context and experimental observations.
-In particular, we show the bound~\eqref{eq:MAP_rate} in \cref{fig:MAP_rate}.
 Let us recall the form of the divergence with different parametrizations.
 For a Gaussian with known mean $0$ and covariance $\sigma^2$, 
 natural and mean parameters $\theta, \m$;
