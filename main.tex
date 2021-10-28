@@ -1895,26 +1895,49 @@ then, if $\|\mu^*-\mu_n\|_{\mu^*} < 1$, we have
 \[
     \mathcal{B}_{A^*}(\mu^*,\mu_n) \leq \omega^*\left(\frac{\|\mu^*-\mu_n\|_{\mu^*}}{1-\|\mu^*-\mu_n\|_{\mu^*}}\right) .
 \]
-Assume $\|\mu^*-\mu_n\|_{\mu^*} < 0.21$, then
+\begin{proposition}
+Assume $\conj$ is self-concordant and  $\|\mu^*-\mu\|_{\mu^*} < 0.21$, then
 \[
-    \bregmanconj(\mu^*,\mu_n) \leq \|\mu^*-\mu_n\|_{\mu^*}^2
+    \bregmanconj(\mu^*,\mu) \leq \|\mu^*-\mu\|_{\mu^*}^2 \; .
 \]
-so we have a local quadratic behavior. To put into euclide's world. Problem is it requires global self-concordance.
+\end{proposition}
+so we have a local quadratic behavior. We can most likely get a lower bound as well -- e.g. a quadratic sandwich.
+We would like to use a concentration bound, either on $\hat \mu_n$ around $\bar \mu_n$ or $\tilde \mu_n$ in norm, or on $\|\mu^*- \hat \mu_n\|_{\mu^*}$ above $\frac{d}{2n} + \text{bias}$.
+Then we could get a high probability bound on $\bregmanconj(\mu^*,\mu) $ after seeing a given number of samples.
 
-\paragraph{Discarded}
-However,
-\begin{align*}
-    \|\mu^*-\mu_n\|^2_{\mu_n} & = \left\|\frac{n+n_0-1}{n+n_0}(\mu^*-\mu_{n-1}) + \frac{1}{n+n_0}(\mu^*-T_n)\right\|^2_{\mu_n},\\
-    & = \left\|\frac{n+n_0-1}{n+n_0}(\mu^*-\mu_{n-1})\right\|_{\mu_n}^2 +  \left\|\frac{1}{n+n_0}(\mu^*-T_n)\right\|^2_{\mu_n} + \frac{2(n+n_0+1)}{(n+n_0)^2}\langle \nabla^2 [A(\mu_n)](\mu^*-\mu_{n-1}),\,(\mu^*-T_n) \rangle,\\
-\end{align*}
-and
-\begin{align*}
-    \|\mu^*-\mu_n\|_{\mu_n} & \leq  \frac{n+n_0-1}{n+n_0}\left\|\mu^*-\mu_{n-1}\right\|_{\mu_n} + \frac{1}{n+n_0}\left\|\mu^*-T_n\right\|_{\mu_n} .
-\end{align*}
-Moreover, by the bounded Hessian change,
-\[
-    \left\|\mu^*-\mu_{n-1}\right\|_{\mu_n} \leq \frac{1}{1-\left\|\mu_n-\mu_{n-1}\right\|_{\mu_{n-1}}}\left\|\mu^*-\mu_{n-1}\right\|_{\mu_{n-1}}
-\]
-    
+Concentration bounds with Mahalanobis bounds for vectors that are not sub-gaussian are not easy to find. In the Gaussian example, $T(x)=(x, x^2)$, and $x^2$ follows a gamma distribution. The framework of sub-exponential or sub-gamma variables may be more suited.
+Let us use a union bound to get something easier to deal with. But first we want an $\infty$ norm.
+Straightforward approach does not work
+\alignn{
+	\norm{\mu}_{\mM^\top \mM} = \norm{\mM \mu}_2
+	\geq \norm{\mu}_\infty \min_{\norm{\nu}_\infty \geq 1} \norm{\mM \nu}_2
+}
+as this minimization is non-convex and impossible to deal with.
+Using the operator norm of the matrix inverse is better
+\alignn{
+	\norm{\mu}_\infty = \norm{\mM^{-1}\mM \mu}_\infty
+	&\leq \norm{\mM^{-1}}_{2\rightarrow\infty} \norm{\mM\mu}_2
+	= \norm{\mM^{-1}}_{2\rightarrow\infty} \norm{\mu}_{\mM^\top\mM} \\
+	\implies
+	\norm{\mF^{-\half}}_{2\rightarrow\infty}^{-1} \norm{\mu}_\infty 
+	&\leq \norm{\mu}_\mF
+}
+Now denote $c:= \norm{\mF^{-\half}}_{2\rightarrow\infty}$ where the norm $2\rightarrow \infty$ is easy to compute as the maximum $\ell^2$ norm of a row. We are ready to enter the realm of probabilities
+\alignn{
+	\Prob(\norm{\mu}_\mF >t)
+	&\leq \Prob\paren{\norm{\mu}_\infty >c t}
+	= \Prob\paren{\bigcup_i \{\mu_i >c t \} \cup \{-\mu_i >c t \} }
+	\leq \sum_i \Prob(\mu_i > c t) + \Prob(\mu_i < - c t)
+}
+where the last inequality is a \textbf{union bound}.
+For MAP, 
+\alignn{
+	\mu =  \frac{n_0 (\mu_0 - \mu^*) + \sum_j ( T_j - \mu^*) }{n_0 + n} 
+}
+which means that $\mu_i >ct$ rewrites into
+\alignn{
+	\sum_j ( T_{j,i} - \mu_i^*) > (n_0 + n)\paren{ct - n_0 (\mu_{0,i} - \mu_i^*) }
+}
+and bounding the deviation of a sum of real valued random variables with zero mean is what concentration bounds typically do. Assuming $T_{j,i}$ is sub-gamma, we may obtain some nice results. We just need to assess the value of sub-gamma parameters if the data is really gaussian. 
 
 \end{document}
