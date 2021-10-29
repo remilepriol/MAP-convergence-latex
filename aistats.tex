@@ -1007,6 +1007,7 @@ and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 
 \subsection{Multivariate MLE}
 
+For the sake of simplicity, in higher dimension we focus on Gaussian covariance estimation and avoid the general Wishart discussion. 
 In higher dimensions, $X \sim \cN(0, \mu_*)$, $X\in\real^d$, $T(X) = XX^\top$, and the mean parameter $\mu_*$ 
 is a $d \times d$ symmetric, positive definite covariance matrix with $p = \frac{d(d+1)}{2}$ degrees of freedom.
 Note that here $d$ denotes the dimensionality of the data $X$, rather than the dimensionality of the parameters $\mu_*$.
@@ -1128,14 +1129,14 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 \begin{lemma}[Expected MAP natural parameter]\label{lem:expected-map-natural-parameter-gaussian}
 	Define the variable $a = n_0 \frac{\mu_0}{\mu^*}$, which characterizes 
 	the importance of the prior relative to the true parameters.
-	The expectation of the natural parameter of the MAP of $\cN(0,\mu_*)$ is bounded by
+	The expectation of the natural parameter of a MAP of $\Gamma(\alpha,\beta)$ is bounded by
 \begin{equation}
 		\frac{n_0+n}{a+n}
 		=\frac{\mu^*}{\mu_n}
 		\leq \expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\nat^*}} 
 		\leq
-		\frac{n_0 +n}{a+(n-2)_+} \; , \forall n\geq 0 \; .
+		\frac{n_0 +n}{a+(n-\inv{\alpha} )_+} \; , \forall n\geq 0 \; .
 		\label{eq:lemma_nat_bound}
 	\end{equation}
 \end{lemma}
@@ -1148,59 +1149,41 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 \alignn{
 		\expect{\frac{\mu^*}{\MAPm}} 
 		= \expect{\frac{\MAPt}{\nat^*}} 
-		= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i^2}}  
-		= (n_0 + n) \expect{\inv{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i^2}{ \mu^*} }} 
-		= (n_0 +n) \expect{\inv{a + \chi^2(n)}} \; ,
+		= \expect{\frac{(n_0+n) \mu^*}{n_0 \mu_0 + \sum_i X_i}}  
+		= \expect{\frac{n_0+n}{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i}{ \mu^*} }} 
+		= \expect{\frac{n_0+n}{a + \Gamma(n\alpha, \alpha)}} \; ,
 }
-	where $\chi^2(n) = \sum_i \frac{X_i^2}{ \mu^*}$ is a chi-square random variable of degree $n$ and $a=n_0 \frac{\mu_0}{\mu^*}$. The expectation reads
+	where  $\sum_i \frac{X_i^2}{ \mu^*} \sim \Gamma(n\alpha, \alpha)$ is a Gamma random variable and $a=n_0 \frac{\mu_0}{\mu^*}$. 
+	Further note that 
 \alignn{
- 	\expect{\inv{a + \chi^2(n)}}  
-	= \int_0^\infty \inv{a+x} \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{2^{\half[n]}\Gamma(\half[n])} dx \; .
+	\expect{\frac{n_0+n}{a + \Gamma(n\alpha, \alpha)}} 
+	= \frac{n_0 + n}{a} \expect{\frac{1}{1 + \Gamma(n \alpha , a \alpha) }} \; .
 }
-	This $1/(a+x)$ is hard to deal with.
-	Fortunately, there is a trick to express it as an integral itself, with an exponential that fits well with the $\chi^2$-density,
+This kind of integrals can be expressed with {generalized exponential integral functions}
+	\begin{align}
+		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; ,
+	\end{align}
+with \href{http://dlmf.nist.gov/8.19.E4}{the formula} \citep[Eq.~8.19.4]{DLMF}
 \alignn{
-		&\int_1^\infty e^{-\frac{zt}{2}} dt = \frac{2}{z} e^{-\half[z]} \\
-		\implies &\inv{z} = \half e^{\half[z]} \int_1^\infty e^{-\frac{zt}{2}} dt \\
-		\implies & \boxed{\inv{a+x} = \half e^{\frac{a+x}{2}} \int_1^\infty e^{- \frac{(a+x)t}{2}}dt  \; .}
-} 
-We can then plug this integral into the expectation and apply Fubini's theorem to get a tractable integral on the inside
-\alignn{
-		2^{\half[n]}\Gamma(\half[n]) \expect{\inv{a + \chi^2(n)}}  
-		&= \int_0^\infty \frac{x^{\frac{n}{2}-1}e^{-\half[x]} }{a+x} dx \\
-		&= \int_0^\infty dx\  x^{\frac{n}{2}-1}e^{-\half[x]} \half e^{\half[a+x]} \int_1^\infty  dt\  e^{-\half[(a+x)t]}  \\
-		&= \half e^{\half[a]} \int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty dx \  x^{\frac{n}{2}-1} e^{-\half[x t]}  \; ,
+	\expect{\frac{1}{1 + \Gamma(\alpha , \beta) }}
+	= \frac{\beta^{\alpha}}{\Gamma(\alpha)} \int_0^\infty \frac{x^{\alpha-1}e^{-\beta x} }{1+x}  dx 
+	= \beta e^{\beta} E_\alpha (\beta) \; .
 }
-	assuming we can exchange the order of integration.
-	Now with the change of variable $x = 2\frac{y}{t}$, eg $dx = 2\frac{dy}{t}$, the inner integral becomes
-	\begin{align}
-		\expect{\inv{a + \chi^2(n)}}  
-		&= \frac{e^{\half[a]} }{2^{\half[n]+1}\Gamma(\half[n]) }\int_1^\infty dt \ e^{-\half[a t]}   \int_0^\infty 2\frac{dy}{t} \  (2\frac{y}{t})^{\frac{n}{2}-1} e^{-y} \\
-		&= \frac{e^{\half[a]} }{2\Gamma(\half[n]) } 
-		\underbrace{\int_1^\infty  \frac{e^{-\half[a t]}}{t^{\frac{n}{2}}}  dt}_{E_{\half[n]}(\half[a])  } \ 
-		\underbrace{\int_0^\infty  y^{\frac{n}{2}-1} e^{-y} dy}_{\Gamma(\half[n])}
-	\end{align}
-	so we finally get  the formula valid for all $n\geq 1$
-	\begin{align}
-		\boxed{\expect{\inv{a + \chi^2(n)}}  = \half e^{\frac{a}{2}} E_{\half[n]}(\half[a])}
-		\label{eq:hard_expectation}
-	\end{align}
-	where the {generalized exponential integral function} is defined as 
-	\begin{align}
-		E_k(z) = \int_1^\infty \frac{e^{-z t} }{t^k} dt \; .
-	\end{align}
-	Now our goal is to bound this function with simpler functions.
+Overall we get
+\alignn{
+\expect{\frac{\mu^*}{\MAPm}}  = (n_0 +n) \alpha e^{a \alpha} E_{n\alpha} ( a \alpha) 
+}
+	Now our goal is to bound this generalized exponential integral with simpler functions.
 	Fortunately, mathematicians have been working on these integrals for decades.
-	For $n \geq 2$, eg $k\geq 1$, we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound} \citep[Eq.~8.19.21]{DLMF}
+	For instance , we have \href{https://dlmf.nist.gov/8.19.E21}{the general bound} \citep[Eq.~8.19.21]{DLMF}
 	\begin{align}
 		e^x E_k(x) 
-		&\leq \inv{x + k - 1} \\
-		\iff \expect{\inv{a + \chi^2(n)}}
-		&\leq \inv{a + n - 2} \\
+		&\leq \inv{x + k - 1} , \ \forall k>1\\
 		\iff \expect{\frac{\mu^*}{\MAPm}} 
-		&\leq \frac{n +n_0}{a + n - 2}.
+		&\leq \frac{(n_0 +n)\alpha}{a\alpha + n\alpha - 1}
+		= \frac{n_0 +n}{a + n - \inv{\alpha}} , \ \forall n >\inv{\alpha} \; .
 	\end{align}
-We are left with a special case when  $n=1$, eg $k=\half$. 
+We are left with a special case when  $n\leq \alpha$. 
 Then we can use the trivial bound 
 \begin{align}
 	\expect{\inv{a + X^2}} < \inv{a}.
@@ -1208,6 +1191,25 @@ Then we can use the trivial bound
 \end{align}
 to conclude the proof.
 \end{proof}
+
+For small $n$. a more subtle alternative uses \href{http://dlmf.nist.gov/8.19.E12}{the recurrence relationship} \cite[Eq.~8.19.12]{DLMF}
+\alignn{
+	\alpha E_{\alpha+1}(\beta) + \beta E_\alpha(\beta) 
+	= e^{-\beta} 
+}
+and combines it with the inequality \citep[Eq.~8.19.21]{DLMF} to get
+\alignn{
+	\beta e^\beta E_\alpha(\beta)
+ 	= 1 - \alpha e^\beta E_{\alpha+1}(\beta)
+ 	\leq 1 - \frac{\alpha}{\alpha + 1 + \beta}
+ 	 = \frac{\beta + 1}{\alpha + \beta + 1} \; .
+}
+Back to the MAP, we get
+\alignn{
+	\expect{\frac{\mu^*}{\MAPm}} 
+	\leq \frac{n_0 + n}{a} \frac{a\alpha + 1}{n \alpha + a \alpha +1}
+	= \frac{n_0 + n}{a + n +\inv{\alpha}} \paren{1 + \inv{a \alpha}}
+}
 
 
 
