@@ -48,6 +48,7 @@
 \usepackage[dvipsnames]{xcolor}
 
 \usepackage{array}
+\usepackage{wrapfig}
 
 \hypersetup{ % SLJ: my standard paper setup...
 	pdftitle={MAP convergence},
@@ -879,53 +880,59 @@ Simon Lacoste-Julien is a CIFAR Associate Fellow in the Learning in Machines \& 
 
 In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
 and add some context and experimental observations.
-Let us recall the form of the divergence with different parametrizations.
-For a Gaussian with known mean $0$ and covariance $\sigma^2$, 
-natural and mean parameters $\theta, \m$;
+As mentioned in the main text, the centered gaussian $\cN(0,\sigma^2)$ has sufficient statistic $x^2$ following a Gamma distribution $\Gamma\paren{\half, \inv{2 \sigma^2}}$. 
+In this section we derive results for samples  from a general gamma distribution $X \sim\Gamma(\alpha,\beta)$ with known shape parameter $\alpha$, but unknown rate parameter $\beta$.
+Results for the Gaussian follow by taking $\alpha=\half$.
+
+The density of $\Gamma(\alpha,\beta)$ reads
+\alignn{
+	p(x) = \frac{\beta^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x} \; .
+}
+When $\alpha$ is known, it can be cast as an exponential family~\eqref{eq:def_expfamily} with sufficient statistic $T(x)=x$, domain $\cX = \real_+$ and base measure $\nu(x)\propto x^{\alpha-1}$. Then the natural parameter is $\nat = -\beta < 0$ and the log-partition function is
+\alignn{
+	\logpart (\nat) = -\alpha \log(-\nat)  + \log\Gamma(\alpha) \; .
+}
+From there we find that the mean parameter is $\mu = \frac{\alpha}{-\nat} >0$ and the entropy has the same form as the log-partition $\conj(\mu) = - \alpha \log(\mu) + \cst$.
+This means that the primal and dual Bregman divergences have the same form as well
 \begin{align}
-	\KL( \sigma_*^2 ; \sigma_n^2 ) 
-	&= \half \left ( \frac{\sigma_*^2}{ \sigma_n^2} - 1 - \log \frac{\sigma_*^2}{ \sigma_n^2} \right)
-	= \phi\paren{\frac{\sigma_*^2}{ \sigma_n^2}},
-	\\
 	\bregmanconj(\m_*; \m_n) 
-	&= \half \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right) 
-	= \phi\paren{\frac{\m_*}{ \m_n}},
+	&= \alpha \left ( \frac{\m_*}{ \m_n} - 1 - \log  \frac{\m_*}{ \m_n} \right) 
+	= \alpha \phi\paren{\frac{\m_*}{ \m_n}},
 	\\
 	\bregman( \nat_n; \nat_* ) 
-	&=  \half \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
-	= \phi\paren{\frac{ \nat_n}{\nat_*}},
+	&=  \alpha \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
+	= \alpha \phi\paren{\frac{ \nat_n}{\nat_*}},
 \end{align}
-where all these lines are equal, and $\phi$ measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
+\begin{wrapfigure}[14]{r}{0.4\textwidth}
+	\centering
+	\includegraphics[width=.38\textwidth]{phi.pdf}
+	\caption{%
+	Illustration of $\phi(z)$ (orange) and its upper bound $\phi(z) + \phi\paren{z^{-1}}$ (grey).
+	They both are barriers near $0$.
+	}
+	\label{fig:phi}
+\end{wrapfigure}
+where these 2 lines are equal, and $\phi$ measures the discrepancy between the ratio $\frac{ \nat_n}{\nat_*} =  \frac{\m_*}{ \m_n}  $ and $1$ via the function
 \begin{align}
-	\phi(z) := \half (z - 1 - \log(z)),
+	\phi(z) := z - 1 - \log(z),
 \end{align}
 illustrated in orange in Figure~\ref{fig:phi}.
 To upper bound for the MAP, due to the difficulty of finding a closed form for the expectation of the logarithm, we focus on the symmetrized Bregman instead
 \alignn{
 	\bregmanconj( \mu_*; \mu_n) 
-	\leq \cS_{\conj} (\mu_*, \mu_n ) 
-	:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) 
-	= \half \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 },
+	\leq \cS_{\conj} (\mu_*, \mu_n )
+	&:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \nonumber\\
+	&=  \alpha \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 },
 	\label{eq:symmetrized_bregman}
 }
 which can also be expressed with $\phi$ as follows:
 \aligns{
 	\label{eq:log_bound}
-	\phi(z) \leq \phi(z) + \phi\paren{\inv{z}}
-	&=  \half \paren{z -1  + \inv{z} -1} 
-	= \frac{(z-1)^2}{z} \; .
+	\phi(z) \leq \phi(z) + \phi\paren{z^{-1}}
+	&=  z -1  + \inv{z} -1
+	= \frac{(z-1)^2}{z} \; ,
 }
-See the grey upper bound in Figure~\ref{fig:phi}.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=.4\textwidth]{phi.pdf}
-	\caption{%
-	$\phi(z)$ is the Bregman divergence induced by $-\log(z)$. 
-	It is a barrier near $0$, and admits an upper bound (in grey) despite being poorly approximated by quadratics.
-	}
-	\label{fig:phi}
-\end{figure}
+and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 
 
 
