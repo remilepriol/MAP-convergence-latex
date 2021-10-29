@@ -497,10 +497,12 @@ The expected suboptimality of the MAP of $\cN(0,\m^*)$ with prior hyper-paramete
 \end{align}
 \end{theorem}
 Anticipating on \S\ref{ssec:bias-variance}, this inequality highlights an explicit $O(\frac{v}{n} + \frac{b}{n^2})$ variance-bias decomposition.
-This inequality was derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus was more tractable.
+This inequality is derived with the symmetrized Bregman $\cB(a,b) + \cB(b,a)$ for which calculus is more tractable.
 This explains why the variance term is twice larger than the asymptote~\eqref{eq:asymptote}.
 Regarding the bias, it vanishes when $\frac{\m_0}{\m^*} =1 + \inv{n_0} $, which happens when the prior is slightly larger than the ground truth.
 This correlates well with our numerical observations (cf App.~\ref{app:gaussian-variance}).
+
+Note that if $X\sim \cN(0,\sigma^2)$, then $X^2 \sim \Gamma\paren{\half, \inv{2\sigma^2}}$ in the shape-rate parametrization of Gamma distributions. In fact the bounds above can be generalized to any distribution $\Gamma\paren{\alpha, \beta}$ with known shape $\alpha$, but we leave it to \cref{app:gaussian-variance} for the sake of clarity.
 
 \begin{figure*}[t]
 	\centering
@@ -631,12 +633,11 @@ For the MLE, the proof of~\eqref{eq:asymptote} from~\eqref{eq:bregmanTaylor} yie
 For MAP, transforming~\eqref{eq:MAP_quadratic}, we get the sufficient condition $n\geq 25d + 5 \norm{\m^* -  \m_0} - n_0$.
 This means that on average, we need $25$ times more samples than the dimension to reach the quadratic regime and ensure an upper-bound like~\eqref{eq:MAP_quadratic}.
 
-The entropy $\conj$ is self-concordant for several common families such as Gaussians (\S\ref{ssec:gaussian}). %or gamma ?
-Since self-concordance is preserved by convex-conjugacy~\citep{nesterov1994interior}, we can add to the list:
+The entropy $\conj$ is self-concordant for several common families such as Gaussians (\S\ref{ssec:gaussian}), and all families with $\logpart \approx -\log$ such as
 exponential distributions,
 Laplace with known mean,
 Pareto with known minimum value,
-Weibull with known shape $k$.
+or Weibull with known shape $k$.
 The entropy is also self-concordant when $T$ lives in a compact \citep{bubeck2015entropic} -- e.g., categorical and Dirichlet distributions.
 Precisely, categorical variables illustrate that Proposition~\ref{prop:selfConcordant} does not imply directly a bound on the \emph{expected} Bregman.
 The expected KL of the categorical MLE is always infinite, as previously mentioned in \S\ref{sec:problem}.
