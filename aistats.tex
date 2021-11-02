@@ -697,8 +697,9 @@ Next, we investigate whether an optimization approach could solve it.
 \label{sec:optimization}
 
 
-As we saw in \S\ref{sec:problem}, MAP can be interpreted as stochastic mirror descent (SMD).
-This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from the MAP may inform other designs and analyses of SMD.
+As we saw in \S\ref{sec:problem}, MAP  is a special case of stochastic mirror descent (SMD).
+This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from MAP may inform other designs and analyses of SMD.
+In particular, we know that MAP converges asymptotically as $O(n^{-1})$, so we hope to find a convergence rate for SMD that could capture this behavior. 
 We first review the assumptions of relative smoothness, helpful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
 
 \subsection{Relative Smoothness}
