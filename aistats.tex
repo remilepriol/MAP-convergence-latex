@@ -919,8 +919,8 @@ To obtain the result for Gaussian variance, theorem~\ref{thm:varianceMLE}, simpl
 In this section, we review useful properties of the gamma distribution and associated Bregman divergence in \S\ref{app:gamma}. 
 Then we prove theorem~\ref{thm:gammaMLE} in \S\ref{app:gammaMLE}.
 Then we prove an extension of theorem~\ref{thm:varianceMLE} in \S\ref{app:multivariateMLE}.
-Then we prove a useful lemma about the expectation of the natural parameter of the MAP in \S\ref{app:nat-bound}.
-Finally we prove upper bounds for the MAP in \S\ref{app:MAP-bound}.
+Then we prove a useful lemma about the expectation of the natural parameter of the MAP in \S\ref{app:nat-bound}, in order to prove upper bounds for the MAP in \S\ref{app:MAP-bound}.
+Finally we numerically investigate the effect of prior hyper-parameters in \S\ref{app:prior-choice}.
 
 \subsection{Gamma Distribution}
 \label{app:gamma}
@@ -1346,8 +1346,7 @@ The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP  with
 }
 \end{theorem} 
 Note that the second term vanishes when $\mu_0 = \mu^* \paren{1 + \inv{\alpha n_0}}$.
-Expressions for $n\alpha < 1$ are less elegant. See below \TODO{Damien try this on Matlab?}
-
+Expressions for $n\alpha < 1$ are less elegant as visible below
 \alignn{
  	\expect{\cS_\conj(\mu^*, \hat \mu_n)}
 	\leq \frac{n_0 + n}{a + n +\inv{\alpha}} \paren{1 + \inv{a \alpha}} -1 + \frac{a - n_0}{n_0+n}
@@ -1394,6 +1393,7 @@ so putting it all together we get
 
 
 \subsection{On the Choice of a Prior}
+\label{app:prior-choice}
 The optimal $\mu_0$ is larger than $\mu^*$ for small $n_0$ and small $n$.
 Indeed, the upper bound~\eqref{eq:MAP_rate} has a bias term that is $0$ when $\frac{mu_0}{\mu^*} = 1 + \inv{n_0}$, e.g. for large values of $n_0$, it is $\mu_0=\mu^*$ is the best prior, but for small $n_0$, one better sets larger values for $\mu_0$. In Figure~\ref{fig:optimal_n0}, we observe this behavior numerically.
 
