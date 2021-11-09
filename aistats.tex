@@ -895,12 +895,17 @@ Simon Lacoste-Julien is a CIFAR Associate Fellow in the Learning in Machines \& 
 In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
 and add some context and experimental observations.
 As mentioned in the main text, the centered gaussian $\cN(0,\sigma^2)$ has sufficient statistic $T(X)=X^2$ which follows a gamma distribution $\Gamma\paren{\half, \inv{2 \sigma^2}}$. 
-MLE and MAP only depend on $T(X)$, not $X$, so their performance only distributions of $T(X)$. 
+
+In general, if $X$ is part of the exponential family,  $T(X)$ is part of the natural exponential family with the appropriate support and base measure, and with the same log-partition function as $X$, up to constants.
+MLE and MAP only depend on $T(X)$, not $X$, so their performance only depends on the distributions of $T(X)$.
+ 
 In this section we derive results for samples  from a general gamma distribution $X \sim \Gamma(\alpha,\beta)$ with known shape parameter $\alpha$, but unknown rate parameter $\beta$.
 Results for the Gaussian follow by taking $\alpha=\half$,
- and we also immediately have results for exponential distributions by taking $\alpha=1$.
+We also immediately get results for exponential distributions by taking $\alpha=1$.
+For instance for the MLE we derive the following theorem:
 
 \begin{theorem}[MLE Upper Bound]
+	\label{thm:gammaMLE}
 	Consider an exponential family such that $T(X)$ is a gamma $\Gamma(\alpha, \beta)$ with known shape $\alpha$.
 	the expected KL between $\mu_*$ and the MLE $\hat\mu_n$	is infinite when $\alpha n\leq 1$ and otherwise upper bounded by
 	\begin{align}
@@ -909,11 +914,16 @@ Results for the Gaussian follow by taking $\alpha=\half$,
 	\end{align}
 \end{theorem}
 	
-This theorem applies to Gaussian variance since 
-\TODO{explain how this corresponds to theorem 4.1}
+To obtain the result for Gaussian variance, theorem~\ref{thm:varianceMLE}, simply plug-in $\alpha=\half$.
 
+In this section, we review useful properties of the gamma distribution and associated Bregman divergence in \S\ref{app:gamma}. 
+Then we prove theorem~\ref{thm:gammaMLE} in \S\ref{app:gammaMLE}.
+Then we prove an extension of theorem~\ref{thm:varianceMLE} in \S\ref{app:multivariateMLE}.
+Then we prove a useful lemma about the expectation of the natural parameter of the MAP in \S\ref{app:nat-bound}.
+Finally we prove upper bounds for the MAP in \S\ref{app:MAP-bound}.
 
-\subsection{Gamma distribution}
+\subsection{Gamma Distribution}
+\label{app:gamma}
 The density of $\Gamma(\alpha,\beta)$ reads
 \alignn{
 	p(x) = \frac{\beta^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x} \; .
@@ -968,11 +978,12 @@ and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 
 
 \subsection{Proof for the MLE}
+	\label{app:gammaMLE}
 	
 	\begin{proof}
-	For gamma distributions, since $T(X)=X$ the MLE is a scaled sum of gammas $\hat \mu_n = \inv{n} \sum_i X_i$.
-	As such it is also a Gamma with parameter $\Gamma(n \alpha, n \beta)$ and expectation $\frac{n\alpha}{n\beta} = \frac{\alpha}{\beta} = \mu_*$.
-	If we consider the ratio $\frac{\MAPm}{\mu_*}$, it is also a Gamma with parameter $\Gamma(n \alpha, n \alpha)$ 
+	Since $T(X)$ follows a gamma distribution $\Gamma(\alpha, \beta)$, the MLE is a scaled sum of gammas $\hat \mu_n = \inv{n} \sum_i T(X_i)$.
+	As such it is also a gamma with parameter $\Gamma(n \alpha, n \beta)$ and expectation $\frac{n\alpha}{n\beta} = \frac{\alpha}{\beta} = \mu_*$.
+	If we consider the ratio $\frac{\MAPm}{\mu_*}$, it is also a gamma with parameter $\Gamma(n \alpha, n \alpha)$.
 	Its inverse follows an inverse gamma distribution with expectation
 	\begin{equation}
 		\expect{\frac{\mu_*}{\hat \mu_n}} 
@@ -987,8 +998,8 @@ and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 		= \frac{n \alpha}{n\alpha -1 } - 1
 		= \frac{1}{n \alpha -1}
 	\end{align}
-	There is also a closed form solution for the expected logarithm of a Gamma.
-	Indeed a the sufficient statistic of a Gamma is $(X, \log(X))$, so one can apply formula~\eqref{eq:mirror-map} on the log-partition of a Gamma to get
+	There is also a closed form solution for the expected logarithm of a gamma.
+	Indeed a the sufficient statistic of a gamma is $(X, \log(X))$, so one can apply formula~\eqref{eq:mirror-map} on the log-partition of a gamma to get
 	\begin{align}
 		\expect{\log \frac{\hat \mu_n}{\mu_*}} 
 		= \psi\paren{n \alpha} - \log\paren{n \alpha},
@@ -1027,6 +1038,7 @@ and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 
 
 \subsection{Multivariate MLE}
+\label{app:multivariateMLE}
 
 For the sake of simplicity, in higher dimension we focus on Gaussian covariance estimation and avoid the general Wishart discussion. 
 In higher dimensions, $X \sim \cN(0, \mu_*)$, $X\in\real^d$, $T(X) = XX^\top$, and the mean parameter $\mu_*$ 
@@ -1145,6 +1157,7 @@ where $p = \frac{d(d+1)}{2}$ and the last inequality used $\inv{2d}\leq 1$.
 \end{proof}
 
 \subsection{Bounding the expected natural parameters for the MAP}
+\label{app:nat-bound}
 Before proving a convergence rate for the MAP, we need to bound the expectation of its inverse, hence the following lemma.
 We introduce the notation $(z)_+ = \max(0,z)$.
 \begin{lemma}[Expected MAP natural parameter]\label{lem:expected-map-natural-parameter-gaussian}
@@ -1174,7 +1187,7 @@ We introduce the notation $(z)_+ = \max(0,z)$.
 		= \expect{\frac{n_0+n}{n_0 \frac{\mu_0}{\mu^*}+ \sum_i \frac{X_i}{ \mu^*} }} 
 		= \expect{\frac{n_0+n}{a + \Gamma(n\alpha, \alpha)}} \; ,
 }
-	where  $\sum_i \frac{X_i^2}{ \mu^*} \sim \Gamma(n\alpha, \alpha)$ is a Gamma random variable and $a=n_0 \frac{\mu_0}{\mu^*}$. 
+	where  $\sum_i \frac{X_i^2}{ \mu^*} \sim \Gamma(n\alpha, \alpha)$ is a gamma random variable and $a=n_0 \frac{\mu_0}{\mu^*}$. 
 	Further note that 
 \alignn{
 	\expect{\frac{n_0+n}{a + \Gamma(n\alpha, \alpha)}} 
@@ -1236,13 +1249,14 @@ Unfortunately, this formula does not yield an elegant convergence rate, so we ke
 
 
 \subsection{Proof of MAP Bound}
+\label{app:MAP-bound}
 
 We did not find a closed form or an upper bound for the expected logarithm of the MAP $\expect{\log\frac{\MAPm}{\mu^*}}$.
 Consequently, we derived a bound for the symmetrized Bregman~\eqref{eq:symmetrized_bregman} instead. 
 This bound is asymptotically tight for the Bregman, up to a factor $2$.
 
 There are several ways to write down the convergence rate. The Gaussian variance example can be written in a particularly simple form, so we give  it a special treatment in \S\ref{app:proof-MAP-gaussian}, corresponding to the theorem displayed in the main text.
-We make a more general statement about Gamma distributions in \S\ref{app:proof-MAP-gamma}.
+We make a more general statement about gamma distributions in \S\ref{app:proof-MAP-gamma}.
 
 
 \subsubsection{Gaussian Variance}
@@ -1318,7 +1332,7 @@ so putting it all together we get
 so we  recover the same bias term as when $n\geq2$.
 \end{proof}
 
-\subsubsection{Gamma with known shape}
+\subsubsection{Gamma with Known Shape}
 \label{app:proof-MAP-gamma}
 
 \begin{theorem}[MAP Bound]
@@ -1332,8 +1346,14 @@ The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP  with
 }
 \end{theorem} 
 Note that the second term vanishes when $\mu_0 = \mu^* \paren{1 + \inv{\alpha n_0}}$.
-Expressions for $n\alpha < 1$ are less elegant so we do not write them down here. 
-\TODO{try simplification with wolfram alpha}.
+Expressions for $n\alpha < 1$ are less elegant. See below \TODO{Damien try this on Matlab?}
+
+\alignn{
+ 	\expect{\cS_\conj(\mu^*, \hat \mu_n)}
+	\leq \frac{n_0 + n}{a + n +\inv{\alpha}} \paren{1 + \inv{a \alpha}} -1 + \frac{a - n_0}{n_0+n}
+	\quadtext{where}
+	 a:=n_0\frac{\mu_0}{\mu^*} \; .
+}
 
 \begin{proof}
 We expand the symmetrized Bregman~\eqref{eq:symmetrized_bregman} to get
