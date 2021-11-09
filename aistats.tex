@@ -11,7 +11,7 @@
 % RLP: not sure what is the point of this. With my latex it creates an error, and I do not have warnings, so I comment it out for now.
 
 
-\usepackage{aistats/aistats2022}
+\usepackage[accepted]{aistats/aistats2022}
 % If your paper is accepted, change the options for the package
 % aistats2022 as follows:
 %\usepackage[accepted]{aistats2022}
@@ -136,10 +136,17 @@
 \aistatstitle{Convergence Rates for the MAP of an Exponential Family\\ and Stochastic Mirror Descent -- an Open Problem}
 
 
-\aistatsauthor{R\'emi Le Priol \And Frederik Kunstner \And  Damien Scieur \And Simon Lacoste-Julien }
+\aistatsauthor{R\'emi Le Priol \And Frederik Kunstner \And  Damien Scieur \And Simon Lacoste-Julien \TODO{s} }
 
-\aistatsaddress{ Mila \And  UBC \And SAIT SAIL \And Mila}
+\aistatsaddress{ 
+	Mila, Université de Montreal 
+	\And  University of \\ British Columbia
+	\And SAIT AI Lab, Montreal 
+	\And Mila, Université de Montreal \\
+	Canada CIFAR AI Chair \\
+	SAIT AI Lab, Montreal}
 ]
+
 
 \begin{abstract}
 We consider the problem of upper bounding the expected log-likelihood sub-optimality of the maximum likelihood estimate (MLE), or a conjugate maximum a posteriori (MAP) for an exponential family, in a non-asymptotic way.
@@ -697,7 +704,7 @@ Next, we investigate whether an optimization approach could solve it.
 \label{sec:optimization}
 
 
-As we saw in \S\ref{sec:problem}, MAP  is a special case of stochastic mirror descent (SMD).
+As we saw in \S\ref{sec:problem}, MAP  can be interpreted as stochastic mirror descent (SMD).
 This means that \textbf{1)} we may obtain a convergence rate for MAP from an optimization analysis, and \textbf{2)} any insights gained from MAP may inform other designs and analyses of SMD.
 In particular, we know that MAP converges asymptotically as $O(n^{-1})$, so we hope to find a convergence rate for SMD that could capture this behavior. 
 We first review the assumptions of relative smoothness, helpful to deal with non-smooth functions, before investigating recent analyses of SMD with the MAP.
@@ -883,11 +890,26 @@ Simon Lacoste-Julien is a CIFAR Associate Fellow in the Learning in Machines \& 
 
 In this section, we prove the results mentioned in \S\ref{ssec:gaussian-variance},
 and add some context and experimental observations.
-As mentioned in the main text, the centered gaussian $\cN(0,\sigma^2)$ has sufficient statistic $x^2$ following a Gamma distribution $\Gamma\paren{\half, \inv{2 \sigma^2}}$. 
-In this section we derive results for samples  from a general gamma distribution $X \sim\Gamma(\alpha,\beta)$ with known shape parameter $\alpha$, but unknown rate parameter $\beta$.
+As mentioned in the main text, the centered gaussian $\cN(0,\sigma^2)$ has sufficient statistic $T(X)=X^2$ which follows a gamma distribution $\Gamma\paren{\half, \inv{2 \sigma^2}}$. 
+MLE and MAP only depend on $T(X)$, not $X$, so their performance only distributions of $T(X)$. 
+In this section we derive results for samples  from a general gamma distribution $X \sim \Gamma(\alpha,\beta)$ with known shape parameter $\alpha$, but unknown rate parameter $\beta$.
 Results for the Gaussian follow by taking $\alpha=\half$,
  and we also immediately have results for exponential distributions by taking $\alpha=1$.
 
+\begin{theorem}[MLE Upper Bound]
+	Consider an exponential family such that $T(X)$ is a gamma $\Gamma(\alpha, \beta)$ with known shape $\alpha$.
+	the expected KL between $\mu_*$ and the MLE $\hat\mu_n$	is infinite when $\alpha n\leq 1$ and otherwise upper bounded by
+	\begin{align}
+		 \expect{\bregmanconj( \mu_*; \hat \mu_n) }
+			\leq \inv{2n} + \frac{1}{n(n \alpha-1)}  \; .
+	\end{align}
+\end{theorem}
+	
+This theorem applies to Gaussian variance since 
+\TODO{explain how this corresponds to theorem 4.1}
+
+
+\subsection{Gamma distribution}
 The density of $\Gamma(\alpha,\beta)$ reads
 \alignn{
 	p(x) = \frac{\beta^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\beta x} \; .
@@ -927,9 +949,10 @@ To upper bound for the MAP, due to the difficulty of finding a closed form for t
 	\leq \cS_{\conj} (\mu_*, \mu_n )
 	&:= \bregmanconj( \mu_*; \mu_n)  + \bregmanconj( \mu_n; \mu_*) \nonumber\\
 	&=  \alpha \paren{\frac{ \mu_*}{\mu_n} -1 +\frac{ \mu_n}{\mu_*} - 1 },
-	\label{eq:symmetrized_bregman}
+	\label{eq:symmetrized_bregman} \\
+	&= \alpha\phi\paren{\frac{\mu_*}{\mu_n}} + \alpha\phi\paren{\frac{\mu_n}{\mu_*}}
 }
-which can also be expressed with $\phi$ as follows:
+Writing $z=\frac{\mu_*}{\mu_n}$ this is equivalent to
 \aligns{
 	\label{eq:log_bound}
 	\phi(z) \leq \phi(z) + \phi\paren{z^{-1}}
@@ -940,19 +963,10 @@ and as illustrated by the grey upper bound in Figure~\ref{fig:phi}.
 
 
 
-\subsection{Upper bound for the MLE of the variance}
-
-	\begin{theorem}[MLE Upper Bound]
-	For a Gamma $\Gamma(\alpha, \beta)$ with known shape $\alpha$,
-	the expected KL between $\mu_*$ and the MLE $\hat\mu_n$	is infinite when $\alpha n\leq 1$ and otherwise upper bounded by
-	\begin{align}
-		 \expect{\bregmanconj( \mu_*; \hat \mu_n) }
-			\leq \inv{2n} + \frac{1}{n(n \alpha-1)}  \; .
-	\end{align}
-	\end{theorem}
+\subsection{Proof for the MLE}
 	
 	\begin{proof}
-	The MLE is a scaled sum of Gammas $\hat \mu_n = \inv{n} \sum_i X_i$.
+	For gamma distributions, since $T(X)=X$ the MLE is a scaled sum of gammas $\hat \mu_n = \inv{n} \sum_i X_i$.
 	As such it is also a Gamma with parameter $\Gamma(n \alpha, n \beta)$ and expectation $\frac{n\alpha}{n\beta} = \frac{\alpha}{\beta} = \mu_*$.
 	If we consider the ratio $\frac{\MAPm}{\mu_*}$, it is also a Gamma with parameter $\Gamma(n \alpha, n \alpha)$ 
 	Its inverse follows an inverse gamma distribution with expectation
@@ -1208,7 +1222,7 @@ and combining it with the inequality \citep[Eq.~8.19.21]{DLMF} to get
  	\leq 1 - \frac{\alpha}{\alpha + 1 + \beta}
  	 = \frac{\beta + 1}{\alpha + \beta + 1} \; .
 }
-Plugging this inequality back into~\ref{eq:expect1+gamma}, we get the following upper bound for the MAP:
+Plugging this inequality back into~\eqref{eq:expect1+gamma}, we get the following upper bound for the MAP:
 \alignn{
 	\expect{\frac{\mu^*}{\MAPm}} 
 	\leq \frac{n_0 + n}{a} \frac{a\alpha + 1}{n \alpha + a \alpha +1}
@@ -1227,57 +1241,6 @@ There are several ways to write down the convergence rate. The Gaussian variance
 We make a more general statement about Gamma distributions in \S\ref{app:proof-MAP-gamma}.
 
 
-\subsubsection{Gamma with known shape}
-\label{app:proof-MAP-gamma}
-
-\begin{theorem}[MAP Bound]
-The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP of $\Gamma(\alpha, \frac{\alpha}{\mu^*})$ with prior hyper-parameters $(n_0,\mu_0)$ is upper bounded as
-\alignn{
-    \forall n\geq \inv{\alpha},\quad \quad
-	\expect{\cS_\conj(\mu^*, \hat \mu_n)}
-	\leq\frac{1}{n_0+n} + 
-	\frac{\alpha\paren{\frac{\mu_0}{\mu^*} - \inv{\alpha n_0} - 1 }^2 }{\paren{1+\frac{n}{n_0}}\paren{\frac{\mu_0}{\mu^*} - \inv{\alpha n_0} + \frac{n}{n_0}}}
-}
-\end{theorem} 
-Note that the second term vanishes when $\mu_0 = \mu^* \paren{1 + \inv{\alpha n_0}}$. Expressions for $n\alpha < 1$ are less elegant so we do not write them down here. 
-
-\begin{proof}
-We expand the symmetrized Bregman~\eqref{eq:symmetrized_bregman} to get
-\begin{align}
-	\expect{\cS_\conj(\mu^*; \MAPm)} 
-	&\leq \alpha \paren{\expect{\frac{\mu^*}{\MAPm}} -1  + \expect{\frac{\MAPm}{\mu^*}} - 1} \; .
-\end{align}
-The expectation of $\MAPm$ is straightforward
-\begin{align}
-	 \expect{\frac{\MAPm}{\mu^*}} - 1 
-	 = \frac{n_0 \mu_0 + n \mu^*}{(n_0+n)\mu^*} - 1 
-	 = \frac{a+n}{n_0+n} - 1 = \frac{a - n_0}{n_0+n}
-	 \quadtext{where}
-	 a:=n_0\frac{\mu_0}{\mu^*} \; .
-\end{align}
-There remains the more problematic term with the expectation of the inverse mean parameter, 
-for which we use the bound derived in Lemma \ref{lem:expected-map-natural-parameter-gaussian}  when $n\alpha \geq 1$
-\begin{align}
-	\expect{\frac{\mu^*}{\MAPm}} - 1 
-	\leq \frac{n_0 + n}{a +n - \inv{\alpha}} -1
-	= \frac{n_0 - a + \inv{\alpha}}{a +n - \inv{\alpha}}
-\end{align}
-so putting it all together we get 
-\begin{align}
-	\expect{\bregmanconj(\mu^*; \MAPm)} 
-	&\leq 
-	\alpha \paren{\frac{n_0 - a + \inv{\alpha}}{a +n - \inv{\alpha}} 
-	 + \frac{a - n_0 \pm \inv{\alpha}}{n_0+n}} \\
-	 &=
-	 \alpha \paren{n_0 + \inv{\alpha} -a}  
-	 \left( \inv{a+n-\inv{\alpha}} - \inv{n_0+n} \right)
-	 + \inv{n_0 + n} \\
-	 &= \inv{n_0 + n} + \alpha \frac{(n_0 + \inv{\alpha} - a)^2}{(n_0 + n)(a+ n - \inv{\alpha} )} \\
-	&= \inv{n_0 + n} + \alpha \frac{(1 + \inv{\alpha n_0} - \frac{\mu_0}{\mu^*})^2}{ (1 + \frac{n}{n_0} ) (\frac{\mu_0}{\mu^*} - \inv{\alpha n_0} +\frac{n}{n_0})} \; .
-\end{align}
-\end{proof}
-
-
 \subsubsection{Gaussian Variance}
 \label{app:proof-MAP-gaussian}
 
@@ -1294,7 +1257,7 @@ The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP of $\
 	\quad 
 	\quad 
 	\text{where }
-	b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \; . 
+	b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \in O\paren{\frac{n_0^2}{n^2}} \; . 
 	%\nonumber
 \end{align}
 \end{theorem} 
@@ -1350,6 +1313,60 @@ so putting it all together we get
 \end{align}
 so we  recover the same bias term as when $n\geq2$.
 \end{proof}
+
+\subsubsection{Gamma with known shape}
+\label{app:proof-MAP-gamma}
+
+\begin{theorem}[MAP Bound]
+Consider an exponential distribution with sufficient statistics coming from a gamma distribution $\Gamma(\alpha, \beta^*)$ with mean parameter $\mu^* = \frac{\alpha}{\beta^*}$.
+The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP  with prior hyper-parameters $(n_0,\mu_0)$ is upper bounded as
+\alignn{
+    \forall n\geq \inv{\alpha},\quad \quad
+	\expect{\cS_\conj(\mu^*, \hat \mu_n)}
+	\leq\frac{1}{n_0+n} + 
+	\frac{\alpha\paren{\frac{\mu_0}{\mu^*} - \inv{\alpha n_0} - 1 }^2 }{\paren{1+\frac{n}{n_0}}\paren{\frac{\mu_0}{\mu^*} +  \frac{n - \inv{\alpha}}{n_0}}}
+}
+\end{theorem} 
+Note that the second term vanishes when $\mu_0 = \mu^* \paren{1 + \inv{\alpha n_0}}$.
+Expressions for $n\alpha < 1$ are less elegant so we do not write them down here. 
+\TODO{try simplification with wolfram alpha}.
+
+\begin{proof}
+We expand the symmetrized Bregman~\eqref{eq:symmetrized_bregman} to get
+\begin{align}
+	\expect{\cS_\conj(\mu^*; \MAPm)} 
+	&\leq \alpha \paren{\expect{\frac{\mu^*}{\MAPm}} -1  + \expect{\frac{\MAPm}{\mu^*}} - 1} \; .
+\end{align}
+The expectation of $\MAPm$ is straightforward
+\begin{align}
+	 \expect{\frac{\MAPm}{\mu^*}} - 1 
+	 = \frac{n_0 \mu_0 + n \mu^*}{(n_0+n)\mu^*} - 1 
+	 = \frac{a+n}{n_0+n} - 1 = \frac{a - n_0}{n_0+n}
+	 \quadtext{where}
+	 a:=n_0\frac{\mu_0}{\mu^*} \; .
+\end{align}
+There remains the more problematic term with the expectation of the inverse mean parameter, 
+for which we use the bound derived in Lemma \ref{lem:expected-map-natural-parameter-gaussian}  when $n\alpha \geq 1$
+\begin{align}
+	\expect{\frac{\mu^*}{\MAPm}} - 1 
+	\leq \frac{n_0 + n}{a +n - \inv{\alpha}} -1
+	= \frac{n_0 - a + \inv{\alpha}}{a +n - \inv{\alpha}}
+\end{align}
+so putting it all together we get 
+\begin{align}
+	\expect{\bregmanconj(\mu^*; \MAPm)} 
+	&\leq 
+	\alpha \paren{\frac{n_0 - a + \inv{\alpha}}{a +n - \inv{\alpha}} 
+	 + \frac{a - n_0 \pm \inv{\alpha}}{n_0+n}} \\
+	 &=
+	 \alpha \paren{n_0 + \inv{\alpha} -a}  
+	 \left( \inv{a+n-\inv{\alpha}} - \inv{n_0+n} \right)
+	 + \inv{n_0 + n} \\
+	 &= \inv{n_0 + n} + \alpha \frac{(n_0 + \inv{\alpha} - a)^2}{(n_0 + n)(a+ n - \inv{\alpha} )} \\
+	&= \inv{n_0 + n} + \alpha \frac{(1 + \inv{\alpha n_0} - \frac{\mu_0}{\mu^*})^2}{ (1 + \frac{n}{n_0} ) (\frac{\mu_0}{\mu^*} - \inv{\alpha n_0} +\frac{n}{n_0})} \; .
+\end{align}
+\end{proof}
+
 
 
 \subsection{On the Choice of a Prior}
