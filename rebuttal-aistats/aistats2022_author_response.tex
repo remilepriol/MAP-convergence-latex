@@ -1,0 +1,40 @@
+\documentclass{article}
+
+% !
+% If statement to enable comments and a page limit > 1. 
+\newif\ifenablecomments
+\enablecommentstrue
+% Disable comments for the submission.
+%\enablecommentsfalse
+
+\usepackage{aistats2022_author_response}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage[dvipsnames]{xcolor}         % define colors in text
+\usepackage{xspace}         % fix spacing around commands
+
+\newcommand{\RLP}[1]{\ifenablecomments\textcolor{BrickRed}{RLP:#1}\fi}
+\newcommand{\FDK}[1]{\ifenablecomments\textcolor{Periwinkle}{FDK:#1}\fi}
+\newcommand{\SLJ}[1]{\ifenablecomments\textcolor{ForestGreen}{SLJ:#1}\fi}
+
+\begin{document}
+
+\input{main_response}
+
+\ifenablecomments
+	\newpage
+	\input{instructions}
+	\newpage
+	\input{discussion}
+	\newpage
+	\input{reviews_and_comments}
+\fi
+
+\end{document}

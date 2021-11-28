@@ -1,0 +1,338 @@
+% !TEX root = aistats2022_author_response.tex
+
+\section*{Reviewer \#1 (Score: 4, Confidence: 4)}
+
+\subsection*{1. Summary and Contributions}
+
+This paper proposes a class of problems regarding the non-asymptotic rates of MLE/MAP in exponential families, especially in the small sample size regime. The convergence of stochastic mirror descent under natural parametrization is also discussed. Since AISTATS is a conference aimed at publishing complete research papers, my evaluation is based on the results proven, instead of the conjectures being made. I would encourage the authors to consider venues with an open problem session, for instance, COLT. Nevertheless, in the comments to follow, I will also remark on the open problems themselves.
+
+\subsection*{2. Strengths}
+
+It is true that the current non-asymptotic understanding into the class of classical parametric estimation problems is still lacking in some aspects, especially in the case involving small sample size, high dimensions, and optimization algorithms. In particular, for exponential families with natural parametrization, many relevant quantities are measured with respect to Bregman divergence, instead of the Euclidean distance. Taking KL divergence as the loss function, from Le Cam theory and Fisher's identity, we know that the $\frac{d}{2n}$ leading-order term is asymptotically efficient. It is therefore natural to ask for non-asymptotic bound matching its performance. Besides, Proposition 1 presents interesting results that relate weighted $\ell^2$ distance with Bregman divergence, under the self-concordance assumption. This could be useful for establishing desired bounds.
+
+\subsection*{3. Weaknesses}
+
+The paper only presented conjectures with discussion and partial results on toy examples. This does not qualify as a complete research work. Besides, for the open problems, it would be better to state the desired results in a concrete way. For example, Open Problem 1 simply asks to bound some expected Bregman divergences. This is a vague question, as there could be many forms of possible bounds, under various assumptions, and many of such results are essentially known. A more concrete way of stating such open problem would be in the form of ``under certain assumptions (self-concordance, smoothness of second and third order, etc), the expected Bregman divergence is upper bounded by $d / 2n + O (n^{-2})$''.
+
+
+\subsection*{4. Correctness}
+
+The proof of the partial results and toy examples are correct.
+
+\subsection*{5. Clarity}
+
+The conjectures need to be stated in a clearer way. (see ``weakness'' section)
+
+\subsection*{6. Relation to prior work}
+
+In a more general stochastic optimization setup, there are some works that obtain a bound of (nearly) the desired form (but not restricted to exponential families). It would be better to discuss the connection and differences:
+
+Competing with the Empirical Risk Minimizer in a Single Pass (COLT 2015), Roy Frostig, Rong Ge, Sham M. Kakade, Aaron Sidford
+
+\subsection*{7. Additional Comments}
+
+(N/A)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+\section*{Reviewer \#2 (Score: 5, Confidence: 4)}
+
+\subsection*{1. Summary and Contributions}
+
+This paper proposed the following general problem: in an exponential family $P_\theta$, how to prove an expectation or high-probability upper bound of the $KL(P_\theta, P_{\hat\theta})$ where $\hat\theta$ is either the MLE or the MAP estimator based on a conjugate prior? The authors provided some basic properties and ideas towards this problem.
+
+From the statistical perspective, the authors proved non-asymptotic upper bounds on the KL divergence under Gaussian models with unknown covariance, and argued the non-triviality for the full Gaussian model. For the general theory, the authors derived the asymptotic rate, upper bounds when the associated Bregman divergence is quadratic or locally quadratic, and a generic bias-variance tradeoff. The general analysis remains largely open.
+
+From the optimization perspective, the authors observed the analogy between the MAP estimator and stochastic mirror descent (SMD). Specifically, the MAP estimator with different sample sizes could be formulated as a proper SMD update, and the final KL divergence is the sub optimality gap in the minimization of the negative log-likelihood function. Despite this similarity, in Section 6 the authors discussed why existing literature on SMD is not sufficient for solving this problem.
+
+\subsection*{2. Strengths}
+
+This paper presents a nice summary and effort of a fundamental problem in statistics. Both the statistical and optimization perspectives are interesting, and it is an outstanding question to see how different views are related to each other. Overall speaking this is a nice "open problem paper" which presents an open problem clearly and contains sufficient discussions.
+
+\subsection*{3. Weaknesses}
+
+The major weakness is that this paper is not a "regular paper" in the usual sense. There are few solid and formal theorems - many of them are easy consequences or straightforward computation in specific models. In contrast, there are a lot of intuitions and discussions on limitations of certain approaches or why some ideas fail. So I am not sure whether the very nature of the paper is suitable for aistats, or more suitable for other venues which have calls for open problems.
+
+If I start to evaluate this work from the "open problem paper" perspective, I think some related work should be more thoroughly discussed. Currently the authors did a good job in reviewing the literature from optimization, but the counterpart on the statistical literature is less satisfactory - many papers are only mentioned, without concrete settings and results. A more detailed picture of what have been done should be presented to the reader to better grasp the state-of-the-art.
+
+When it comes to specific examples, in addition to the Gaussian model discussed extensively in the paper, some other models (mainly categorical models) should also be discussed. For example, the KL divergence computation in the multinomial model or a product Poisson model is also a classical problem, which should be discussed more thoroughly.
+
+\subsection*{4. Correctness}
+
+I checked most proofs and they are correct.
+
+\subsection*{5. Clarity}
+
+The writing is mostly clear and I enjoyed reading it. A possible improvement is to discuss some related work in more detail, rather than the current short descriptions.
+
+\subsection*{6. Relation to prior work}
+
+As included in the weakness, I would recommend to add some papers for categorical examples such as the multinomial model studied in
+
+Kamath, S., Orlitsky, A., Pichapati, D., \& Suresh, A. T. (2015, June). On learning distributions from their samples. In Conference on Learning Theory (pp. 1066-1100). PMLR.
+
+\subsection*{7. Additional Comments}
+
+The asymptotic rate d/2n is also a minimax lower bound of the KL divergence (not necessarily restricted to MLE/MAP). This is well-known in the information theory literature on the minimax prediction error/redundancy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section*{Reviewer \#3 (Score: 7, Confidence: 3)}
+
+\subsection*{1. Summary and Contributions}
+
+This paper focuses on the problem of deriving rates of convergence for the maximum a posteriori estimator of an exponential family (e.g., gaussian with unknown mean and variance) parametrized by the natural parameter theta and the log partition function A, in the Kullback-Leibler divergence objective, given a set of samples. Existing non asymptotic results only cover the case of a gaussian with known variance.
+
+Their starting point is to see the MAP for a finite number of points n as a stochastic mirror descent update on the parameter theta, where the mirror map is the gradient of the log partition function, mapping theta to the mean parameter of the distribution parametrized by theta; with a stepsize is close to 1/n and the objective function is the KL between $p_{\theta^*}$ and $p_\theta$.
+
+The paper discusses several paths for deriving rates of convergence for MAP in the KL objective. They first obtain bounds for gaussian with zero mean and unknown variance. They highlight then that the case of unknown mean/variance is harder to study. They provide a first partial result, a quadratic bound on the KL (the quadratic case) in the large number of samples regimes. As an optimization problem (section 6), recent results from the optimization literature on stochastic mirror descent do not apply, even with relative smoothness, as these works assume boundedness of the gradient of the objective, which does not hold for the KL (expected - log) here.
+
+\subsection*{2. Strengths}
+
+The paper tackles an important problem, ie non asymptotic guarantees regarding MAP, that is surely of interest for the statistics/ML community. It provides an interesting viewpoint and novel (even if partial) results compared to what can be found in the literature. The discussion is regularly illustrated with examples of distributions that satisfy the assumptions or not (e.g. smoothness, quadratic behavior of the Bregman divergence), which is also novel to the best of my knowledge. The optimization section mostly tells why results from the optimization literature do not directly apply but I found this discussion informative.
+
+\subsection*{3. Weaknesses}
+
+The paper only provide partial results but it is clearly stated.
+
+\subsection*{4. Correctness}
+
+The results appear technically sound, I did not find any flaws.
+
+\subsection*{5. Clarity}
+
+The paper is clearly written and discusses well the novel contributions.
+
+\subsection*{6. Relation to prior work}
+
+other works use a similar mirror descent framework for the optimization of a parameter of an exponential family and might be relevant to cite:
+
+The Information Geometry of Mirror Descent
+Garvesh Raskutti, Sayan Mukherjee, 2013.
+
+Conjugate-Computation Variational Inference : Converting Variational Inference in Non-Conjugate Models to Inferences in Conjugate Models. Mohammad Emtiyaz, Khan Wu Lin, 2017.
+
+\subsection*{7. Additional Comments}
+
+Minor comments:
+Figure 2 caption : MLE /MAP in orange/blue seem to have been swapped.
+
+Section 6.2.1 : why is assumption 32 weaker than 31? what is tilde(g) in 32?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section*{Reviewer \#5 (Score: 8, Confidence 3)}
+
+\subsection*{1. Summary and Contributions}
+
+This paper is concerned with the problem of bounding the suboptimality of the MLE
+and MAP (under conjugate priors) estimators of exponential family
+distributions in a non-asymptotic way. It also presents an optimization
+perspective into the MAP estimate by reinterpreting it as a Bregman proximal
+update for the expected negative log-likelihood using the log-partition
+function as the Bregman generator. The two open problems presented in this
+paper are closely related to these persepctives: the first is to upper bound
+the expected suboptimality of the MLE and MAP estimators, and the second is to
+derive convergence rates for the online mirror descent algorithm for barrier
+functions. The paper presents results for the first problem in the case of
+a zero-mean Gaussian, and explores various avenues for the case of
+the full Gaussian. In particular, the second problem is approached from the
+optimization perspective, using tools such as relative smoothness and
+convexity to try deriving a convergence rate for the stochastic mirror descent
+algorithm.
+
+\subsection*{2. Strengths}
+
+The paper uses well-established tools from convex analysis and information
+geometry to facilitate a well-grounded analysis of the problems they presented
+therein. The problem of establishing convergence rates for the mirror descent
+algorithm has been well-studied in optimization literature. The paper does
+discuss a couple of techniques that have been proposed in order to establish
+favorable convergence results, but existing techniques do not suffice for the
+case of barrier objectives. The significance of the paper is that it provides
+insight into a deeper connection between exponential family MLE/MAP estimation
+and the Bregman geometry. The paper does build on existing results from the
+relationship between exponential families and bregman divergences, but the
+connection to stochastic mirror descent would be of great interest for future
+work in optimization and (online) parameter estimation. Most importantly, the
+general one-to-one correspondence between the Bregman divergence and the
+exponential family is used throughout (wherever possible) in order to keep the
+analysis as generally applicable as possible (the bias variance decomposition
+for example). The connections between self-concordance and the quadratic
+approximation to the Bregman was also fairly illuminating.
+
+\subsection*{3. Weaknesses}
+
+The biggest weakness seems that the answers discussed to the problems posed in
+the paper are only discussed for the Gaussian distribution. While the MLE/MAP
+estimates for exponential families are well-known, I would have liked if the
+paper could comment on the potential generalizability of the MLE/MAP bound
+found for the Gaussian, to other exponential family distributions. On the
+novelty side, the partial solutions discussed in Section 5 mostly utilize
+results from optimization and the quadratic approximation the Bregman, which
+are minimally novel. However, the application of these techniques are fairly standard.
+
+\subsection*{4. Correctness}
+
+The proofs for the MLE and MAP bounds mostly employ various techniques from statistics and analysis, and the methods are sound.
+
+\subsection*{5. Clarity}
+
+The paper was really well-written and made it easier to follow and understand
+the big picture. I would put this as one of the paper's biggest strengths.
+
+\subsection*{6. Relation to prior work}
+
+The relation to prior work has been discussed quite thoroughly, especially
+throughout sections 5 and 6. Some of these works are quite recent (2021), and
+in particular, I think that this paper is not too far away from producing
+a solution to their second problem (the work of D'Orazio (2021) proves linear
+convergence under constant step size, which also handles barrier objectives).
+
+\subsection*{7. Additional Comments}
+
+Typos:
+
+- in Figure 2, seems that the colors for the MAP and MLE are reversed to
+what the caption suggests.
+
+- Minor notation comments:The notation for the Bregman divergence should only use semicolon or comma
+throughout (to separate its arguments). Proposition 1, 2nd column on Page 7, and first column on Page 8
+use comma.
+
+In the accepted version, some things that would make the paper better:
+
+- Maybe add a discussion on the proofs for proposition 1 and 2, just talking
+about the kind of arguments used to establish these bounds.
+
+- A further discussion of stochastic mirror descent and its convergence.
+I am almost certain there might be something already out there which might
+help improve the discussion for problem 2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section*{Reviewer \#6 (Score: 8, Confidence: 4)}
+
+\subsection*{1. Summary and Contributions}
+
+This paper brings forth some fundamental gaps in our understanding of the non-assymptotic behavior of the risk of MLE/MAP estimators of the exponential family. The authors provide relevant background, discuss assymptotic behaviors and present lack of rigorous results for the non-assymptotic regimes.
+
+\subsection*{2. Strengths}
+
+The paper is largely well-written, and is well-motivated. The presented results (or lack of) are very relevant and useful to both optimisation and statistics communities, and should spark several discussions at the conference. The results and also well discussed using relevant toy empirical examples, which help in the understanding.
+
+
+\subsection*{3. Weaknesses}
+
+None I can see. The paper should be accepted IMO. The authors are very upfront about the problems they consider as being open and (atleast so far, seemingly) hard to solve. Nevertheless, there are some results which are somewhat easier toy settings. I would suggest the authors emphasize this more, a lot of results in statistical literature are for simpler settings. This could motivate readers to work through the simpler settings and work on the harder settings.
+
+\subsection*{4. Correctness}
+Yes
+
+\subsection*{5. Clarity}
+
+Yes
+
+\subsection*{6. Relation to prior work}
+
+Yes
+
+\subsection*{7. Additional Comments}
+
+None
