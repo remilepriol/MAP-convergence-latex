@@ -7,54 +7,38 @@
 }\fi
 
 
-\section*{Main criticisms}
+We thank all the reviewers for their careful review and insightful comments. We start our rebuttal by answering the common concern, followed by specific comments for each reviewer.
+	
+\paragraph{Common answer: Is the work relevant for AISTATS?}
+We understand from the reviewers that “open problem papers”  are unusual, and the question of whether such an article should be accepted or not at AISTATS is legitimate. 
+When writing the paper, we aimed to submit it at a cross disciplinary conference, as the paper’s topic is at the intersection of statistics and optimization. After a careful review of possibilities, AISTATS seems to be a perfect match, given what is written in the call of papers:
+"AISTATS is an interdisciplinary gathering of researchers at the intersection of computer science, artificial intelligence, machine learning, statistics, and related areas. Since its inception in 1985, the primary goal of AISTATS has been to broaden research in these fields by promoting the exchange of ideas among them."  
+We strongly believe our article will promote an exchange of ideas, as emphasized by some of the reviewers below:
+(R3) "It provides an interesting viewpoint and novel (even if partial) results compared to what can be found in the literature."
+(R5)  "The significance of the paper is that it provides insight into a deeper connection between exponential family MLE/MAP estimation and the Bregman geometry. [...]  The connections between self-concordance and the quadratic approximation to the Bregman was also fairly illuminating."
+(R6) "The presented results (or lack of) are very relevant and useful to both optimisation and statistics communities, and should spark several discussions at the conference."
 
-\subsection*{It's an open problem paper}
-
-R1: 
-``This does not qualify as a complete research work.'' 
-
-R2: 
-``The major weakness is that this paper is not a "regular paper" in the usual sense. 
-[...]
-So I am not sure whether the very nature of the paper is suitable for aistats, or more suitable for other venues which have calls for open problems.''
+Additionally, members of the optimization and statistics community we talked to during our investigation of this problem were 
+either convinced a result already exist in the other community, 
+either interested in knowing the answers to these questions.
+Motivated by these feedbacks, we decided to submit as is, to highlight the similarity between these questions, 
+and to stimulate interest and get the help of the community to make progress on this hard problem.
 
 
-\FDK{Paraphrasing SLJ;}
-The main weakness noted by Reviewers 1 \& 2 
-is that our submission aims to promote discussions around an open problem, 
-rather than a ``regular paper'' (R2), 
-and they are unsure whether it is suitable for the AISTATS audience.
-We agree with this characterization of the submission. 
-%and acknowledge that such papers are (perhaps wrongly) scarce in the major machine learning conferences.
-Our submission to AISTATS was motivated by the emphasis, in the call for papers, on the promotion of the exchange of ideas between the communities working in statistics and optimization in the context of machine learning.
+\paragraph{(R1) The statement of the conjecture should be more precise.}
+We know that asymptotically, the expected KL belongs to $\frac{d}{2 n} + O (n^{-\frac{3}{2}})$, so it is tempting to explicitly search for a non-asymptotic upper bound in this set. 
+Yet, we are still unaware of any general upper bound.
+In our opinion, a bound of the form $\frac{c}{n}$ with the wrong constant $c>\frac{d}{2}$, or even a bound $\frac{c}{\sqrt{n}}$ would be novel and interesting.
+Consequently, we decided to keep the question open-ended.  
+Additionally, about the statement: (R1) "many of such results are essentially known."
+We are very interested in knowing examples of such   results, as we believe they could help us improve the paper.
 
-The people in optimization and statistics we talked to during our investigation of this problem where interested in knowing the answers to these questions; members of one community thought this problem must have already been solved by the other. This motivated our submission; to show the similarities between those questions, stimulate interest and get the help of the community to make progress on this hard problem.
-
-\subsection*{The statement of the conjecture is not sufficiently precise}
-
-R1: 
-``Besides, for the open problems, it would be better to state the desired results in a concrete way.
-[...]
-This is a vague question, as there could be many forms of possible bounds, under various assumptions, and many of such results are essentially known.''
-
-\FDK{This one is fair, and I'm not sure how to fix it. 
-I would go with ``Under no additional assumption, other than steep exponential families, what is the generalization of the quadratic bias-variance bound?''. But this is still a question, rather than a conjecture about a concrete result that should hold.
-}
-
-\RLP{Re: ``and many of such results are essentially known'', what are those?
-	\FDK{Any non-asymptotic result under additional assumptions fit the bill like the ones we cite by Bach et al. and others. I assume many special cases are much more well known in stats}
-}
-
-\subsection*{The coverage of related work needs improvement}
-
-R2:
+\paragraph{(R2) The coverage of related work needs improvement.}
 ``some related work should be more thoroughly discussed. Currently the authors did a good job in reviewing the literature from optimization, but the counterpart on the statistical literature is less satisfactory''
-
 \FDK{I think it's fair, but I don't know how to fix it (without a $\sim$3 weeks lit review and a new page)}
+\RLP{Let's not address it as is, and focus on the specific references that were given by R2 and R3. Also add \url{https://arxiv.org/pdf/1811.11419.pdf} ?}
 
-\subsection*{Additional examples, beyond the Gaussian case, should be considered}
-
+\paragraph{(R2 \& R5) Additional examples, beyond the Gaussian case, should be considered}
 R2:
 ``When it comes to specific examples, in addition to the Gaussian model discussed extensively in the paper, some other models (mainly categorical models) should also be discussed.
 [...] for categorical examples such as the multinomial model studied in
@@ -74,6 +58,13 @@ found for the Gaussian, to other exponential family distributions.''
 \FDK{This is fair, and should be relatively easy to add. No internet so couldn't check Kamath et al. (2015), but this must be out there.
 I haven't delved into Bernoulli bounds (I was only plotting the actual expected losses because you could get it in closed form), but I can look into it this week.
 }
+\RLP{We are going to investigate categoricals, and if we get satisfying upper bound we will include it in the paper.}
+
+\paragraph{(R5)}
+Recall that D'Orazio (2021) proves linear convergence only down to a variance ball around the optimum.
+
+\paragraph{(R6)} 
+Thank you for your very encouraging comment.
 
 \section*{Minor comments}
 
