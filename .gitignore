@@ -1,4 +1,5 @@
 # personal
+arxiv/
 doc/
 code/
 .ipynb_checkpoints/
@@ -6,6 +7,7 @@ code/
 *.pdf
 *.mtc
 *.ptc1
+*.zip
 
 # Latex IDE
 .texpadtmp/
