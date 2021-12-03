@@ -216,7 +216,8 @@ For $p$ and $q$ continuous densities,
 $\KL(p||q) = +\infty$ if $\exists x, q(x)=0 \, \& \, p(x)>0$.
 %Since exponential families have a positive density over their whole input set, this is not a concern for us, except if we misspecified the input set.
 }
-has led statisticians to study symmetric, better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial} or more recently the Hellinger distance \citep{baraud2017new}.
+has led statisticians to study better-behaved distances, such as the $L^2$ norm \citep[\S1.2]{tsybakov2009introduction}, the $L^1$ norm \citep{devroye2001combinatorial}, 
+or more recently  $\chi^2$ distance \citep{kamath2015learning} or Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research,
 and raising the fundamental problem:
 \begin{equation}
@@ -572,7 +573,7 @@ where the Mahalanobis norm  $\| x \|_{\mF}^2 = x^\top \mF x$  is induced by $\mF
     = \nabla^2\logpart(\nat^*)^{-1}
     = \Cov_{\nat^*}[T(X)]^{-1}  \; .
 }
-Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, we have
+Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregmanTaylor}, we get
 \begin{align}
 	\label{eq:asymptote}
 	\E \bregmanconj \left (\E [T(X)] ; \hat \meanp_n^\text{MLE/MAP} \right )
@@ -580,7 +581,8 @@ Plugging the MLE~\eqref{eq:defMLE} or MAP~\eqref{eq:defMAP} into~\eqref{eq:bregm
 \end{align}
 Both MLE and MAP have the same asymptote, as the contribution of the prior $n_0 \meanp_0$ gets negligible for large $n$.
 This asymptote is independent of the optimum $\meanp^*$ or $\mF$ for well-specified models.
-Next, we give another example for which we get a rate matching~\eqref{eq:asymptote}.
+Actually, $\frac{d}{2n}$ is also the minimax of the KL over all estimators, at least for categorical data \citep{braess2004bernstein, kamath2015learning}.
+Next, we focus on the quadratic example,  whose finite sample rate matches~\eqref{eq:asymptote}.
 
 \subsection{Quadratic Case}
 \label{ssec:quadratic}
