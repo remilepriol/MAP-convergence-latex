@@ -18,9 +18,8 @@ We strongly believe our article will promote an exchange of ideas, as emphasized
 (R5)  "The significance of the paper is that it provides insight into a deeper connection between exponential family MLE/MAP estimation and the Bregman geometry. [...]  The connections between self-concordance and the quadratic approximation to the Bregman was also fairly illuminating."
 (R6) "The presented results (or lack of) are very relevant and useful to both optimisation and statistics communities, and should spark several discussions at the conference."
 
-Additionally, members of the optimization and statistics community we talked to during our investigation of this problem were 
-either convinced a result already exist, 
-either interested in knowing the answers to these questions.
+In 1954, John Tukey  \nocite{tukey1954unsolved} wrote "Difficulties in identifying problems have delayed statistics far more than difficulties in solving problems. This seems likely to be the case in the future, too."
+Many members of the optimization and statistics community we talked to during our investigation of this problem thought: "Surely, this problem has been solved."
 Motivated by these feedbacks, we decided to submit as is, 
 to stimulate interest and get the help of the community to make progress on this hard problem.
 
@@ -51,26 +50,3 @@ Thank you for your very encouraging comment.
 
 \bibliographystyle{apalike}
 \bibliography{../references}
-
-\section*{Minor comments}
-
-\subsection*{Recommended litterature}
-
-R1:
-``In a more general stochastic optimization setup, [...]  bound of (nearly) the desired form (but not restricted to exponential families) [...] 
-
-Competing with the Empirical Risk Minimizer in a Single Pass (COLT 2015), Roy Frostig, Rong Ge, Sham M. Kakade, Aaron Sidford''
-
-R3:
-``other works use a similar mirror descent framework for the optimization of a parameter of an exponential family and might be relevant to cite:
-
-The Information Geometry of Mirror Descent
-Garvesh Raskutti, Sayan Mukherjee, 2013.
-
-Conjugate-Computation Variational Inference : Converting Variational Inference in Non-Conjugate Models to Inferences in Conjugate Models. Mohammad Emtiyaz, Khan Wu Lin, 2017.'' 
-
-\FDK{
-Haven't read it, but I'd guess Frostig et al. (2015) is a generalization of SGD being asymptotically ``optimal'' on the test set, which wouldn't solve the problem. Good to cite though. 
-For the other two, they are on, or use, mirror descent, so could be cited as related work.
-But there's no convergence rate, whether stats nor optimization.
-}
