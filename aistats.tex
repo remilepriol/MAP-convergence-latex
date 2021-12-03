@@ -522,7 +522,7 @@ This generalization encompasses exponential distribution when $\alpha=1$, as ano
 	\centering
 	\includegraphics[width=.8\textwidth]{figs/thales/numerical_schema_n=3.pdf}
 	\caption{
-	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MAP (blue) and MLE (orange) (\S\ref{ssec:gaussian} with $n=3$).
+	Primal and dual representations of a Gaussian $\cN(m,\sigma^2)$ MLE (blue) and MAP (orange) (\S\ref{ssec:gaussian} with $n=3$).
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
 	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:bias-variance} from~\S\ref{ssec:bias-variance}.
 	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the long edges of the triangle and the red curve.
@@ -639,7 +639,7 @@ Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^*
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
-	\bregmanconj(\m^*,\m) \leq \norm{\m^*-\m}_{\mF}^2.
+	\bregmanconj(\m^*; \m) \leq \norm{\m^*-\m}_{\mF}^2.
 }
 \end{proposition}
 To gain insights into how many samples are needed, we can estimate when $\expecti{\norm{\m^*-\m}_{\mF}} < 0.21 $.
@@ -728,11 +728,11 @@ For instance $\logpart = -\log$ is neither smooth nor strongly convex.
 Recently, these assumptions have been relaxed to the $\stgcvx$-strong convexity and $\smooth$-smoothness of $f$
 \emph{relative} to a reference function $\logpart$, defined as
 \aligns{
-	\stgcvx \cB_{A}(x, y)
+	\stgcvx \cB_{A}(x ; y)
 	\leq
-	\cB_f(x,y)
+	\cB_f(x ; y)
 	\leq
-	\smooth \cB_A(x,y) \; .
+	\smooth \cB_A(x ; y) \; .
 }
 When $\logpart = \norm{\cdot}^2$, we recover the standard smoothness and gradient descent.
 These conditions ensure the linear convergence of MD with mirror map $\nabla A$
@@ -760,7 +760,7 @@ We review these analyses in the light of the MAP and provide a summary in \cref{
 		Each row correspond to one analysis, and each columns answers one question.
 		($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
 		($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
-		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^*,\hat\nat_n)$?
+		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^* ; \hat\nat_n)$?
 		($\hat\nat_n$) is it for the last iterate or an average ?
 		None of these analysis check all the boxes needed to address~\eqref{problem}.
 	}
@@ -798,11 +798,11 @@ We review these analyses in the light of the MAP and provide a summary in \cref{
 %Before we proceed, let $f_X$ be a stochastic estimate of $f = \expecti{f_X}$, with stochastic gradients $g_X(\nat) =\nabla f_X(\nat)$. In our case $f_X(\nat) = - \log p(X\cond \nat)$ and $g_X(\nat) = \m - T(X)$.
 
 \subsubsection{Analogs of the Variance}
-Let us introduce the symmetrized Bregman induced by $\conj$, written $\cS_\conj(\m_1, \m_2) = \bregmanconj(\m_1, \m_2) + \bregmanconj(\m_2, \m_1)$.
+Let us introduce the symmetrized Bregman induced by $\conj$, written $\cS_\conj(\m_1 ; \m_2) = \bregmanconj(\m_1 ; \m_2) + \bregmanconj(\m_2 ; \m_1)$.
 \citet{hanzely2018fastest} assume that the expectation of $\cS$ between stochastic and deterministic updates verifies
 \alignn{
-	\expect[g]{\cS_\conj \paren{
-			\hat\m_{n} - \lr g(\hat \nat_{n}),
+	\expect[g\!]{\cS_\conj \paren{
+			\hat\m_{n} - \lr g(\hat \nat_{n}) ;
 			\hat\m_{n}   -\lr \nabla f(\hat \nat_{n})
 	}} \leq \lr^2 C
 	\label{eq:hanzely}
@@ -811,25 +811,28 @@ for all possible iterates $\MAPt$, relevant step-sizes $\lr$ and for some consta
 When $A(\theta) = \frac{1}{2}\norm{\theta}^2$,
 %or when $A$ is $\stgcvx$-strongly convex,
 this definition recovers the variance of the stochastic gradient
-\[
-\expect[g\!\!]{\norm{\nabla f(\theta) - g(\theta)}^2}\leq C.
-\]
+\alignn{
+	\expect[g\!]{\norm{\nabla f(\theta) - g(\theta)}^2}\leq C \; .
+	\label{eq:gradient-var}
+}
 Under this assumption, \citet[Lem.4.8]{hanzely2018fastest} prove a $O(1/n)$ convergence rate on function values with $O(1/n)$ step-sizes and tail averaging \citep{lacostejulien2012simpler} in primal space $\Theta$.
 
-\citet{dragomir2021fast} define the weaker assumption
+\citet{dragomir2021fast} define the assumption
 \alignn{
-	\expect[\tilde g]{
+	\expect[g\!]{
 		\cB_{A^*}(\MAPm - 2\lr g(\theta_*), \MAPm)
 	} \leq 2 \lr^2 C \; .
 	\label{eq:dragomir}
 }
 When $A(\theta) = \frac{1}{2}\norm{\theta}^2$,
 % or when $\logpart$ is $\stgcvx$-strongly-convex,
-we recover the variance of the gradients at the optimum
-\[
-\expect[g\!\!]{\norm{\nabla g(\theta^*)}^2}\leq C.
-\]
-Using their descent lemma \citep[Eq. (12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th. 3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^*, \hat\nat_n)$.
+we recover the variance of the gradients at the optimum, which is weaker than~\eqref{eq:gradient-var},
+\alignn{
+	\expect[g\!]{\norm{\nabla g(\theta^*)}^2}\leq C \; .
+	\label{eq:opt-gradient-var}
+}
+%Note that~\eqref{eq:opt-gradient-var} is weaker than~\eqref{eq:gradient-var}.
+Using their descent lemma \citep[Eq. (12)]{dragomir2021fast} with the $O(1/n)$ step-size used by \citet[Th. 3.2]{gower2019sgd} for SGD, we obtain a $O(1/n)$ convergence rate, on the Bregman with \emph{reversed} arguments $\bregman(\nat^* ; \hat\nat_n)$.
 
 These two analyses seem promising for~\eqref{problem}, but none of these assumptions hold in front of barrier objectives such as the $-\log$ from \S\ref{ssec:gaussian-variance}.
 Indeed, they both assume their bound holds uniformly for every possible iterate $\hat \nat_n$.
@@ -845,7 +848,7 @@ Confronted with this difficulty, we investigate an alternative definition of var
 \subsubsection{Bounded Optimality Gap}
 Inspired by \citet{loizou2021stochastic}, \citet{dorazio2021stochastic} explore the hypothesis
 \alignn{
-	\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C,
+	\min_\nat f(\nat) - \expect[X]{\min_\nat f_X(\nat)} \leq C \; ,
 	\label{eq:dorazio}
 }
 where $f_X$ is a stochastic estimate of $f = \expecti{f_X}$. In our case $f_X(\nat) = - \log p(X\cond \nat)$.
