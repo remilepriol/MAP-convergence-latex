@@ -201,7 +201,7 @@ In this case, not only is $f$ convex, but it yields a simple condition for the m
 	\label{eq:defMLE}
 \end{align}
 This rule is also known as moment matching.
-Given a specific conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). In this paper, we will focus on analyzing MLE and MAP estimators.\footnote{A related analysis is present in the online-learning literature, but for different online estimators, which are less efficient than offline methods \citep{azoury2001relative,dasgupta2007online}.}
+Given a specific conjugate prior, a similar formula~\eqref{eq:defMAP} holds for the maximum a posteriori (MAP). In this paper, we will focus on analyzing MLE and MAP estimators.
 
 \paragraph{Statistical decision theory}
 To assess the quality of an estimator $\hat \nat$ (and compare them), we need to define some notion of closeness to the correct parameter $\nat^*$.
@@ -234,6 +234,11 @@ There are already general asymptotic results (\S\ref{ssec:asymptote} and Fig.~\r
 or close to quadratic (\S\ref{ssec:quadratic}).
 However, a  general solution for finite $n$ remains elusive. 
 In this paper, we review partial solutions and give ideas on how to solve the problem.
+
+\paragraph{Online Learning.}
+Variants of this problem have been considered by the online learning community. For instance \citet[Th.~9-10]{kaufmann2021mixture} provides high-confidence upper bounds on~\eqref{problem}, but only for Gaussians with known variance or Gamma with known shape.
+Other works compare other online estimators to MLE or MAP \citep{azoury2001relative,dasgupta2007online}.
+
 
 \paragraph{Optimization} 
 Stochastic optimization offers an interesting perspective on~\eqref{problem}.
