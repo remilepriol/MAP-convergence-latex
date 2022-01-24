@@ -7,7 +7,7 @@
 }\fi
 
 
-We thank all the reviewers for their careful review and insightful or encouraging comments. We start our rebuttal by answering the common concern, followed by specific comments for each reviewer.
+We thank all the reviewers for their careful review and insightful or encouraging comments. We start by answering the common concern, followed by specific comments for each reviewer.
 	
 \paragraph{Common answer: Is the paper relevant to AISTATS?}
 We understand from the reviewers that “open problem papers”  are unusual, and the question of whether such an article should be accepted or not at AISTATS is legitimate. 
@@ -18,7 +18,7 @@ We strongly believe our article will promote an exchange of ideas, as emphasized
 (R5)  "The significance of the paper is that it provides insight into a deeper connection between exponential family MLE/MAP estimation and the Bregman geometry. [...]  The connections between self-concordance and the quadratic approximation to the Bregman was also fairly illuminating."
 (R6) "The presented results (or lack of) are very relevant and useful to both optimisation and statistics communities, and should spark several discussions at the conference."
 
-In 1954, John Tukey  \nocite{tukey1954unsolved} wrote "Difficulties in identifying problems have delayed statistics far more than difficulties in solving problems. This seems likely to be the case in the future, too."
+%In 1954, John Tukey  \nocite{tukey1954unsolved} wrote "Difficulties in identifying problems have delayed statistics far more than difficulties in solving problems. This seems likely to be the case in the future, too."
 Many members of the optimization and statistics community we talked to during our investigation of this problem thought: "Surely, this problem has been solved."
 Motivated by these feedbacks, we decided to submit as is, 
 to stimulate interest and get the help of the community to make progress on this hard problem.
@@ -27,13 +27,12 @@ to stimulate interest and get the help of the community to make progress on this
 \paragraph{(R1) The statement of the conjecture should be more precise.}
 We know that asymptotically, the expected KL belongs to $\frac{d}{2 n} + O (n^{-\frac{3}{2}})$, so it is tempting to explicitly search for a non-asymptotic upper bound in this set. 
 Yet, we are still unaware of any general upper bound.
-In our opinion, a bound of the form $\frac{c}{n}$ with a large constant $c>\frac{d}{2}$, or even a bound $\frac{c}{\sqrt{n}}$ would be novel and interesting.
+In our opinion, a bound of the form $\frac{c}{n}$ with a large constant $c>\frac{d}{2}$, or even a bound $\frac{c}{\sqrt{n}}$ valid for small $n$ would be novel and interesting.
 Consequently, we decided to keep the question open-ended.  
 
 Additionally, about the statement: (R1) "many of such results are essentially known."
-We are very interested in knowing examples of such   results, as we believe they could help us improve the paper.
-
-We will also discuss \citet{frostig2015competing}, noting that they work with smooth and strongly convex losses, which is precisely the assumptions we aim to relax.
+If the reviewer has in mind such results that were not mentioned in the paper and the reviews, we would really appreciate specific references, as they could help us improve the paper.
+We will also discuss \citet{frostig2015competing}, noting that they work with smooth and strongly convex losses, which are precisely the assumptions we are aiming to relax.
 
 \paragraph{(R2) The statistical literature review should be more detailed.}
 We understand R2 is mostly talking about the papers mentioned in the locally quadratic subsection. 
