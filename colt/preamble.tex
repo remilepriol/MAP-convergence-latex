@@ -1,0 +1,100 @@
+% \usepackage[round]{natbib}
+\renewcommand{\bibname}{References}
+\renewcommand{\bibsection}{\subsubsection*{\bibname}}
+\usepackage[rightcaption]{sidecap}
+
+%\usepackage{microtype} % RLP tried it, no change.
+%\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\usepackage{floatrow}
+%\usepackage{titlesec}
+
+%\titleclass{\part}{top}
+%\titleformat{\part}[display]
+%{\normalfont\huge\bfseries}{\centering\partname\ \thepart}{20pt}{\Huge\centering}
+%\titlespacing*{\part}{0pt}{50pt}{40pt}
+
+\graphicspath{{figs/}}
+%\usepackage{subfigure}
+%\usepackage{subcaption}
+%\usepackage{placeins}
+\usepackage{hyperref}       % hyperlinks
+
+\usepackage{array}
+\usepackage{wrapfig}
+
+\hypersetup{ % SLJ: my standard paper setup...
+	pdftitle={MAP convergence},
+	pdfkeywords={},
+	pdfborder=0 0 0,
+	pdfpagemode=UseNone,
+	colorlinks=true,
+	linkcolor=blue, %mydarkblue,
+	citecolor=blue, %mydarkblue,
+	filecolor=blue, %mydarkblue,
+	urlcolor=blue, %mydarkblue,
+	pdfview=FitH,
+	pdfauthor={Anonymous},
+	% draft,
+	final,
+}
+
+% To make a table of contents only for the appendix
+\usepackage[toc,page,header]{appendix}
+\usepackage{minitoc}
+\renewcommand \thepart{}
+\renewcommand \partname{}
+
+% To make colored boxes
+\usepackage[framemethod=TikZ]{mdframed}
+\newmdenv[
+	roundcorner=10pt,
+	backgroundcolor=Red!30,
+]{important}
+
+
+\usepackage[capitalise]{cleveref}
+\newcommand{\rlp}[1]{\textcolor{BrickRed}{(RLP:#1)}}
+\newcommand{\fdk}[1]{\textcolor{Periwinkle}{(fdk:#1)}}
+\newcommand{\TODO}[1]{\textcolor{cyan}{(TODO #1)}}
+\newcommand{\tocite}{\textcolor{purple}{(add citation)}}
+
+% my packages
+\usepackage{math_commands}
+% some custom math commands
+% \newtheorem{proposition}{Proposition}
+\newtheorem{problem}{Open Problem}
+
+\newcommand*{\expect}[2][]{\ensuremath{\mathbb{E}_{#1} \left[ #2 \right] }} % expectation operator
+\newcommand*{\expecti}[2][]{\ensuremath{\mathbb{E}_{#1} [ #2 ] }} % expectation operator
+
+\newcommand{\cond}{\,\vert\,}
+\newcommand{\logpart}{A}
+\newcommand{\conj}{{\logpart^*}}
+\newcommand{\bregman}{\cB_\logpart}
+\newcommand{\bregmanconj}{\cB_{\logpart^*}}
+\newcommand{\nat}{\theta}
+\newcommand{\m}{\mu}
+\newcommand{\meanp}{\m}
+\newcommand{\decrement}{D}
+\newcommand{\linear}{\ell} % linearization of a function
+\newcommand{\lr}{\gamma} % learning rate, or step-size
+\newcommand{\lin}[1]{\left\langle#1\right\rangle}
+
+\newcommand{\MAPm}{\hat \m_n}
+\newcommand{\MAPt}{\hat \nat_n}
+\DeclareMathSymbol{\shortminus}{\mathbin}{AMSa}{"39}
+
+\newcommand{\stgcvx}{\alpha} % strong convexity
+\newcommand{\smooth}{\beta} % smoothness
+
+\newcommand*{\greencmark}{\textcolor{green}{\cmark}}
+\newcommand*{\redxmark}{\textcolor{red}{\xmark}}
+
+\setcounter{tocdepth}{2}
