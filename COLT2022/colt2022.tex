@@ -1,3 +1,4 @@
+\RequirePackage[dvipsnames]{xcolor}
 %\documentclass[anon,12pt]{colt2022} % Anonymized submission
 \documentclass[final,12pt]{colt2022} % Include author names
 % The following packages are automatically loaded:
@@ -20,7 +21,6 @@
 %\usepackage{subcaption}
 %\usepackage{placeins}
 \usepackage{hyperref}       % hyperlinks
-%\usepackage[dvipsnames]{xcolor}
 
 \usepackage{array}
 \usepackage{wrapfig}
@@ -194,9 +194,9 @@ Given a specific conjugate prior, a similar formula~\eqref{eq:defMAP} holds for 
 \paragraph{Statistical decision theory}
 To assess the quality of an estimator $\hat \nat$ (and compare them), we need to define some notion of closeness to the correct parameter $\nat^*$.
 We distinguish here two ways: \textit{distance in parameter space} and \textit{``distance'' between distributions}.
-{\bf 1)} Distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation} and a wealth of asymptotic results \citep{vdv1998asymptotic}.
+\textbf{1)} Distance in parameter space $d(\nat,\nat^*)$. This is the focus of \emph{parameter estimation}, yielding results such as the asymptotic efficiency of the MLE via the Cramer-Rao lower-bound \citep{aitken1942estimation} and a wealth of asymptotic results \citep{vdv1998asymptotic}.
 In particular for sum of independent variables such as~\eqref{eq:defMLE}, large deviations theory \citep{varadhan1984large} characterizes concentration phenomena.
-{\bf 2)} Distance between distributions, as studied in \emph{density estimation}.
+\textbf{ 2)} Distance between distributions, as studied in \emph{density estimation}.
 For this purpose, the Kullback-Leibler (KL) divergence $\KL\paren{p_{\nat^*} || p_{\nat} }$  arises naturally from information theory,
 but its lack of robustness to misspecification\footnote{
 For $p$ and $q$ continuous densities,
@@ -297,7 +297,7 @@ When explicit, we write the random variable $T = T(X)$.
 
 % TODO sort out relationships between : steep family, minimal statistics and Legendre type. What implies what ?
 
-{\bf Duality.}
+\textbf{ Duality.}
 The log-partition function $\logpart$ verifies the two following identities:
 \begin{align}
     \nabla\logpart(\nat) &=  \expect[p_\nat]{T(X)} =: \meanp, \label{eq:mirror-map} \\
@@ -326,7 +326,7 @@ By Fenchel duality, its gradient is the inverse of the gradient of $\logpart$,  
 %\end{figure}%
 %
 %Not super convinced about introducing that here? it comes naturally when considering the KL on exponential maps) %RLP it is useful to the conjugate prior.
-{\bf The Bregman Divergence} induced by $\logpart$ measures the discrepancy between two parameters $\nat$ and $\nat_0$,
+\textbf{ The Bregman Divergence} induced by $\logpart$ measures the discrepancy between two parameters $\nat$ and $\nat_0$,
 \begin{align}
     \bregman (\nat ; \nat_0)
     & = \logpart(\nat) - \logpart(\nat_0)
@@ -342,7 +342,7 @@ In general, Bregman divergences are not symmetric, i.e., $\bregman (\nat ; \nat_
 %    \label{eq:bregman_switch}
 %\end{align}
 
-{\bf A Conjugate Prior} for $p(X|\nat)$ is
+\textbf{ A Conjugate Prior} for $p(X|\nat)$ is
 \begin{align}
     p(\nat)
     &\propto \exp( - n_0 \bregman(\nat ; \nat_0) ) \nonumber \\
@@ -353,7 +353,7 @@ where $n_0$ and $\nat_0$ are (hyper)parameters of the prior  \citep{agarwal2010g
 This is an exponential family with sufficient statistics $(\nat ,\logpart(\nat))$ and natural parameter $(n_0 \m_0, -n_0)$.
 Intuitively, $n_0$ is the number of fictive data points observed from a distribution with natural parameter $\nat_0$.
 
-{\bf Maximum A Posteriori (MAP).}
+\textbf{ Maximum A Posteriori (MAP).}
 Given a dataset $\mD_n =(X_1,\dots,X_n)$, we wish to estimate the maximum of the posterior distribution $p(\nat \cond \mD_n) \propto p(\mD_n|\nat)p(\nat)$.
 Plugging in~\eqref{eq:def_expfamily},~\eqref{eq:defBregman} and~\eqref{eq:def_prior} yields
 \aligns{
@@ -414,7 +414,7 @@ while in \S,\ref{sec:insights} we provide realistic conditions to obtain valid b
 However, we have yet to find a solution encompassing both a broad range of exponential families
 and applicable to small sample sizes $n \lesssim d$.
 
-{\bf A Difficulty with the MLE.}
+\textbf{ A Difficulty with the MLE.}
 While~\eqref{eq:bregmanMAP} is always finite, \eqref{eq:bregmanMLE} may be infinite,
 for instance when estimating the covariance of a Gaussian when $n \leq d + 1$.
 Even worse, there is a non-zero probability never to sample one of the categories with categorical variables.
@@ -603,7 +603,7 @@ Adding a reference mean $\m_0$ to get the MAP yields
 We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias term in $O(n^{-2})$. However, this result does not generalize well to other families unless we make restrictive assumptions on $\conj$. % we can relate $\bregmanconj$ to a norm or a quadratic.
 % Can we generalize these results to other families?
 
-{\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
+\textbf{ If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     &\leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m} \\
@@ -611,7 +611,7 @@ We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias ter
 \end{align}
 so $\bregmanconj$ is Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate, but no common exponential families verify the assumption.
 
-{\bf If $\conj$ is $L$-smooth}\footnote{$\conj$ is $L$-smooth iff $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
+\textbf{ If $\conj$ is $L$-smooth}\footnote{$\conj$ is $L$-smooth iff $\nabla\conj$ is $L$-Lipschitz.} (e.g. $\logpart$ is $\frac{1}{L}$-strongly convex \citep{kakade2009duality}), then
 \begin{align}
     \bregmanconj(\m^* ; \m)
     \leq \frac{L}{2} \norm{\m^* - \m}^2 \; ,
@@ -1534,7 +1534,7 @@ A convex function is $F:\real^p \rightarrow \real$ is self-concordant if it is d
 %for all feasible $t$ and for some $C\geq 0$.
 %\end{definition}
 
-{\bf Clarification:} In the main text in Section~\ref{ssec:local-quadratic}, we claimed that the Fenchel conjugate of a 1-dimensional function is also self-concordant. 
+\textbf{ Clarification:} In the main text in Section~\ref{ssec:local-quadratic}, we claimed that the Fenchel conjugate of a 1-dimensional function is also self-concordant. 
 Actually, this is also true in higher dimensions, as proved by \citet{nesterov1994interior}. See \citet[Prop.~6]{sun2019generalized} for a more accessible reference.
 
 
@@ -1714,7 +1714,7 @@ leading to the update $\theta_{n+1}$ satisfying
 Expressed with the dual parameters, we obtain $\mu_{n} = \nabla A(\theta_{n})$, 
 $\mu_{n+1} = \mu_n - \gamma \nabla f(\theta_n)$. 
 
-{\bf In our case,} where the objective function is the (negative) log-likelihood of an exponential family, we have
+\textbf{ In our case,} where the objective function is the (negative) log-likelihood of an exponential family, we have
 \alignn{
 	f(\theta) = A(\theta) - \lin{\frac{1}{n} \sum_{i=1}^n T(X_i), \theta}.
 }
