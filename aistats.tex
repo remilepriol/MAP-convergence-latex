@@ -5,33 +5,13 @@
 % This is a hack, there is no clean solution for that unless we install locally the package
 \WarningFilter{latex}{You have requested package}
 
-
-%\pdfsuppresswarningpagegroup=1 %removes the warning
-% This is a hack, the other way to remove is to convert all pdf into postscript or eps.
-% RLP: not sure what is the point of this. With my latex it creates an error, and I do not have warnings, so I comment it out for now.
-
-
 \usepackage[accepted]{aistats/aistats2022}
-% If your paper is accepted, change the options for the package
-% aistats2022 as follows:
-%\usepackage[accepted]{aistats2022}
-
 \setlength{\footskip}{3.31pt}
 
-% If you set papersize explicitly, activate the following three lines:
-%\special{papersize = 8.5in, 11in}
-%\setlength{\pdfpageheight}{11in}
-%\setlength{\pdfpagewidth}{8.5in}
-
-%\let\oldsection\section
-%\renewcommand{\section}[1]{\oldsection{\texorpdfstring{\uppercase{#1}}{#1}}}
-
-% If you use natbib package, activate the following three lines:
 \usepackage[round]{natbib}
 \renewcommand{\bibname}{References}
 \renewcommand{\bibsection}{\subsubsection*{\bibname}}
 
-%\usepackage{microtype} % RLP tried it, no change.
 %\usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{lmodern}
