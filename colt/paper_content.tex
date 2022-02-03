@@ -35,6 +35,7 @@ This convexity lays the foundation for generalized linear models \citep{mccullag
 \begin{figure}[ht]
 	\centering
 \includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
+	\vspace{-3ex}
 	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
 		Solid curve  are average over $10^5$ trials.
 		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
@@ -587,15 +588,6 @@ While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020b
 We review these analyses in the light of the MAP and provide a summary in \cref{tbl:assumptions}.
 
 \begin{table}[t]
-	\caption{Summary of results for SMD
-		under relative smoothness and relative strong convexity assumptions.
-		Each row correspond to one analysis, and each columns answers one question.
-		($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
-		($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
-		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^* ; \hat\nat_n)$?
-		($\hat\nat_n$) is it for the last iterate or an average ?
-		None of these analysis check all the boxes needed to address~\eqref{problem}.
-	}
 	\begin{center}
 		\begin{tabular}{lcccc}
 			%{p{.15\textwidth}m{.05\textwidth}m{.08\textwidth}m{.1\textwidth}}
@@ -623,6 +615,16 @@ We review these analyses in the light of the MAP and provide a summary in \cref{
 			\bottomrule
 		\end{tabular}
 	\end{center}
+	\vspace{-3ex}
+	\caption{Summary of results for SMD
+		under relative smoothness and relative strong convexity assumptions.
+		Each row correspond to one analysis, and each columns answers one question.
+		($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
+		($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
+		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^* ; \hat\nat_n)$?
+		($\hat\nat_n$) is it for the last iterate or an average ?
+		None of these analysis check all the boxes needed to address~\eqref{problem}.
+	}
 	\label{tbl:assumptions}
 \end{table}
 
