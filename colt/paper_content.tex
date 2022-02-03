@@ -3,20 +3,6 @@
 %\part{} % Start the document part
 %\parttoc % Insert the document TOC
 
-\begin{figure}[h]
-	\centering
-\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
-	\caption{\vspace{-5ex}KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
-		Solid curve  are average over $10^5$ trials.
-		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
-		Shaded areas are 90\% confidence interval.
-		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
-		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
-		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
-	}
-	\label{fig:curves}
-\end{figure}
-
 %\begin{figure}[h]
 %	\centering
 %	\floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,top},capbesidewidth=.6\textwidth}}]{figure}[\FBwidth]
@@ -45,6 +31,20 @@ f(\nat) := \E[-\log p_\nat(X)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 }
 where $\logpart$ is the convex log-partition function and \mbox{$\nat\in\Theta$} is the \textit{natural parameter}.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} or variants of principal component analysis \citep{collins2001generalization}, among other applications.
+
+\begin{figure}[ht]
+	\centering
+\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
+		Solid curve  are average over $10^5$ trials.
+		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
+		Shaded areas are 90\% confidence interval.
+		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
+		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
+		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
+	}
+	\label{fig:curves}
+\end{figure}
 
 \paragraph{Estimators}
 In this paper, we consider the problem of estimating $\nat$ from a dataset $\mD = (X_1, \dots, X_n)$ of iid observations from $p_\theta$ in an exponential family.
@@ -86,7 +86,9 @@ However, a  general solution for finite $n$ remains elusive.
 In this paper, we review partial solutions and give ideas on how to solve the problem.
 
 \paragraph{Online Learning.}
-Variants of this problem have been considered by the online learning community. For instance \citet[Th.~9-10]{kaufmann2021mixture} provides high-confidence upper bounds on~\eqref{problem}, but only for Gaussians with known variance or Gamma with known shape.
+Variants of this problem have been considered by the online learning community. 
+For instance \citet[Th.~9-10]{kaufmann2021mixture} provides high-confidence upper bounds on~\eqref{problem}, but only for Gaussians with known variance or Gamma with known shape.
+Very recently, \citet{chowdhury2022bregman} expressed implicit confidence bounds for the MLE of exponential families with the KL divergence, which is a similar to~\eqref{problem} but different.
 Other works compare other online estimators to MLE or MAP \citep{azoury2001relative,dasgupta2007online}.
 
 
