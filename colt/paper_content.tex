@@ -585,14 +585,14 @@ While many assumptions exist for SGD \citep[\S3 for a modern review]{khaled2020b
 We review these analyses in the light of the MAP and provide a summary in \cref{tbl:assumptions}.
 
 \begin{table}[t]
-	\caption{\vspace{-4ex} Summary of results for SMD
+	\caption{Summary of results for SMD
 		under relative smoothness and relative strong convexity assumptions.
 		Each row correspond to one analysis, and each columns answers one question.
 		($-\log$) does the bound hold for the Gaussian variance example (\S\ref{ssec:gaussian-variance})?
 		($\lr_n \sim \inv{n}$) does it converge with a $O(\inv{n})$ step-size?
 		($f$) is the bound in function value, or in reverse Bregman $\bregman(\nat^* ; \hat\nat_n)$?
 		($\hat\nat_n$) is it for the last iterate or an average ?
-		None of these analysis check all the boxes needed to address~\eqref{problem}. \vspace{-4ex}
+		None of these analysis check all the boxes needed to address~\eqref{problem}.
 	}
 	\begin{center}
 		\begin{tabular}{lcccc}
@@ -709,17 +709,17 @@ In writing this paper, we hope to attract attention to this fundamental problem,
 \bibliography{references}
 
 \clearpage
-\appendix
 
 % \addcontentsline{toc}{section}{Appendix} % Add the appendix text to the document TOC
 % \part{} % Start the appendix part
 
 % \parttoc % Insert the appendix TOC
 
-\renewcommand{\contentsname}{APPENDICES}
+%\renewcommand{\contentsname}{APPENDICES}
 \tableofcontents
 
 
+\appendix
 \section{PROOFS FOR GAUSSIAN VARIANCE}
 \label{app:gaussian-variance}
 
@@ -774,9 +774,9 @@ This means that the primal and dual Bregman divergences have the same form as we
 	&=  \alpha \left ( \frac{ \nat_n}{\nat_*} - 1 - \log  \frac{ \nat_n}{\nat_*} \right)
 	= \alpha \phi\paren{\frac{ \nat_n}{\nat_*}},
 \end{align}
-\begin{wrapfigure}[14]{r}{0.4\textwidth}
+\begin{wrapfigure}[12]{r}{0.4\textwidth}
 	\centering
-	\includegraphics[width=.38\textwidth]{phi.pdf}
+	\includegraphics[width=\textwidth]{phi.pdf}
 	\caption{%
 	Illustration of $\phi(z)$ (orange) and its upper bound $\phi(z) + \phi\paren{z^{-1}}$ (grey).
 	They both are barriers near $0$.
@@ -1096,15 +1096,13 @@ We make a more general statement about gamma distributions in \S\ref{app:proof-M
 \begin{theorem}[MAP Bound]
 The expected symmetrized Bregman~\eqref{eq:symmetrized_bregman} of the MAP of $\cN(  0,\m^*)$ with prior hyper-parameters $(n_0,\m_0)$ is upper bounded as
  \begin{align}
-	& \expect{\cS_\conj( \m^*; \hat \m_n^\mathrm{MAP})}
+	\expect{\cS_\conj( \m^*; \hat \m_n^\mathrm{MAP})}
 	\leq 
 	\left\{\begin{array}{ll}
 		\cS_\conj( \mu_*; \mu_0) 					& \text{ if } \ n=0, \\
 		\inv{2(n_0+1)}  +  b_1 						& \text{ if }\ n=1,\\
 		\frac{1}{n_0 \frac{\m_0}{\m^*} +n-2} + b_n  & \text{ if }\ n\geq 2,
-	\end{array}\right.
-	\quad 
-	\quad 
+	\end{array}\right. \\
 	\text{where }
 	b_n = \frac{(1 + \inv{n_0} - \frac{\m_0}{\m^*})^2}{2 (\frac{\m_0}{\m^*}+\frac{(n-2)_+}{n_0})(1 + \frac{n}{n_0} )} \in O\paren{\frac{n_0^2}{n^2}} \; . 
 	%\nonumber
