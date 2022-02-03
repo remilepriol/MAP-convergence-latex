@@ -1,6 +1,6 @@
 \RequirePackage[dvipsnames]{xcolor}
-%\documentclass[anon,12pt]{colt2022} % Anonymized submission
-\documentclass[final,12pt]{colt2022} % Include author names
+\documentclass[anon,12pt]{colt2022} % Anonymized submission
+%\documentclass[final,12pt]{colt2022} % Include author names
 % The following packages are automatically loaded:
 % amsmath, amssymb, natbib, graphicx, url, algorithm2e
 \usepackage{times}
@@ -143,28 +143,14 @@ We believe solving this very fundamental problem may bring progress to both the 
 \end{abstract}
 
 \begin{keywords}%
-  List of keywords%
+    Exponential Familly, Estimator, Mirror Descent
 \end{keywords}
+
 
 \doparttoc % Tell to minitoc to generate a toc for the parts
 \faketableofcontents % Run a fake tableofcontents command for the partocs
 %\part{} % Start the document part
 %\parttoc % Insert the document TOC
-
-\begin{figure}
-	\centering
-\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
-	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
-		Solid curve  are average over $10^5$ trials.
-		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
-		Shaded areas are 90\% confidence interval.
-		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
-		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
-		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
-	}
-	\label{fig:curves}
-\end{figure}
-
 
 \section{INTRODUCTION}
 \label{sec:motivation}
@@ -180,6 +166,21 @@ f(\nat) := \E[-\log p_\nat(X)] = \logpart(\nat) - \lin{\E[T(X)] , \nat},
 }
 where $\logpart$ is the convex log-partition function and \mbox{$\nat\in\Theta$} is the \textit{natural parameter}.
 This convexity lays the foundation for generalized linear models \citep{mccullagh1989generalized} or variants of principal component analysis \citep{collins2001generalization}, among other applications.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=.6\textwidth]{gammaMAPrate.pdf}
+	\caption{KL divergence~\eqref{eq:suboptimalityKL} for Gaussian variance (\S\ref{ssec:gaussian-variance}) MLE (blue) and MAP (orange) against number of samples $n$. 
+		Solid curve  are average over $10^5$ trials.
+		Dashed curves are upper bounds~\eqref{eq:MLE_rate} (blue) and~\eqref{eq:MAP_rate} (orange, not tight by a factor 2).
+		Shaded areas are 90\% confidence interval.
+		The MLE expected KL is infinite for $n=1$ and $n=2$, but for $n\geq3$ it quickly joins the upper bound~\eqref{eq:MLE_rate} and the $1/2n$ asymptote~\eqref{eq:asymptote}.
+		MAP's expected KL is always finite, and it has lower variance than MLE, but it is slower to join the asymptote.
+		We wish to find upper bounds similar to~\eqref{eq:MAP_rate} characterizing the relative importance of the prior and the few sample behavior of MAP for a variety of exponential families.
+	}
+	\label{fig:curves}
+\end{figure}
+
 
 \paragraph{Estimators}
 In this paper, we consider the problem of estimating $\nat$ from a dataset $\mD = (X_1, \dots, X_n)$ of iid observations from $p_\theta$ in an exponential family.
@@ -210,8 +211,8 @@ and raising the fundamental problem:
 \begin{equation}
 \boxed{
 \begin{aligned}
-	\textit{Find an upper}&\textit{ bound on the expected value of } \\
-	&\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \; .
+	\textit{Find an upper bound on the expected value of } \ \
+	\KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \; .
 \end{aligned}
 }
 \tag{$\star$}
@@ -231,17 +232,14 @@ Other works compare other online estimators to MLE or MAP \citep{azoury2001relat
 \paragraph{Optimization} 
 Stochastic optimization offers an interesting perspective on~\eqref{problem}.
 Consider the problem
-\alignn{
-	\min_{\theta\in \Theta} f(\theta)\,,
-	\label{eq:optimization_problem}
-}
+	$\min_{\theta\in \Theta} f(\theta)$,
 solved by $\nat^*\in \Theta$.
 Setting $f$ as the log-likelihood~\eqref{eq:defNLL}, the suboptimality is equal to the KL:
 \alignn{
 	f(\nat) - f(\nat^*) = \KL\paren{p_{\nat^*} || p_{\nat} } .
 	\label{eq:suboptimalityKL}
 }
-Both MLE and MAP can be seen as stochastic algorithms solving~\eqref{eq:optimization_problem}.
+Both MLE and MAP can be seen as stochastic algorithms minimizing $f$.
 In particular, with exponential families, MAP is equivalent to stochastic mirror descent (SMD) \citep{nemirovski2009robust}.
 Inspired by recent work~\citep{lepriol2021analysis, kunstner2020homeomorphic}, we consider using existing convergence rates for SMD to get the upper bound we seek.
 Unfortunately, none of the current analyses apply, highlighting open problems for the analysis of SMD.
@@ -876,7 +874,7 @@ Simon Lacoste-Julien is a CIFAR Associate Fellow in the Learning in Machines \& 
 
 
 \bibliographystyle{apalike}
-\bibliography{../references}
+\bibliography{references}
 
 
 \clearpage
