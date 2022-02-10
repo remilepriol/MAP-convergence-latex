@@ -73,9 +73,9 @@ has led statisticians to study better-behaved distances, such as the $L^2$ norm 
 or more recently  $\chi^2$ distance \citep{kamath2015learning} or Hellinger distance \citep{baraud2017new}.
 With exponential families, the KL divergence is also a Bregman divergence between parameters (see \S\ref{sec:problem}), thus drawing a connection between these two lines of research,
 and raising the fundamental problem:
-\begin{equation}
+\begin{equation}\setlength\fboxsep{2ex}
 \boxed{
-	\textit{Find an upper bound on the expected value of}\ \ \KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \; .
+	\textit{Find an upper bound in expectation on}\ \ \KL(p_{\nat^*} || p_{\hat \nat_n^\text{MLE/MAP} }) \; \textit{(or in high probability)}.
 }
 \tag{$\star$}
 \label{problem}
@@ -366,7 +366,7 @@ This generalization encompasses exponential distribution when $\alpha=1$, as ano
 	In dual space, MAP is a scaled version of the MLE~\eqref{eq:defMAP} with expectation $\E[\hat\m_n^\text{MAP}]=:\bar \m_n$ (light green), and MLE is unbiased $\E[\hat\m_n^\text{MLE}]=\m^*$, as illustrated by the parallels in the grey triangle.
 	In primal space, MAP has expectation $\tilde \nat_n$ (red), which intervenes in the bias-variance decomposition~\eqref{eq:bias-variance} from~\S\ref{ssec:bias-variance}.
 	The hyperparameter of the prior $\nat_0$ controls the brown point's location while varying $n_0$ spans the long edges of the triangle and the red curve.
-	Large blurry circles in the background are other instances of MAP and MLE revealing their distribution. \vspace{-3ex}
+	Large blurry circles in the background are other instances of MAP and MLE revealing their distribution.
 	}
 	\label{fig:thales}
 \end{figure}
@@ -448,9 +448,7 @@ We see here a variance term defining the $\frac{d}{2n}$ asymptote and a bias ter
 
 {\bf If $\conj$ is $L$-Lipschitz} (e.g. $\logpart$ is defined within the $\ell^2$-ball of radius $L$), then
 \begin{align}
-    \bregmanconj(\m^* ; \m)
-    &\leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m} \\
-    &\leq 2L \norm{\m^* - \m} \; ,
+    \bregmanconj(\m^* ; \m)  \leq L \norm{\m^* - \m} + \norm{\nat} \norm{\m^* - \m}  2L \norm{\m^* - \m} \; ,
 \end{align}
 so $\bregmanconj$ is Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\sqrt{n}})$ rate, but no common exponential families verify the assumption.
 
@@ -461,7 +459,7 @@ so $\bregmanconj$ is Lipschitz, and~\eqref{eq:MAP_quadratic} yields a $O(\inv{\s
 \end{align}
 so $\bregmanconj$ is upper bounded by a quadratic, and we get~\eqref{eq:MAP_quadratic} as an upper bound.
 % It is also possible to get upper bounds under restricted notions of strong-convexity \citep{negahban2012unified}.
-Besides the Gaussian with known variance, the problem is that no standard exponential family has a \textit{globally} strongly convex log-partition function. The next section focuses on \textit{local} quadratic behavior, which is more realistic.
+Besides the Gaussian with known variance, the problem is that no standard exponential family has a \textit{globally} strongly convex log-partition function. The next section focuses on the more realistic \textit{local} quadratic behavior.
 
 \subsection{Locally Quadratic Case}
 \label{ssec:local-quadratic}
@@ -469,7 +467,7 @@ From~\eqref{eq:bregmanTaylor}, we know that Bregman divergences are locally quad
 Under some assumptions, such as self-concordance of $\conj$ (in 1d, $f$ is self-concordant iff $\forall x, \abs{f'''(x)} \leq 2 \abs{f''(x)}^{\frac{3}{2}}$ \citep[Ch.~4.1]{nesterov2003introductory}), we can quantify when this quadratic behavior kicks in. % Proofs for this subsection are in App.~\ref{app:self-concordant}.
 \begin{proposition}
 	\label{prop:selfConcordant}
-Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then \vspace{-3ex} % \footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$.} 
+Let $\conj:\cM\rightarrow \real$ be a self-concordant convex function, $\m, \m^* \in\cM$ and $\mF = \nabla \conj(\m^*)$. Then % \footnote{$0.21$ is a value of $x$ such that $x^2 \geq -\frac{x}{1-x} - \log(1 - \frac{x}{1-x})$.} 
 \aligns{
 	\norm{\m^*-\m}_{\mF} < 0.21
 	\implies
